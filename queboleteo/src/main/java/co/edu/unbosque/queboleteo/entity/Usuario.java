@@ -22,16 +22,16 @@ public class Usuario implements UserDetails {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name = "Correo", length = 50)
+	@Column(name = "Correo", length = 50, unique = true)
 	private String correo;
 
-	@Column(name = "NombreUsuario", length = 50, nullable = false)
+	@Column(name = "NombreUsuario", length = 50, nullable = false, unique = true)
 	private String nombreUsuario;
 
 	@Column(name = "Clave", length = 255, nullable = false)
 	private String clave;
 
-	@Column(name = "DocumentoIdentidad", length = 20, nullable = false)
+	@Column(name = "DocumentoIdentidad", length = 20, nullable = false, unique = true)
 	private String documentoIdentidad;
 
 	@Column(name = "PrimerNombre", length = 50, nullable = false)
@@ -393,6 +393,26 @@ public class Usuario implements UserDetails {
 	@Override
 	public String getUsername() {
 		return correo;
+	}
+
+	@Override
+	public boolean isAccountNonExpired() {
+		return accountNonExpired;
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+		return accountNonLocked;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return credentialsNonExpired;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return enabled;
 	}
 
 }

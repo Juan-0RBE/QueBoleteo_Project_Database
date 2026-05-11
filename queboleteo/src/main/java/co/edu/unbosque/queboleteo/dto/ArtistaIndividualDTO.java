@@ -1,40 +1,18 @@
-package co.edu.unbosque.queboleteo.entity;
+package co.edu.unbosque.queboleteo.dto;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import java.util.Objects;
 
-@Entity
-@Table(name = "artista_individual")
-public class ArtistaIndividual {
+public class ArtistaIndividualDTO {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "IdArtista")
 	private Long idArtista;
-
-	@Column(name = "NombreArtista", length = 100)
 	private String nombreArtista;
-
-	@Column(name = "DescripcionArtista", length = 200)
 	private String descripcionArtista;
-
-	@Column(name = "ImagenArtista", length = 2000)
 	private String imagenArtista;
-
-	@Column(name = "PaisOrigenArtista", length = 50)
 	private String paisOrigenArtista;
-
-	@Column(name = "EdadArtista")
 	private Integer edadArtista;
-
-	@Column(name = "LenguajeArtista", length = 50)
 	private String lenguajeArtista;
 
-	public ArtistaIndividual() {
+	public ArtistaIndividualDTO() {
 	}
 
 	/**
@@ -45,7 +23,7 @@ public class ArtistaIndividual {
 	 * @param edadArtista
 	 * @param lenguajeArtista
 	 */
-	public ArtistaIndividual(String nombreArtista, String descripcionArtista, String imagenArtista,
+	public ArtistaIndividualDTO(String nombreArtista, String descripcionArtista, String imagenArtista,
 			String paisOrigenArtista, Integer edadArtista, String lenguajeArtista) {
 		super();
 		this.nombreArtista = nombreArtista;
@@ -152,6 +130,41 @@ public class ArtistaIndividual {
 	 */
 	public void setLenguajeArtista(String lenguajeArtista) {
 		this.lenguajeArtista = lenguajeArtista;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(descripcionArtista, edadArtista, idArtista, imagenArtista, lenguajeArtista, nombreArtista,
+				paisOrigenArtista);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+
+		if (obj == null)
+			return false;
+
+		if (getClass() != obj.getClass())
+			return false;
+
+		ArtistaIndividualDTO other = (ArtistaIndividualDTO) obj;
+
+		return Objects.equals(descripcionArtista, other.descripcionArtista)
+				&& Objects.equals(edadArtista, other.edadArtista) && Objects.equals(idArtista, other.idArtista)
+				&& Objects.equals(imagenArtista, other.imagenArtista)
+				&& Objects.equals(lenguajeArtista, other.lenguajeArtista)
+				&& Objects.equals(nombreArtista, other.nombreArtista)
+				&& Objects.equals(paisOrigenArtista, other.paisOrigenArtista);
+	}
+
+	@Override
+	public String toString() {
+		return "ArtistaIndividualDTO [idArtista=" + idArtista + ", nombreArtista=" + nombreArtista
+				+ ", descripcionArtista=" + descripcionArtista + ", imagenArtista=" + imagenArtista
+				+ ", paisOrigenArtista=" + paisOrigenArtista + ", edadArtista=" + edadArtista + ", lenguajeArtista="
+				+ lenguajeArtista + "]";
 	}
 
 }
