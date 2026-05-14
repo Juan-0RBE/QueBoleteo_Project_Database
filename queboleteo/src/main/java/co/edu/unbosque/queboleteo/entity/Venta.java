@@ -48,16 +48,58 @@ public class Venta {
 	}
 
 	/**
-	 * @param idVenta
-	 * @param valorTotal
-	 * @param fechaVenta
-	 * @param usuario
+	 * @return the idVenta
 	 */
-	public Venta(Long idVenta, BigDecimal valorTotal, LocalDateTime fechaVenta, Usuario usuario) {
-		super();
+	public Long getIdVenta() {
+		return idVenta;
+	}
+
+	/**
+	 * @param idVenta the idVenta to set
+	 */
+	public void setIdVenta(Long idVenta) {
 		this.idVenta = idVenta;
+	}
+
+	/**
+	 * @return the valorTotal
+	 */
+	public BigDecimal getValorTotal() {
+		return valorTotal;
+	}
+
+	/**
+	 * @param valorTotal the valorTotal to set
+	 */
+	public void setValorTotal(BigDecimal valorTotal) {
 		this.valorTotal = valorTotal;
+	}
+
+	/**
+	 * @return the fechaVenta
+	 */
+	public LocalDateTime getFechaVenta() {
+		return fechaVenta;
+	}
+
+	/**
+	 * @param fechaVenta the fechaVenta to set
+	 */
+	public void setFechaVenta(LocalDateTime fechaVenta) {
 		this.fechaVenta = fechaVenta;
+	}
+
+	/**
+	 * @return the usuario
+	 */
+	public Usuario getUsuario() {
+		return usuario;
+	}
+
+	/**
+	 * @param usuario the usuario to set
+	 */
+	public void setUsuario(Usuario usuario) {
 		this.usuario = usuario;
 	}
 
