@@ -1,0 +1,98 @@
+<div class="confirmacion-wrapper" *ngIf="concierto">
+
+  <!-- Encabezado steps -->
+  <div class="resumen-header">
+    <div class="resumen-header-inner">
+      <div class="steps">
+        <span class="step done"><i class="pi pi-check"></i> Selección</span>
+        <span class="step-line done"></span>
+        <span class="step done"><i class="pi pi-check"></i> Resumen</span>
+        <span class="step-line done"></span>
+        <span class="step active"><i class="pi pi-ticket"></i> Confirmación</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="confirmacion-container">
+
+    <!-- Éxito -->
+    <div class="exito-banner">
+      <div class="exito-icon">
+        <i class="pi pi-check"></i>
+      </div>
+      <h1 class="exito-titulo">¡Compra confirmada!</h1>
+      <p class="exito-sub">Tus boletas han sido reservadas exitosamente.</p>
+    </div>
+
+    <!-- Boleta -->
+    <div class="boleta-card">
+      <div class="boleta-header">
+        <div class="boleta-brand">
+          <div class="boleta-logo"><i class="pi pi-ticket"></i></div>
+          <span>Que<strong>Boleteo</strong></span>
+        </div>
+        <div class="boleta-codigo">
+          <span class="codigo-label">Código de compra</span>
+          <span class="codigo-valor">{{ codigoVenta }}</span>
+        </div>
+      </div>
+
+      <div class="boleta-divider-perforado"></div>
+
+      <div class="boleta-info">
+        <div class="boleta-col">
+          <span class="info-label">Evento</span>
+          <span class="info-valor grande">{{ concierto.nombre }}</span>
+        </div>
+        <div class="boleta-col">
+          <span class="info-label">Artista</span>
+          <span class="info-valor">{{ concierto.artista }}</span>
+        </div>
+        <div class="boleta-col">
+          <span class="info-label">Fecha</span>
+          <span class="info-valor">{{ concierto.fecha }} · {{ concierto.hora }}</span>
+        </div>
+        <div class="boleta-col">
+          <span class="info-label">Sede</span>
+          <span class="info-valor">{{ concierto.sede }}, {{ concierto.ciudad }}</span>
+        </div>
+      </div>
+
+      <div class="boleta-divider-perforado"></div>
+
+      <!-- Zonas compradas -->
+      <div class="boleta-zonas">
+        <div class="boleta-zona-item" *ngFor="let item of items">
+          <div class="bz-info">
+            <span class="bz-nombre">{{ item.zona.nombre }}</span>
+            <span class="bz-cantidad">{{ item.cantidad }} boleta{{ item.cantidad !== 1 ? 's' : '' }}</span>
+          </div>
+          <span class="bz-precio">{{ formatPrecio(item.zona.precio * item.cantidad) }}</span>
+        </div>
+      </div>
+
+      <div class="boleta-total">
+        <span>Total pagado</span>
+        <span class="boleta-total-valor">{{ formatPrecio(total) }}</span>
+      </div>
+
+    </div>
+
+    <!-- Acciones -->
+    <div class="confirmacion-acciones">
+      <p-button
+        label="Ver mis boletas"
+        icon="pi pi-ticket"
+        styleClass="btn-mis-boletas"
+        routerLink="/mis-boletas">
+      </p-button>
+      <p-button
+        label="Volver al inicio"
+        icon="pi pi-home"
+        styleClass="btn-inicio"
+        routerLink="/principal/paginaprincipal">
+      </p-button>
+    </div>
+
+  </div>
+</div>
