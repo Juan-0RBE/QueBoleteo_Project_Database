@@ -1,0 +1,303 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+
+:root {
+  --auth-bg:          #0a0a0f;
+  --auth-card:        #12121a;
+  --auth-border:      rgba(255, 255, 255, 0.07);
+  --auth-violet:      #7c3aed;
+  --auth-violet-glow: rgba(124, 58, 237, 0.35);
+  --auth-pink:        #f0247a;
+  --auth-pink-glow:   rgba(240, 36, 122, 0.3);
+  --auth-text:        #f0eef8;
+  --auth-muted:       #7a7890;
+  --auth-input-bg:    #1a1a26;
+  --auth-radius:      14px;
+}
+
+.auth-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--auth-bg);
+  background-image:
+    radial-gradient(ellipse 60% 50% at 20% 20%, rgba(124, 58, 237, 0.18) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 80% 80%, rgba(240, 36, 122, 0.14) 0%, transparent 60%),
+    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.018'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  font-family: 'DM Sans', sans-serif;
+  padding: 2rem 1rem;
+}
+
+.auth-card {
+  background: var(--auth-card);
+  border: 1px solid var(--auth-border);
+  border-radius: var(--auth-radius);
+  width: 100%;
+  max-width: 460px;
+  padding: 2.5rem 2.25rem;
+  box-shadow:
+    0 0 0 1px rgba(124, 58, 237, 0.1),
+    0 25px 60px rgba(0, 0, 0, 0.6),
+    0 0 80px rgba(124, 58, 237, 0.08);
+  animation: cardIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.auth-card--wide {
+  max-width: 540px;
+}
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(28px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ---- Brand header ---- */
+.auth-brand {
+  text-align: center;
+  margin-bottom: 2rem;
+
+  .brand-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    background: linear-gradient(135deg, var(--auth-violet), var(--auth-pink));
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 24px var(--auth-violet-glow);
+
+    i { font-size: 1.6rem; color: #fff; }
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.65rem;
+    font-weight: 800;
+    color: var(--auth-text);
+    margin: 0 0 0.3rem;
+    letter-spacing: -0.02em;
+
+    span {
+      background: linear-gradient(90deg, var(--auth-violet), var(--auth-pink));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+
+  p {
+    font-size: 0.88rem;
+    color: var(--auth-muted);
+    margin: 0;
+  }
+}
+
+/* ---- Form fields ---- */
+.field {
+  margin-bottom: 1.1rem;
+
+  label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--auth-muted);
+    margin-bottom: 0.45rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+/* ---- PrimeNG overrides (Corregido con ::ng-deep) ---- */
+
+/* ---- FIX: Gradiente del Título ---- */
+.auth-brand h1 span {
+  display: inline-block !important;
+  background: linear-gradient(90deg, #7c3aed, #f0247a) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
+}
+
+/* Esto obliga al contenedor de la contraseña a ser el punto de referencia */
+::ng-deep .p-password {
+  position: relative;
+  display: flex !important;
+  width: 100%;
+}
+
+/* Posiciona el ojo absolutamente a la derecha */
+::ng-deep .p-password-toggle-icon {
+  position: absolute;
+  right: 12px; /* Ajusta según prefieras el margen derecho */
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  cursor: pointer;
+  color: var(--auth-muted) !important;
+}
+
+/* Evita que el texto escrito se oculte detrás del icono */
+::ng-deep .p-password input {
+  padding-right: 35px !important;
+}
+
+  /* ---- FIX: Botón (p-button) ---- */
+  /* PrimeNG a veces pone la clase en el componente, no en el <button> */
+  .btn-auth.p-button {
+    width: 100% !important;
+    background: linear-gradient(135deg, #7c3aed, #f0247a) !important;
+    border: none !important;
+    padding: 0.75rem !important;
+    justify-content: center !important;
+    box-shadow: 0 4px 20px rgba(124, 58, 237, 0.35) !important;
+  }
+
+  .btn-auth .p-button-label {
+    font-family: 'Syne', sans-serif !important;
+    font-weight: 700 !important;
+  }
+
+
+/* ---- Submit button ---- */
+.btn-auth {
+  width: 100%;
+  padding: 0.75rem !important;
+  border-radius: 10px !important;
+  font-family: 'Syne', sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 0.95rem !important;
+  letter-spacing: 0.04em;
+  background: linear-gradient(135deg, var(--auth-violet), var(--auth-pink)) !important;
+  border: none !important;
+  color: #fff !important;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 4px 20px var(--auth-violet-glow);
+  margin-top: 0.5rem;
+
+  &:hover:not(:disabled) {
+    opacity: 0.9;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 28px var(--auth-pink-glow);
+  }
+
+  &:active { transform: translateY(0); }
+
+  &:disabled { opacity: 0.45 !important; }
+}
+
+/* ---- Divider ---- */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1.4rem 0;
+
+  span { font-size: 0.78rem; color: var(--auth-muted); white-space: nowrap; }
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--auth-border);
+  }
+}
+
+/* ---- Footer link ---- */
+.auth-footer {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.85rem;
+  color: var(--auth-muted);
+
+  a {
+    color: var(--auth-violet);
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s;
+
+    &:hover { color: var(--auth-pink); }
+  }
+}
+
+/* ---- Validation messages ---- */
+.p-error {
+  font-size: 0.78rem !important;
+  color: #ff6b8a !important;
+  margin-top: 0.3rem;
+}
+
+/* ---- Checkbox ---- */
+.p-checkbox .p-checkbox-box {
+  background: var(--auth-input-bg) !important;
+  border-color: var(--auth-border) !important;
+  border-radius: 5px !important;
+
+  &.p-highlight {
+    background: var(--auth-violet) !important;
+    border-color: var(--auth-violet) !important;
+  }
+}
+
+.terms-label {
+  font-size: 0.83rem;
+  color: var(--auth-muted);
+  line-height: 1.4;
+
+  a {
+    color: var(--auth-violet);
+    text-decoration: none;
+    &:hover { color: var(--auth-pink); }
+  }
+}
+
+/* Fix: gradiente del nombre de la app */
+.auth-brand h1 span {
+  display: inline-block;
+  background: linear-gradient(90deg, var(--auth-violet), var(--auth-pink));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+
+::ng-deep .p-inputwrapper,
+::ng-deep .p-inputmask {
+  width: 100% !important;
+  display: block;
+}
+
+/* Asegura que el input de la máscara también herede el estilo visual */
+::ng-deep .p-inputmask {
+  background: var(--auth-input-bg) !important;
+  border: 1px solid var(--auth-border) !important;
+  border-radius: 10px !important;
+  color: var(--auth-text) !important;
+  padding: 0.65rem 1rem !important;
+}
+
+/* Fix: botón con gradiente propio en lugar del verde de Aura */
+.btn-auth.p-button {
+  background: linear-gradient(135deg, var(--auth-violet), var(--auth-pink)) !important;
+  border: none !important;
+  color: #fff !important;
+}
+
+.btn-auth.p-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--auth-violet), var(--auth-pink)) !important;
+  opacity: 0.88;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 28px var(--auth-pink-glow);
+}
+
+.btn-auth.p-button:focus {
+  box-shadow: 0 0 0 3px var(--auth-violet-glow) !important;
+}

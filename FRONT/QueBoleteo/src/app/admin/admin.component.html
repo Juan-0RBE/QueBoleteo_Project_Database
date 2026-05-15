@@ -1,0 +1,39 @@
+<div class="admin-shell" [class.sidebar-collapsed]="!sidebarAbierto">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-brand" *ngIf="sidebarAbierto">
+        <div class="brand-icon"><i class="pi pi-ticket"></i></div>
+        <span>Que<strong>Boleteo</strong></span>
+      </div>
+      <button class="toggle-btn" (click)="toggleSidebar()">
+        <i class="pi" [ngClass]="sidebarAbierto ? 'pi-chevron-left' : 'pi-chevron-right'"></i>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a
+        *ngFor="let item of navItems"
+        [routerLink]="'/admin/' + item.ruta"
+        routerLinkActive="active"
+        class="nav-item">
+        <i class="pi" [ngClass]="item.icon"></i>
+        <span *ngIf="sidebarAbierto">{{ item.label }}</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer" *ngIf="sidebarAbierto">
+      <a routerLink="/principal/paginaprincipal" class="back-link">
+        <i class="pi pi-arrow-left"></i>
+        <span>Volver al sitio</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- ── CONTENIDO ── -->
+  <div class="admin-content">
+    <router-outlet />
+  </div>
+
+</div>
