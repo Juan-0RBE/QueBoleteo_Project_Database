@@ -24,6 +24,7 @@ import co.edu.unbosque.queboleteo.dto.UsuarioDTO;
 import co.edu.unbosque.queboleteo.service.UsuarioService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
@@ -31,6 +32,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @CrossOrigin(origins = { "*" })
 @Transactional
 @Tag(name = "Gestión de Usuarios", description = "Endpoints para administrar usuarios")
+@SecurityRequirement(name = "bearerAuth")
 public class UsuarioController {
 
 	@Autowired

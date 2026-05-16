@@ -18,12 +18,14 @@ import co.edu.unbosque.queboleteo.dto.ConOrgDTO;
 import co.edu.unbosque.queboleteo.service.ConOrgService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @CrossOrigin(origins = { "*" })
 @RequestMapping(path = { "/conorg" })
 @Tag(name = "Concierto-Organizador", description = "Endpoints para la relación entre conciertos y organizadores")
+@SecurityRequirement(name = "bearerAuth")
 public class ConOrgController {
 
 	@Autowired

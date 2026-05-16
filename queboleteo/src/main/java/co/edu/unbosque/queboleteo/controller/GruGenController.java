@@ -18,12 +18,14 @@ import co.edu.unbosque.queboleteo.dto.GruGenDTO;
 import co.edu.unbosque.queboleteo.service.GruGenService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @CrossOrigin(origins = { "*" })
 @RequestMapping(path = { "/grugen" })
 @Tag(name = "Grupo-Género", description = "Endpoints para la relación entre grupos y géneros")
+@SecurityRequirement(name = "bearerAuth")
 public class GruGenController {
 
 	@Autowired

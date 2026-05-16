@@ -19,6 +19,7 @@ import co.edu.unbosque.queboleteo.dto.GrupoDTO;
 import co.edu.unbosque.queboleteo.service.GrupoService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
@@ -29,6 +30,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping(path = { "/grupo" })
 @Tag(name = "Gestión de Grupos",
 	description = "Endpoints para la gestión de grupos musicales")
+@SecurityRequirement(name = "bearerAuth")
 public class GrupoController {
 
 	@Autowired

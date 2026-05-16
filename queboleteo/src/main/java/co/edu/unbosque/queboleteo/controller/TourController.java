@@ -19,6 +19,7 @@ import co.edu.unbosque.queboleteo.dto.TourDTO;
 import co.edu.unbosque.queboleteo.service.TourService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
@@ -26,6 +27,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping(path = { "/tour" })
 @Tag(name = "Gestión de Tours",
 	description = "Endpoints para la gestión de tours")
+@SecurityRequirement(name = "bearerAuth")
 public class TourController {
 
 	@Autowired

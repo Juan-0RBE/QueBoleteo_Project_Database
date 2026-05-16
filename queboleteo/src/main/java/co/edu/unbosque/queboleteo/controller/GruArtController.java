@@ -18,12 +18,14 @@ import co.edu.unbosque.queboleteo.dto.GruArtDTO;
 import co.edu.unbosque.queboleteo.service.GruArtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @CrossOrigin(origins = { "*" })
 @RequestMapping(path = { "/gruart" })
 @Tag(name = "Grupo-Artista", description = "Endpoints para la relación entre grupos y artistas individuales")
+@SecurityRequirement(name = "bearerAuth")
 public class GruArtController {
 
 	@Autowired

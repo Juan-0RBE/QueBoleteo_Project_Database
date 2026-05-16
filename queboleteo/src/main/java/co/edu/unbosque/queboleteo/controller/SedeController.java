@@ -19,6 +19,7 @@ import co.edu.unbosque.queboleteo.dto.SedeDTO;
 import co.edu.unbosque.queboleteo.service.SedeService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
@@ -26,6 +27,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping(path = { "/sede" })
 @Tag(name = "Gestión de Sedes",
 	description = "Endpoints para la gestión de sedes")
+@SecurityRequirement(name = "bearerAuth")
 public class SedeController {
 
 	@Autowired

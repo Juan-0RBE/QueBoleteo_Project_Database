@@ -19,6 +19,7 @@ import co.edu.unbosque.queboleteo.dto.ResenaDTO;
 import co.edu.unbosque.queboleteo.service.ResenaService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
@@ -26,6 +27,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping(path = { "/resena" })
 @Tag(name = "Gestión de Reseñas",
     description = "Endpoints para la gestión de reseñas de conciertos")
+@SecurityRequirement(name = "bearerAuth")
 public class ResenaController {
 
     @Autowired
