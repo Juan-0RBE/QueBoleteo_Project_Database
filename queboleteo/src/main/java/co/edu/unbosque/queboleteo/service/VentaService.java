@@ -13,161 +13,299 @@ import co.edu.unbosque.queboleteo.entity.Venta;
 import co.edu.unbosque.queboleteo.repository.UsuarioRepository;
 import co.edu.unbosque.queboleteo.repository.VentaRepository;
 
+import co.edu.unbosque.queboleteo.dto.CompraRequestDto;
+import co.edu.unbosque.queboleteo.dto.CompraResponseDto;
+import co.edu.unbosque.queboleteo.entity.Boleto;
+import co.edu.unbosque.queboleteo.entity.Lugar;
+import co.edu.unbosque.queboleteo.entity.ZonaConcierto;
+import co.edu.unbosque.queboleteo.repository.BoletoRepository;
+import co.edu.unbosque.queboleteo.repository.LugarRepository;
+import co.edu.unbosque.queboleteo.repository.ZonaConciertoRepository;
+import org.springframework.transaction.annotation.Transactional;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 @Service
 public class VentaService implements CRUDOperation<VentaDTO> {
 
-    @Autowired
-    private VentaRepository ventaRepo;
+	@Autowired
+	private VentaRepository ventaRepo;
 
-    @Autowired
-    private UsuarioRepository usuarioRepo;
+	@Autowired
+	private UsuarioRepository usuarioRepo;
 
-    public VentaService() {
-    }
+	@Autowired
+	private ZonaConciertoRepository zonaConciertoRepo;
 
-    /**
-     * Convierte un DTO a entidad.
-     * Resuelve la relación Usuario a partir del correo recibido en el DTO.
-     *
-     * @param dto DTO de la venta
-     * @return Entidad Venta lista para persistir
-     */
-    private Venta toEntity(VentaDTO dto) {
-        Venta entity = new Venta();
-        entity.setValorTotal(dto.getValorTotal());
-        entity.setFechaVenta(dto.getFechaVenta());
+	@Autowired
+	private BoletoRepository boletoRepo;
 
-        // Resolvemos la relación con Usuario usando su correo (PK)
-        if (dto.getCorreoUsuario() != null) {
-            Optional<Usuario> usuario = usuarioRepo.findById(dto.getCorreoUsuario());
-            usuario.ifPresent(entity::setUsuario);
-        }
+	@Autowired
+	private LugarRepository lugarRepo;
 
-        return entity;
-    }
+	public VentaService() {
+	}
 
-    /**
-     * Convierte una entidad a DTO.
-     * Extrae solo el correo del usuario, no el objeto completo.
-     *
-     * @param entity Entidad Venta
-     * @return DTO de la venta
-     */
-    private VentaDTO toDTO(Venta entity) {
-        VentaDTO dto = new VentaDTO();
-        dto.setIdVenta(entity.getIdVenta());
-        dto.setValorTotal(entity.getValorTotal());
-        dto.setFechaVenta(entity.getFechaVenta());
+	/**
+	 * Convierte un DTO a entidad. Resuelve la relación Usuario a partir del correo
+	 * recibido en el DTO.
+	 *
+	 * @param dto DTO de la venta
+	 * @return Entidad Venta lista para persistir
+	 */
+	private Venta toEntity(VentaDTO dto) {
+		Venta entity = new Venta();
+		entity.setValorTotal(dto.getValorTotal());
+		entity.setFechaVenta(dto.getFechaVenta());
 
-        // ⚠️ Extraemos solo el correo, nunca la clave ni datos de seguridad
-        if (entity.getUsuario() != null) {
-            dto.setCorreoUsuario(entity.getUsuario().getCorreo());
-        }
+		// Resolvemos la relación con Usuario usando su correo (PK)
+		if (dto.getCorreoUsuario() != null) {
+			Optional<Usuario> usuario = usuarioRepo.findById(dto.getCorreoUsuario());
+			usuario.ifPresent(entity::setUsuario);
+		}
 
-        return dto;
-    }
+		return entity;
+	}
 
-    /**
-     * Crea una nueva venta en la base de datos.
-     * un campo de negocio único — cada venta es inherentemente nueva.
-     *
-     * @param newData DTO con los datos de la venta
-     * @return 0 si fue exitoso
-     */
-    @Override
-    public int create(VentaDTO newData) {
-        ventaRepo.save(toEntity(newData));
-        return 0;
-    }
+	/**
+	 * Convierte una entidad a DTO. Extrae solo el correo del usuario, no el objeto
+	 * completo.
+	 *
+	 * @param entity Entidad Venta
+	 * @return DTO de la venta
+	 */
+	private VentaDTO toDTO(Venta entity) {
+		VentaDTO dto = new VentaDTO();
+		dto.setIdVenta(entity.getIdVenta());
+		dto.setValorTotal(entity.getValorTotal());
+		dto.setFechaVenta(entity.getFechaVenta());
 
-    /**
-     * Obtiene todas las ventas registradas.
-     *
-     * @return Lista de DTOs de ventas
-     */
-    @Override
-    public List<VentaDTO> getAll() {
-        List<Venta> entityList = ventaRepo.findAll();
-        List<VentaDTO> dtoList = new ArrayList<>();
-        entityList.forEach(entity -> dtoList.add(toDTO(entity)));
-        return dtoList;
-    }
+		// ⚠️ Extraemos solo el correo, nunca la clave ni datos de seguridad
+		if (entity.getUsuario() != null) {
+			dto.setCorreoUsuario(entity.getUsuario().getCorreo());
+		}
 
-    /**
-     * Obtiene una venta por su ID.
-     *
-     * @param id ID de la venta
-     * @return DTO de la venta si existe, null en caso contrario
-     */
-    @Override
-    public VentaDTO getById(Long id) {
-        Optional<Venta> found = ventaRepo.findById(id);
-        if (found.isPresent()) {
-            return toDTO(found.get());
-        }
-        return null;
-    }
+		return dto;
+	}
 
-    /**
-     * Elimina una venta por su ID.
-     *
-     * @param id ID de la venta
-     * @return 0 si fue eliminada correctamente, 1 si no existe
-     */
-    @Override
-    public int deleteById(Long id) {
-        Optional<Venta> found = ventaRepo.findById(id);
-        if (found.isPresent()) {
-            ventaRepo.delete(found.get());
-            return 0;
-        }
-        return 1;
-    }
+	/**
+	 * Crea una nueva venta en la base de datos. un campo de negocio único — cada
+	 * venta es inherentemente nueva.
+	 *
+	 * @param newData DTO con los datos de la venta
+	 * @return 0 si fue exitoso
+	 */
+	@Override
+	public int create(VentaDTO newData) {
+		ventaRepo.save(toEntity(newData));
+		return 0;
+	}
 
-    /**
-     * Actualiza una venta existente.
-     *
-     * @param id      ID de la venta a actualizar
-     * @param newData Nuevos datos de la venta
-     * @return 0 si actualizó correctamente, 1 si no existe
-     */
-    @Override
-    public int updateById(Long id, VentaDTO newData) {
-        Optional<Venta> found = ventaRepo.findById(id);
-        if (found.isPresent()) {
-            Venta entity = found.get();
-            entity.setValorTotal(newData.getValorTotal());
-            entity.setFechaVenta(newData.getFechaVenta());
+	/**
+	 * Obtiene todas las ventas registradas.
+	 *
+	 * @return Lista de DTOs de ventas
+	 */
+	@Override
+	public List<VentaDTO> getAll() {
+		List<Venta> entityList = ventaRepo.findAll();
+		List<VentaDTO> dtoList = new ArrayList<>();
+		entityList.forEach(entity -> dtoList.add(toDTO(entity)));
+		return dtoList;
+	}
 
-            if (newData.getCorreoUsuario() != null) {
-                Optional<Usuario> usuario = usuarioRepo.findById(newData.getCorreoUsuario());
-                usuario.ifPresent(entity::setUsuario);
-            }
+	/**
+	 * Obtiene una venta por su ID.
+	 *
+	 * @param id ID de la venta
+	 * @return DTO de la venta si existe, null en caso contrario
+	 */
+	@Override
+	public VentaDTO getById(Long id) {
+		Optional<Venta> found = ventaRepo.findById(id);
+		if (found.isPresent()) {
+			return toDTO(found.get());
+		}
+		return null;
+	}
 
-            ventaRepo.save(entity);
-            return 0;
-        }
-        return 1;
-    }
+	/**
+	 * Elimina una venta por su ID.
+	 *
+	 * @param id ID de la venta
+	 * @return 0 si fue eliminada correctamente, 1 si no existe
+	 */
+	@Override
+	public int deleteById(Long id) {
+		Optional<Venta> found = ventaRepo.findById(id);
+		if (found.isPresent()) {
+			ventaRepo.delete(found.get());
+			return 0;
+		}
+		return 1;
+	}
 
-    /**
-     * Cuenta el total de ventas registradas.
-     *
-     * @return Cantidad total de ventas
-     */
-    @Override
-    public Long count() {
-        return ventaRepo.count();
-    }
+	/**
+	 * Actualiza una venta existente.
+	 *
+	 * @param id      ID de la venta a actualizar
+	 * @param newData Nuevos datos de la venta
+	 * @return 0 si actualizó correctamente, 1 si no existe
+	 */
+	@Override
+	public int updateById(Long id, VentaDTO newData) {
+		Optional<Venta> found = ventaRepo.findById(id);
+		if (found.isPresent()) {
+			Venta entity = found.get();
+			entity.setValorTotal(newData.getValorTotal());
+			entity.setFechaVenta(newData.getFechaVenta());
 
-    /**
-     * Verifica si existe una venta con el ID dado.
-     *
-     * @param id ID de la venta
-     * @return true si existe, false en caso contrario
-     */
-    @Override
-    public boolean exist(Long id) {
-        return ventaRepo.existsById(id);
-    }
+			if (newData.getCorreoUsuario() != null) {
+				Optional<Usuario> usuario = usuarioRepo.findById(newData.getCorreoUsuario());
+				usuario.ifPresent(entity::setUsuario);
+			}
+
+			ventaRepo.save(entity);
+			return 0;
+		}
+		return 1;
+	}
+
+	/**
+	 * Cuenta el total de ventas registradas.
+	 *
+	 * @return Cantidad total de ventas
+	 */
+	@Override
+	public Long count() {
+		return ventaRepo.count();
+	}
+
+	/**
+	 * Verifica si existe una venta con el ID dado.
+	 *
+	 * @param id ID de la venta
+	 * @return true si existe, false en caso contrario
+	 */
+	@Override
+	public boolean exist(Long id) {
+		return ventaRepo.existsById(id);
+	}
+
+	/**
+	 * Realiza la compra de boletos para una zona-concierto específica. Crea la
+	 * venta, los boletos y asigna lugares disponibles en una sola transacción.
+	 *
+	 * @param dto DTO con correo del usuario, id de zona-concierto y cantidad
+	 * @return DTO con resumen de la compra realizada
+	 */
+	@Transactional
+	public CompraResponseDto realizarCompra(CompraRequestDto dto) {
+
+		// 1. Verificar usuario
+		Usuario usuario = usuarioRepo.findById(dto.getCorreoUsuario())
+				.orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + dto.getCorreoUsuario()));
+
+		// 2. Verificar ZonaConcierto
+		ZonaConcierto zc = zonaConciertoRepo.findById(dto.getIdZonaConcierto()).orElseThrow(
+				() -> new RuntimeException("ZonaConcierto no encontrada con id: " + dto.getIdZonaConcierto()));
+
+		// 3. Verificar disponibilidad en el contador
+		if (zc.getCantidadDisponible() < dto.getCantidad()) {
+			throw new RuntimeException("No hay suficientes lugares. Disponibles: " + zc.getCantidadDisponible()
+					+ ", solicitados: " + dto.getCantidad());
+		}
+
+		// ---------------------------------------------------------------
+		// 4. Obtener los lugares a asignar según el tipo de zona
+		// ---------------------------------------------------------------
+		List<Lugar> lugaresAAsignar = new ArrayList<>();
+
+		if (zc.getZona().getTieneAsiento()) {
+
+			// ZONA CON ASIENTOS — el usuario debe haber elegido sus lugares
+			if (dto.getIdsLugaresElegidos() == null || dto.getIdsLugaresElegidos().isEmpty()) {
+				throw new RuntimeException("Esta zona tiene asientos. Debes enviar idsLugaresElegidos.");
+			}
+			if (dto.getIdsLugaresElegidos().size() != dto.getCantidad()) {
+				throw new RuntimeException(
+						"La cantidad de lugares elegidos debe coincidir con la cantidad solicitada.");
+			}
+
+			// CAMBIO v4: verificar disponibilidad por ZonaConcierto, no por boleto IS NULL
+			for (Long idLugar : dto.getIdsLugaresElegidos()) {
+				Lugar lugar = lugarRepo.findLugarLibreEspecifico(idLugar, zc.getZona().getIdZona(), zc.getIdPrecio())
+						.orElseThrow(() -> new RuntimeException("El lugar con id " + idLugar
+								+ " no existe, no pertenece a esta zona, o ya está ocupado para este concierto."));
+				lugaresAAsignar.add(lugar);
+			}
+
+		} else {
+
+			// ZONA GENERAL — asignación automática, el usuario no elige
+			// CAMBIO v4: buscar libres por ZonaConcierto específica
+			lugaresAAsignar = lugarRepo.findLugaresLibresPorZonaConcierto(zc.getZona().getIdZona(), zc.getIdPrecio());
+
+			if (lugaresAAsignar.size() < dto.getCantidad()) {
+				throw new RuntimeException("No hay suficientes lugares físicos libres. Libres: "
+						+ lugaresAAsignar.size() + ", solicitados: " + dto.getCantidad());
+			}
+		}
+		// ---------------------------------------------------------------
+
+		// 5. Calcular valor total
+		BigDecimal valorTotal = zc.getPrecio().multiply(BigDecimal.valueOf(dto.getCantidad()));
+
+		// 6. Crear y guardar la Venta
+		Venta venta = new Venta();
+		venta.setUsuario(usuario);
+		venta.setFechaVenta(LocalDateTime.now());
+		venta.setValorTotal(valorTotal);
+		venta = ventaRepo.save(venta);
+
+		// 7. Crear Boletos y asignar Lugares
+		// CAMBIO v4: la FK vive en Boleto — se hace boleto.setLugar(), no
+		// lugar.setBoleto()
+		List<Long> codigosBoletos = new ArrayList<>();
+		List<Long> idsLugares = new ArrayList<>();
+
+		for (int i = 0; i < dto.getCantidad(); i++) {
+
+			Lugar lugar = lugaresAAsignar.get(i);
+
+			Boleto boleto = new Boleto();
+			boleto.setEstadoBoleto("ACTIVO");
+			boleto.setZonaConcierto(zc);
+			boleto.setVenta(venta);
+			boleto.setLugar(lugar); // CAMBIO v4: FK en Boleto, no en Lugar
+			boleto = boletoRepo.save(boleto);
+
+			codigosBoletos.add(boleto.getCodigoBoleto());
+			idsLugares.add(lugar.getIdLugar());
+		}
+
+		// 8. Decrementar disponibilidad
+		zc.setCantidadDisponible(zc.getCantidadDisponible() - dto.getCantidad());
+		zonaConciertoRepo.save(zc);
+
+		// 9. Retornar resumen
+		CompraResponseDto response = new CompraResponseDto();
+		response.setIdVenta(venta.getIdVenta());
+		response.setValorTotal(valorTotal);
+		response.setCodigosBoletos(codigosBoletos);
+		response.setIdsLugares(idsLugares);
+
+		return response;
+	}
+
+	// Métodos auxiliares para el endpoint de consulta
+	public ZonaConcierto getZonaConcierto(Long id) {
+		return zonaConciertoRepo.findById(id).orElseThrow(() -> new RuntimeException("ZonaConcierto no encontrada"));
+	}
+
+	// CAMBIO v4: ahora recibe también idPrecio para filtrar por concierto
+	public List<Lugar> getLugaresLibres(Long idZona, Long idPrecio) {
+		return lugarRepo.findLugaresLibresPorZonaConcierto(idZona, idPrecio);
+	}
+
 }

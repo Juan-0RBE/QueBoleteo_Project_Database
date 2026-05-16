@@ -7,7 +7,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -22,8 +21,12 @@ public class Boleto {
 	@Column(name = "EstadoBoleto", length = 15)
 	private String estadoBoleto;
 
-	// Lado inverso — la FK BOLETO_CodigoBoleto vive en la tabla LUGAR
-	@OneToOne(mappedBy = "boleto")
+	// Boleto es ahora dueño de la FK hacia Lugar.
+	// nullable = true porque zonas generales no asignan lugar específico.
+	// Cardinalidad N:1 — muchos boletos pueden apuntar al mismo lugar
+	// a lo largo del tiempo (uno por concierto distinto).
+	@ManyToOne
+	@JoinColumn(name = "LUGAR_IdLugar", nullable = true)
 	private Lugar lugar;
 
 	@ManyToOne
@@ -38,6 +41,8 @@ public class Boleto {
 	}
 
 	/**
+	 * Constructor para zona general (sin lugar asignado)
+	 * 
 	 * @param estadoBoleto
 	 * @param zonaConcierto
 	 * @param venta
@@ -49,73 +54,57 @@ public class Boleto {
 	}
 
 	/**
-	 * @return the codigoBoleto
+	 * Constructor para zona con asientos (lugar específico asignado)
+	 * 
+	 * @param estadoBoleto
+	 * @param lugar
+	 * @param zonaConcierto
+	 * @param venta
 	 */
+	public Boleto(String estadoBoleto, Lugar lugar, ZonaConcierto zonaConcierto, Venta venta) {
+		this.estadoBoleto = estadoBoleto;
+		this.lugar = lugar;
+		this.zonaConcierto = zonaConcierto;
+		this.venta = venta;
+	}
+
 	public Long getCodigoBoleto() {
 		return codigoBoleto;
 	}
 
-	/**
-	 * @param codigoBoleto the codigoBoleto to set
-	 */
 	public void setCodigoBoleto(Long codigoBoleto) {
 		this.codigoBoleto = codigoBoleto;
 	}
 
-	/**
-	 * @return the estadoBoleto
-	 */
 	public String getEstadoBoleto() {
 		return estadoBoleto;
 	}
 
-	/**
-	 * @param estadoBoleto the estadoBoleto to set
-	 */
 	public void setEstadoBoleto(String estadoBoleto) {
 		this.estadoBoleto = estadoBoleto;
 	}
 
-	/**
-	 * @return the lugar
-	 */
 	public Lugar getLugar() {
 		return lugar;
 	}
 
-	/**
-	 * @param lugar the lugar to set
-	 */
 	public void setLugar(Lugar lugar) {
 		this.lugar = lugar;
 	}
 
-	/**
-	 * @return the zonaConcierto
-	 */
 	public ZonaConcierto getZonaConcierto() {
 		return zonaConcierto;
 	}
 
-	/**
-	 * @param zonaConcierto the zonaConcierto to set
-	 */
 	public void setZonaConcierto(ZonaConcierto zonaConcierto) {
 		this.zonaConcierto = zonaConcierto;
 	}
 
-	/**
-	 * @return the venta
-	 */
 	public Venta getVenta() {
 		return venta;
 	}
 
-	/**
-	 * @param venta the venta to set
-	 */
 	public void setVenta(Venta venta) {
 		this.venta = venta;
 	}
-
 }
