@@ -1,12 +1,10 @@
 package co.edu.unbosque.queboleteo.repository;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import co.edu.unbosque.queboleteo.entity.Boleto;
-import co.edu.unbosque.queboleteo.entity.Lugar;
 import co.edu.unbosque.queboleteo.entity.Venta;
 import co.edu.unbosque.queboleteo.entity.ZonaConcierto;
 
@@ -28,12 +26,4 @@ public interface BoletoRepository extends JpaRepository<Boleto, Long> {
      */
     List<Boleto> findByZonaConcierto(ZonaConcierto zonaConcierto);
 
-    /**
-     * Busca el boleto asociado a un lugar específico.
-     * por eso retorna Optional y no List.
-     *
-     * @param lugar Objeto Lugar
-     * @return Optional con el boleto si existe
-     */
-    Optional<Boleto> findByLugar(Lugar lugar);
 }

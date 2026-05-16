@@ -7,7 +7,6 @@ public class BoletoDTO {
     private Long codigoBoleto;
     private String estadoBoleto;
 
-    private Long idLugar;
     private Long idPrecio;
     private Long idVenta;
 
@@ -16,14 +15,11 @@ public class BoletoDTO {
 
     /**
      * @param estadoBoleto
-     * @param idLugar
      * @param idPrecio
      * @param idVenta
      */
-    public BoletoDTO(String estadoBoleto, Long idLugar, Long idPrecio, Long idVenta) {
-        super();
+    public BoletoDTO(String estadoBoleto, Long idPrecio, Long idVenta) {
         this.estadoBoleto = estadoBoleto;
-        this.idLugar = idLugar;
         this.idPrecio = idPrecio;
         this.idVenta = idVenta;
     }
@@ -49,16 +45,6 @@ public class BoletoDTO {
     public void setEstadoBoleto(String estadoBoleto) { this.estadoBoleto = estadoBoleto; }
 
     /**
-     * @return the idLugar
-     */
-    public Long getIdLugar() { return idLugar; }
-
-    /**
-     * @param idLugar the idLugar to set
-     */
-    public void setIdLugar(Long idLugar) { this.idLugar = idLugar; }
-
-    /**
      * @return the idPrecio
      */
     public Long getIdPrecio() { return idPrecio; }
@@ -80,7 +66,7 @@ public class BoletoDTO {
 
     @Override
     public int hashCode() {
-        return Objects.hash(codigoBoleto, estadoBoleto, idLugar, idPrecio, idVenta);
+        return Objects.hash(codigoBoleto, estadoBoleto, idPrecio, idVenta);
     }
 
     @Override
@@ -91,7 +77,6 @@ public class BoletoDTO {
         BoletoDTO other = (BoletoDTO) obj;
         return Objects.equals(codigoBoleto, other.codigoBoleto)
                 && Objects.equals(estadoBoleto, other.estadoBoleto)
-                && Objects.equals(idLugar, other.idLugar)
                 && Objects.equals(idPrecio, other.idPrecio)
                 && Objects.equals(idVenta, other.idVenta);
     }
@@ -99,7 +84,6 @@ public class BoletoDTO {
     @Override
     public String toString() {
         return "BoletoDTO [codigoBoleto=" + codigoBoleto + ", estadoBoleto=" + estadoBoleto
-                + ", idLugar=" + idLugar + ", idPrecio=" + idPrecio
-                + ", idVenta=" + idVenta + "]";
+                + ", idPrecio=" + idPrecio + ", idVenta=" + idVenta + "]";
     }
 }

@@ -41,13 +41,9 @@ public class BoletoController {
     @PostMapping("/crear")
     public ResponseEntity<String> create(@RequestBody BoletoDTO boleto) {
         int status = boletoService.create(boleto);
-        if (status == 0) {
             return new ResponseEntity<>("Boleto creado correctamente", HttpStatus.CREATED);
-        }
-        return new ResponseEntity<>("Ese lugar ya tiene un boleto asignado",
-                HttpStatus.NOT_ACCEPTABLE);
     }
-
+    
     /**
      * Obtiene todos los boletos.
      *

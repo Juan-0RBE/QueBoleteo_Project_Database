@@ -20,18 +20,17 @@ public class OrganizadorService {
 	 * Crea un nuevo organizador.
 	 * 
 	 * @param dto datos del organizador
-	 * @return 0 si se creó correctamente, 1 si ya existe
+	 * @return 0 si se creó correctamente, 1 si ya existe, 2 si el correo no cumple con el formato estándar
 	 */
 	public int create(OrganizadorDTO dto) {
 
-		Organizador found = organizadorRepo.findById(
-				dto.getNombreOrganizador())
-				.orElse(null);
+		Organizador found = organizadorRepo.findById(dto.getNombreOrganizador()).orElse(null);
 
 		if (found != null) {
 			return 1;
+		} else if (!dto.getCorreoOrganizador().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$")) {
+			return 2;
 		}
-
 		Organizador entity = dtoToEntity(dto);
 
 		organizadorRepo.save(entity);
@@ -46,11 +45,9 @@ public class OrganizadorService {
 	 */
 	public List<OrganizadorDTO> getAll() {
 
-		List<Organizador> entities =
-				organizadorRepo.findAll();
+		List<Organizador> entities = organizadorRepo.findAll();
 
-		List<OrganizadorDTO> dtos =
-				new ArrayList<>();
+		List<OrganizadorDTO> dtos = new ArrayList<>();
 
 		for (Organizador entity : entities) {
 
@@ -68,9 +65,7 @@ public class OrganizadorService {
 	 */
 	public OrganizadorDTO getById(String nombre) {
 
-		Organizador entity = organizadorRepo
-				.findById(nombre)
-				.orElse(null);
+		Organizador entity = organizadorRepo.findById(nombre).orElse(null);
 
 		if (entity == null) {
 			return null;
@@ -83,22 +78,18 @@ public class OrganizadorService {
 	 * Actualiza un organizador existente.
 	 * 
 	 * @param nombre nombre del organizador
-	 * @param dto nuevos datos
+	 * @param dto    nuevos datos
 	 * @return 0 si se actualizó, 1 si no existe
 	 */
-	public int updateById(String nombre,
-			OrganizadorDTO dto) {
+	public int updateById(String nombre, OrganizadorDTO dto) {
 
-		Organizador found = organizadorRepo
-				.findById(nombre)
-				.orElse(null);
+		Organizador found = organizadorRepo.findById(nombre).orElse(null);
 
 		if (found == null) {
 			return 1;
 		}
 
-		found.setCorreoOrganizador(
-				dto.getCorreoOrganizador());
+		found.setCorreoOrganizador(dto.getCorreoOrganizador());
 
 		found.setLogo(dto.getLogo());
 
@@ -115,9 +106,7 @@ public class OrganizadorService {
 	 */
 	public int deleteById(String nombre) {
 
-		Organizador found = organizadorRepo
-				.findById(nombre)
-				.orElse(null);
+		Organizador found = organizadorRepo.findById(nombre).orElse(null);
 
 		if (found == null) {
 			return 1;
@@ -144,16 +133,13 @@ public class OrganizadorService {
 	 * @param dto DTO a convertir
 	 * @return entidad Organizador
 	 */
-	private Organizador dtoToEntity(
-			OrganizadorDTO dto) {
+	private Organizador dtoToEntity(OrganizadorDTO dto) {
 
 		Organizador entity = new Organizador();
 
-		entity.setNombreOrganizador(
-				dto.getNombreOrganizador());
+		entity.setNombreOrganizador(dto.getNombreOrganizador());
 
-		entity.setCorreoOrganizador(
-				dto.getCorreoOrganizador());
+		entity.setCorreoOrganizador(dto.getCorreoOrganizador());
 
 		entity.setLogo(dto.getLogo());
 
@@ -166,17 +152,13 @@ public class OrganizadorService {
 	 * @param entity entidad a convertir
 	 * @return DTO Organizador
 	 */
-	private OrganizadorDTO entityToDTO(
-			Organizador entity) {
+	private OrganizadorDTO entityToDTO(Organizador entity) {
 
-		OrganizadorDTO dto =
-				new OrganizadorDTO();
+		OrganizadorDTO dto = new OrganizadorDTO();
 
-		dto.setNombreOrganizador(
-				entity.getNombreOrganizador());
+		dto.setNombreOrganizador(entity.getNombreOrganizador());
 
-		dto.setCorreoOrganizador(
-				entity.getCorreoOrganizador());
+		dto.setCorreoOrganizador(entity.getCorreoOrganizador());
 
 		dto.setLogo(entity.getLogo());
 

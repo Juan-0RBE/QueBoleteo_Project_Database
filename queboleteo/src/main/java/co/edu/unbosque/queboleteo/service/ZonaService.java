@@ -81,7 +81,7 @@ public class ZonaService implements CRUDOperation<ZonaDTO> {
      */
     @Override
     public int create(ZonaDTO newData) {
-        Optional<Zona> found = zonaRepo.findByNombreZona(newData.getNombreZona());
+        Optional<Zona> found = zonaRepo.findByNombreZonaAndSede_NombreSede(newData.getNombreZona(), newData.getNombreSede());
         if (found.isPresent()) {
             return 1;
         }

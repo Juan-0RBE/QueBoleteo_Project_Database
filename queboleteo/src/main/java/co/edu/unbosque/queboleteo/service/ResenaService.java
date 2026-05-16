@@ -132,6 +132,18 @@ public class ResenaService implements CRUDOperation<ResenaDTO> {
         }
         return null;
     }
+    
+    /**
+     * Obtiene todas las reseñas registradas de un concierto.
+     *
+     * @return Lista de DTOs de reseñas
+     */
+    public List<ResenaDTO> getAllByConcierto(String nombreConcierto) {
+        List<Resena> entityList = resenaRepo.findByConcierto(conciertoRepo.findByNombreConcierto(nombreConcierto).get());
+        List<ResenaDTO> dtoList = new ArrayList<>();
+        entityList.forEach(entity -> dtoList.add(toDTO(entity)));
+        return dtoList;
+    }
 
     /**
      * Elimina una reseña por su ID.
