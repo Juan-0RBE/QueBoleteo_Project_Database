@@ -21,6 +21,9 @@ import co.edu.unbosque.queboleteo.service.ZonaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+
+import co.edu.unbosque.queboleteo.dto.ConfiguracionLugarDto;
+
 @RestController
 @CrossOrigin(origins = { "*" })
 @RequestMapping(path = { "/zona" })
@@ -120,5 +123,34 @@ public class ZonaController {
     @GetMapping("/count")
     public ResponseEntity<Long> count() {
         return new ResponseEntity<>(zonaService.count(), HttpStatus.OK);
+    }
+    
+    /**
+     * Genera los lugares físicos de una zona.
+     * Si la zona tiene asientos, requiere filas y asientosPorFila.
+     * Si es zona general, requiere capacidadGeneral.
+     *
+     * @param idZona ID de la zona
+     * @param dto    Datos de configuración
+     * @return Mensaje de éxito o error
+     */
+    @Operation(summary = "Configurar lugares de una zona")
+    @PostMapping("/configurar-lugares/{idZona}")
+    public ResponseEntity<String> configurarLugares(
+            @PathVariable Long idZona,
+            @RequestBody ConfiguracionLugarDto dto) {
+
+        int status = zonaService.configurarLugares(idZona, dto);
+
+        if (status == 0) {
+            return new ResponseEntity<>("Lugares generados correctamente", HttpStatus.CREATED);
+        } else if (status == 1) {
+            return new ResponseEntity<>("Zona no encontrada", HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>(
+                "Datos inválidos. Para zona con asientos envía filas y asientosPorFila. " +
+                "Para zona general envía capacidadGeneral.",
+                HttpStatus.BAD_REQUEST);
+        }
     }
 }
