@@ -19,6 +19,7 @@ import co.edu.unbosque.queboleteo.dto.ZonaDTO;
 import co.edu.unbosque.queboleteo.service.ZonaService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 
@@ -29,6 +30,7 @@ import co.edu.unbosque.queboleteo.dto.ConfiguracionLugarDto;
 @RequestMapping(path = { "/zona" })
 @Tag(name = "Gestión de Zonas",
     description = "Endpoints para la gestión de zonas")
+@SecurityRequirement(name = "bearerAuth")
 public class ZonaController {
 
     @Autowired

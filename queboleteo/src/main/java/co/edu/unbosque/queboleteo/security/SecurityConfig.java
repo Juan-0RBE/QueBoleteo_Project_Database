@@ -1,7 +1,9 @@
 package co.edu.unbosque.queboleteo.security;
 
+import co.edu.unbosque.queboleteo.controller.ArtGenController;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -28,12 +30,15 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    private final ArtGenController artGenController;
+
 	private final JwtAuthenticationFilter jwtAuthFilter;
 	private final UserDetailsService userDetailsService;
 
-	public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter, UserDetailsService userDetailsService) {
+	public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter, UserDetailsService userDetailsService, ArtGenController artGenController) {
 		this.jwtAuthFilter = jwtAuthFilter;
 		this.userDetailsService = userDetailsService;
+		this.artGenController = artGenController;
 	}
 
 	/**
@@ -42,24 +47,58 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-		http
-				// Desactiva CSRF
-				.csrf(csrf -> csrf.disable())
+		http.csrf(csrf -> csrf.disable()).cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
-				// Permite CORS
-				.cors(cors -> cors.configurationSource(corsConfigurationSource()))
-
-				// Permitir acceso total a todos los endpoints
 				.authorizeHttpRequests(auth -> auth
-						.anyRequest().permitAll())
 
-				// Stateless
-				.sessionManagement(session -> session
-						.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+						// Público
+						// GET públicos
+						.requestMatchers(
+								HttpMethod.GET, "/**").permitAll()
+
+						// Auth
+						.requestMatchers("/auth/**").permitAll()
+
+						// Usuario
+						.requestMatchers("/venta/**", "/resena/**")
+						.hasRole("USUARIO")
+
+						// Admin
+						.requestMatchers(HttpMethod.POST, "/**")
+						.hasRole("ADMINISTRADOR")
+
+						.requestMatchers(HttpMethod.PUT, "/**")
+						.hasRole("ADMINISTRADOR")
+
+						.requestMatchers(HttpMethod.DELETE, "/**")
+						.hasRole("ADMINISTRADOR")
+						.anyRequest().authenticated())
+
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+				.authenticationProvider(authenticationProvider())
+				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
 	}
 
+	/*
+	 * @Bean public SecurityFilterChain securityFilterChain(HttpSecurity http)
+	 * throws Exception {
+	 * 
+	 * http // Desactiva CSRF .csrf(csrf -> csrf.disable())
+	 * 
+	 * // Permite CORS .cors(cors ->
+	 * cors.configurationSource(corsConfigurationSource()))
+	 * 
+	 * // Permitir acceso total a todos los endpoints .authorizeHttpRequests(auth ->
+	 * auth .anyRequest().permitAll())
+	 * 
+	 * // Stateless .sessionManagement(session -> session
+	 * .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+	 * 
+	 * return http.build(); }
+	 */
 	/**
 	 * Proveedor de autenticación basado en nuestra clase UserDetailsService.
 	 */
@@ -69,12 +108,11 @@ public class SecurityConfig {
 	@Bean
 	public AuthenticationProvider authenticationProvider() {
 
-	    DaoAuthenticationProvider authProvider =
-	            new DaoAuthenticationProvider(userDetailsService);
+		DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
 
-	    authProvider.setPasswordEncoder(passwordEncoder());
+		authProvider.setPasswordEncoder(passwordEncoder());
 
-	    return authProvider;
+		return authProvider;
 	}
 
 	/**

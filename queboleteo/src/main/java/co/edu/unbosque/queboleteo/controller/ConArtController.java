@@ -18,12 +18,14 @@ import co.edu.unbosque.queboleteo.dto.ConArtDTO;
 import co.edu.unbosque.queboleteo.service.ConArtService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @CrossOrigin(origins = { "*" })
 @RequestMapping(path = { "/conart" })
 @Tag(name = "Concierto-Artista", description = "Endpoints para la relación entre conciertos y artistas individuales")
+@SecurityRequirement(name = "bearerAuth")
 public class ConArtController {
 
 	@Autowired

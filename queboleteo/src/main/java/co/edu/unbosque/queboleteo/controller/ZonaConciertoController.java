@@ -19,12 +19,14 @@ import co.edu.unbosque.queboleteo.dto.ZonaConciertoDTO;
 import co.edu.unbosque.queboleteo.service.ZonaConciertoService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @CrossOrigin(origins = { "*" })
 @RequestMapping(path = { "/zonaconcierto" })
 @Tag(name = "Gestión de Zonas por Concierto", description = "Endpoints para la gestión de zonas asociadas a conciertos")
+@SecurityRequirement(name = "bearerAuth")
 public class ZonaConciertoController {
 
 	@Autowired
