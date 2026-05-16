@@ -25,7 +25,10 @@ public class Lugar {
 	@Column(name = "Fila", length = 10)
 	private String fila;
 
-	@OneToOne(mappedBy = "lugar")
+	// Lado dueño — la FK BOLETO_CodigoBoleto vive en esta tabla
+	// nullable = true porque un lugar puede existir sin boleto (disponible)
+	@OneToOne
+	@JoinColumn(name = "BOLETO_CodigoBoleto", nullable = true)
 	private Boleto boleto;
 
 	@ManyToOne
@@ -33,7 +36,17 @@ public class Lugar {
 	private Zona zona;
 
 	public Lugar() {
-		// TODO Auto-generated constructor stub
+	}
+
+	/**
+	 * @param numeroAsiento
+	 * @param fila
+	 * @param zona
+	 */
+	public Lugar(Integer numeroAsiento, String fila, Zona zona) {
+		this.numeroAsiento = numeroAsiento;
+		this.fila = fila;
+		this.zona = zona;
 	}
 
 	/**
@@ -43,7 +56,6 @@ public class Lugar {
 	 * @param zona
 	 */
 	public Lugar(Integer numeroAsiento, String fila, Boleto boleto, Zona zona) {
-		super();
 		this.numeroAsiento = numeroAsiento;
 		this.fila = fila;
 		this.boleto = boleto;

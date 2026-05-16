@@ -36,4 +36,5 @@ public interface ResenaRepository extends JpaRepository<Resena, Long> {
      * @return Optional con la reseña si existe
      */
     Optional<Resena> findByUsuarioAndConcierto(Usuario usuario, Concierto concierto);
+
 }

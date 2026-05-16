@@ -17,6 +17,14 @@ public interface ZonaRepository extends JpaRepository<Zona, Long> {
      * @return Optional con la zona si existe
      */
     Optional<Zona> findByNombreZona(String nombreZona);
+    
+    /**
+     * Busca una zona por su nombre y el nombre de la sede.
+     *
+     * @param nombreZona Nombre de la zona
+     * @return Optional con la zona si existe
+     */
+    Optional<Zona> findByNombreZonaAndSede_NombreSede(String nombreZona, String nombreSede);
 
     /**
      * Elimina una zona por su nombre.

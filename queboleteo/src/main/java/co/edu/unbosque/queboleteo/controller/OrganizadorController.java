@@ -46,9 +46,10 @@ public class OrganizadorController {
 		int status = organizadorService.create(organizador);
 
 		if (status == 0) {
-
 			return new ResponseEntity<>("Organizador creado correctamente", HttpStatus.CREATED);
-
+		}
+		if (status == 2) {
+			return new ResponseEntity<>("El correo ingresado no es válido", HttpStatus.NOT_ACCEPTABLE);
 		} else {
 
 			return new ResponseEntity<>("Ya existe un organizador con ese nombre", HttpStatus.NOT_ACCEPTABLE);

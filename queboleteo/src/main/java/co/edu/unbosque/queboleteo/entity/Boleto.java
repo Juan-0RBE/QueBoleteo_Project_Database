@@ -22,8 +22,8 @@ public class Boleto {
 	@Column(name = "EstadoBoleto", length = 15)
 	private String estadoBoleto;
 
-	@OneToOne
-	@JoinColumn(name = "LUGAR_IdLugar", nullable = false)
+	// Lado inverso — la FK BOLETO_CodigoBoleto vive en la tabla LUGAR
+	@OneToOne(mappedBy = "boleto")
 	private Lugar lugar;
 
 	@ManyToOne
@@ -35,19 +35,15 @@ public class Boleto {
 	private Venta venta;
 
 	public Boleto() {
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
 	 * @param estadoBoleto
-	 * @param lugar
 	 * @param zonaConcierto
 	 * @param venta
 	 */
-	public Boleto(String estadoBoleto, Lugar lugar, ZonaConcierto zonaConcierto, Venta venta) {
-		super();
+	public Boleto(String estadoBoleto, ZonaConcierto zonaConcierto, Venta venta) {
 		this.estadoBoleto = estadoBoleto;
-		this.lugar = lugar;
 		this.zonaConcierto = zonaConcierto;
 		this.venta = venta;
 	}

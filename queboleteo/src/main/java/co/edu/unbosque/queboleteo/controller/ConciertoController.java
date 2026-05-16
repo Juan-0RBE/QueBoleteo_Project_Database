@@ -43,6 +43,8 @@ public class ConciertoController {
         int status = conciertoService.create(concierto);
         if (status == 0) {
             return new ResponseEntity<>("Concierto creado correctamente", HttpStatus.CREATED);
+        } else if (status == 2) {
+        	return new ResponseEntity<>("Se debe asignar una sede válida al concierto", HttpStatus.NOT_ACCEPTABLE);
         }
         return new ResponseEntity<>("Ya existe un concierto con ese nombre", HttpStatus.NOT_ACCEPTABLE);
     }

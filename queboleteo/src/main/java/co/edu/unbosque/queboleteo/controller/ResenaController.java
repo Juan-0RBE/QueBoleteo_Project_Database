@@ -78,6 +78,22 @@ public class ResenaController {
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+    
+    /**
+     * Obtiene una reseña por ID.
+     *
+     * @param id ID de la reseña
+     * @return Reseña encontrada
+     */
+    @Operation(summary = "Obtener reseña por concierto")
+    @GetMapping("/concierto/{nombreConcierto}")
+    public ResponseEntity<List<ResenaDTO>> getByNombreConcierto(@PathVariable String nombreConcierto) {
+    	 List<ResenaDTO> lista = resenaService.getAllByConcierto(nombreConcierto);
+         if (lista.isEmpty()) {
+             return new ResponseEntity<>(lista, HttpStatus.NO_CONTENT);
+         }
+         return new ResponseEntity<>(lista, HttpStatus.OK);
+    }
 
     /**
      * Actualiza una reseña existente.

@@ -9,207 +9,180 @@ import org.springframework.stereotype.Service;
 
 import co.edu.unbosque.queboleteo.dto.BoletoDTO;
 import co.edu.unbosque.queboleteo.entity.Boleto;
-import co.edu.unbosque.queboleteo.entity.Lugar;
 import co.edu.unbosque.queboleteo.entity.Venta;
 import co.edu.unbosque.queboleteo.entity.ZonaConcierto;
 import co.edu.unbosque.queboleteo.repository.BoletoRepository;
-import co.edu.unbosque.queboleteo.repository.LugarRepository;
 import co.edu.unbosque.queboleteo.repository.VentaRepository;
 import co.edu.unbosque.queboleteo.repository.ZonaConciertoRepository;
 
 @Service
 public class BoletoService implements CRUDOperation<BoletoDTO> {
 
-    @Autowired
-    private BoletoRepository boletoRepo;
+	@Autowired
+	private BoletoRepository boletoRepo;
 
-    @Autowired
-    private LugarRepository lugarRepo;
+	@Autowired
+	private ZonaConciertoRepository zonaConciertoRepo;
 
-    @Autowired
-    private ZonaConciertoRepository zonaConciertoRepo;
+	@Autowired
+	private VentaRepository ventaRepo;
 
-    @Autowired
-    private VentaRepository ventaRepo;
+	public BoletoService() {
+	}
 
-    public BoletoService() {
-    }
+	/**
+	 * Convierte un DTO a entidad. El boleto ya no es dueño de la relación con Lugar
+	 * — la FK BOLETO_CodigoBoleto vive en la tabla LUGAR.
+	 *
+	 * @param dto DTO del boleto
+	 * @return Entidad Boleto lista para persistir
+	 */
+	private Boleto toEntity(BoletoDTO dto) {
+		Boleto entity = new Boleto();
+		entity.setEstadoBoleto(dto.getEstadoBoleto());
 
-    /**
-     * Convierte un DTO a entidad.
-     *
-     * @param dto DTO del boleto
-     * @return Entidad Boleto lista para persistir
-     */
-    private Boleto toEntity(BoletoDTO dto) {
-        Boleto entity = new Boleto();
-        entity.setEstadoBoleto(dto.getEstadoBoleto());
+		if (dto.getIdPrecio() != null) {
+			Optional<ZonaConcierto> zonaConcierto = zonaConciertoRepo.findById(dto.getIdPrecio());
+			zonaConcierto.ifPresent(entity::setZonaConcierto);
+		}
 
-        // Lado dueño del OneToOne — asignamos el Lugar
-        if (dto.getIdLugar() != null) {
-            Optional<Lugar> lugar = lugarRepo.findById(dto.getIdLugar());
-            lugar.ifPresent(entity::setLugar);
-        }
+		if (dto.getIdVenta() != null) {
+			Optional<Venta> venta = ventaRepo.findById(dto.getIdVenta());
+			venta.ifPresent(entity::setVenta);
+		}
 
-        if (dto.getIdPrecio() != null) {
-            Optional<ZonaConcierto> zonaConcierto = zonaConciertoRepo.findById(dto.getIdPrecio());
-            zonaConcierto.ifPresent(entity::setZonaConcierto);
-        }
+		return entity;
+	}
 
-        if (dto.getIdVenta() != null) {
-            Optional<Venta> venta = ventaRepo.findById(dto.getIdVenta());
-            venta.ifPresent(entity::setVenta);
-        }
+	/**
+	 * Convierte una entidad a DTO. El lugar asociado se navega desde Lugar (lado
+	 * dueño), por lo que aquí solo exponemos ZonaConcierto y Venta.
+	 *
+	 * @param entity Entidad Boleto
+	 * @return DTO del boleto
+	 */
+	private BoletoDTO toDTO(Boleto entity) {
+		BoletoDTO dto = new BoletoDTO();
+		dto.setCodigoBoleto(entity.getCodigoBoleto());
+		dto.setEstadoBoleto(entity.getEstadoBoleto());
 
-        return entity;
-    }
+		if (entity.getZonaConcierto() != null) {
+			dto.setIdPrecio(entity.getZonaConcierto().getIdPrecio());
+		}
 
-    /**
-     * Convierte una entidad a DTO.
-     * Extrae solo los IDs de Lugar, ZonaConcierto y Venta.
-     *
-     * @param entity Entidad Boleto
-     * @return DTO del boleto
-     */
-    private BoletoDTO toDTO(Boleto entity) {
-        BoletoDTO dto = new BoletoDTO();
-        dto.setCodigoBoleto(entity.getCodigoBoleto());
-        dto.setEstadoBoleto(entity.getEstadoBoleto());
+		if (entity.getVenta() != null) {
+			dto.setIdVenta(entity.getVenta().getIdVenta());
+		}
 
-        if (entity.getLugar() != null) {
-            dto.setIdLugar(entity.getLugar().getIdLugar());
-        }
+		return dto;
+	}
 
-        if (entity.getZonaConcierto() != null) {
-            dto.setIdPrecio(entity.getZonaConcierto().getIdPrecio());
-        }
+	/**
+	 * Crea un nuevo boleto. La validación de lugar ocupado ya no aplica aquí — se
+	 * controla desde LugarService al asignar el boleto al lugar.
+	 *
+	 * @param newData DTO con los datos del boleto
+	 * @return 0 si fue exitoso
+	 */
+	@Override
+	public int create(BoletoDTO newData) {
+		boletoRepo.save(toEntity(newData));
+		return 0;
+	}
 
-        if (entity.getVenta() != null) {
-            dto.setIdVenta(entity.getVenta().getIdVenta());
-        }
+	/**
+	 * Obtiene todos los boletos registrados.
+	 *
+	 * @return Lista de DTOs de boletos
+	 */
+	@Override
+	public List<BoletoDTO> getAll() {
+		List<Boleto> entityList = boletoRepo.findAll();
+		List<BoletoDTO> dtoList = new ArrayList<>();
+		entityList.forEach(entity -> dtoList.add(toDTO(entity)));
+		return dtoList;
+	}
 
-        return dto;
-    }
+	/**
+	 * Obtiene un boleto por su código.
+	 *
+	 * @param id Código del boleto
+	 * @return DTO del boleto si existe, null en caso contrario
+	 */
+	@Override
+	public BoletoDTO getById(Long id) {
+		Optional<Boleto> found = boletoRepo.findById(id);
+		if (found.isPresent()) {
+			return toDTO(found.get());
+		}
+		return null;
+	}
 
-    /**
-     * Crea un nuevo boleto.
-     *
-     * @param newData DTO con los datos del boleto
-     * @return 0 si fue exitoso, 1 si ese lugar ya tiene un boleto
-     */
-    @Override
-    public int create(BoletoDTO newData) {
-        if (newData.getIdLugar() != null) {
-            Optional<Lugar> lugar = lugarRepo.findById(newData.getIdLugar());
-            if (lugar.isPresent()) {
-                Optional<Boleto> found = boletoRepo.findByLugar(lugar.get());
-                if (found.isPresent()) {
-                    return 1;
-                }
-            }
-        }
+	/**
+	 * Elimina un boleto por su código.
+	 *
+	 * @param id Código del boleto
+	 * @return 0 si fue eliminado correctamente, 1 si no existe
+	 */
+	@Override
+	public int deleteById(Long id) {
+		Optional<Boleto> found = boletoRepo.findById(id);
+		if (found.isPresent()) {
+			boletoRepo.delete(found.get());
+			return 0;
+		}
+		return 1;
+	}
 
-        boletoRepo.save(toEntity(newData));
-        return 0;
-    }
+	/**
+	 * Actualiza un boleto existente. Solo se actualizan estadoBoleto, zonaConcierto
+	 * y venta. La asignación de lugar se gestiona desde LugarService.
+	 *
+	 * @param id      Código del boleto a actualizar
+	 * @param newData Nuevos datos del boleto
+	 * @return 0 si actualizó correctamente, 1 si no existe
+	 */
+	@Override
+	public int updateById(Long id, BoletoDTO newData) {
+		Optional<Boleto> found = boletoRepo.findById(id);
+		if (found.isPresent()) {
+			Boleto entity = found.get();
+			entity.setEstadoBoleto(newData.getEstadoBoleto());
 
-    /**
-     * Obtiene todos los boletos registrados.
-     *
-     * @return Lista de DTOs de boletos
-     */
-    @Override
-    public List<BoletoDTO> getAll() {
-        List<Boleto> entityList = boletoRepo.findAll();
-        List<BoletoDTO> dtoList = new ArrayList<>();
-        entityList.forEach(entity -> dtoList.add(toDTO(entity)));
-        return dtoList;
-    }
+			if (newData.getIdPrecio() != null) {
+				Optional<ZonaConcierto> zonaConcierto = zonaConciertoRepo.findById(newData.getIdPrecio());
+				zonaConcierto.ifPresent(entity::setZonaConcierto);
+			}
 
-    /**
-     * Obtiene un boleto por su código.
-     *
-     * @param id Código del boleto
-     * @return DTO del boleto si existe, null en caso contrario
-     */
-    @Override
-    public BoletoDTO getById(Long id) {
-        Optional<Boleto> found = boletoRepo.findById(id);
-        if (found.isPresent()) {
-            return toDTO(found.get());
-        }
-        return null;
-    }
+			if (newData.getIdVenta() != null) {
+				Optional<Venta> venta = ventaRepo.findById(newData.getIdVenta());
+				venta.ifPresent(entity::setVenta);
+			}
 
-    /**
-     * Elimina un boleto por su código.
-     *
-     * @param id Código del boleto
-     * @return 0 si fue eliminado correctamente, 1 si no existe
-     */
-    @Override
-    public int deleteById(Long id) {
-        Optional<Boleto> found = boletoRepo.findById(id);
-        if (found.isPresent()) {
-            boletoRepo.delete(found.get());
-            return 0;
-        }
-        return 1;
-    }
+			boletoRepo.save(entity);
+			return 0;
+		}
+		return 1;
+	}
 
-    /**
-     * Actualiza un boleto existente.
-     *
-     * @param id      Código del boleto a actualizar
-     * @param newData Nuevos datos del boleto
-     * @return 0 si actualizó correctamente, 1 si no existe
-     */
-    @Override
-    public int updateById(Long id, BoletoDTO newData) {
-        Optional<Boleto> found = boletoRepo.findById(id);
-        if (found.isPresent()) {
-            Boleto entity = found.get();
-            entity.setEstadoBoleto(newData.getEstadoBoleto());
+	/**
+	 * Cuenta el total de boletos registrados.
+	 *
+	 * @return Cantidad total de boletos
+	 */
+	@Override
+	public Long count() {
+		return boletoRepo.count();
+	}
 
-            if (newData.getIdLugar() != null) {
-                Optional<Lugar> lugar = lugarRepo.findById(newData.getIdLugar());
-                lugar.ifPresent(entity::setLugar);
-            }
-
-            if (newData.getIdPrecio() != null) {
-                Optional<ZonaConcierto> zonaConcierto = zonaConciertoRepo.findById(newData.getIdPrecio());
-                zonaConcierto.ifPresent(entity::setZonaConcierto);
-            }
-
-            if (newData.getIdVenta() != null) {
-                Optional<Venta> venta = ventaRepo.findById(newData.getIdVenta());
-                venta.ifPresent(entity::setVenta);
-            }
-
-            boletoRepo.save(entity);
-            return 0;
-        }
-        return 1;
-    }
-
-    /**
-     * Cuenta el total de boletos registrados.
-     *
-     * @return Cantidad total de boletos
-     */
-    @Override
-    public Long count() {
-        return boletoRepo.count();
-    }
-
-    /**
-     * Verifica si existe un boleto con el código dado.
-     *
-     * @param id Código del boleto
-     * @return true si existe, false en caso contrario
-     */
-    @Override
-    public boolean exist(Long id) {
-        return boletoRepo.existsById(id);
-    }
+	/**
+	 * Verifica si existe un boleto con el código dado.
+	 *
+	 * @param id Código del boleto
+	 * @return true si existe, false en caso contrario
+	 */
+	@Override
+	public boolean exist(Long id) {
+		return boletoRepo.existsById(id);
+	}
 }

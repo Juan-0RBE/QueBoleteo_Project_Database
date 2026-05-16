@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import co.edu.unbosque.queboleteo.dto.LugarDTO;
+import co.edu.unbosque.queboleteo.entity.Boleto;
 import co.edu.unbosque.queboleteo.entity.Lugar;
 import co.edu.unbosque.queboleteo.entity.Zona;
+import co.edu.unbosque.queboleteo.repository.BoletoRepository;
 import co.edu.unbosque.queboleteo.repository.LugarRepository;
 import co.edu.unbosque.queboleteo.repository.ZonaRepository;
 
@@ -22,13 +24,16 @@ public class LugarService implements CRUDOperation<LugarDTO> {
     @Autowired
     private ZonaRepository zonaRepo;
 
+    @Autowired
+    private BoletoRepository boletoRepo;
+
     public LugarService() {
     }
 
     /**
      * Convierte un DTO a entidad.
-     * de la relación OneToOne. La FK vive en BOLETO, no en LUGAR.
-     * El boleto se asigna solo cuando se crea el Boleto.
+     * No asigna boleto — los lugares se crean libres (disponibles).
+     * La asignación de boleto se hace mediante asignarBoleto().
      *
      * @param dto DTO del lugar
      * @return Entidad Lugar lista para persistir
@@ -43,12 +48,13 @@ public class LugarService implements CRUDOperation<LugarDTO> {
             zona.ifPresent(entity::setZona);
         }
 
+        // boleto queda null — lugar disponible
         return entity;
     }
 
     /**
      * Convierte una entidad a DTO.
-     * El codigoBoleto puede ser null si el lugar aún no tiene boleto asignado.
+     * codigoBoleto será null si el lugar está disponible.
      *
      * @param entity Entidad Lugar
      * @return DTO del lugar
@@ -63,7 +69,7 @@ public class LugarService implements CRUDOperation<LugarDTO> {
             dto.setIdZona(entity.getZona().getIdZona());
         }
 
-        // ⚠️ Solo extraemos el código si ya tiene boleto asignado
+        // null si el lugar está disponible, valor si está ocupado
         if (entity.getBoleto() != null) {
             dto.setCodigoBoleto(entity.getBoleto().getCodigoBoleto());
         }
@@ -72,7 +78,7 @@ public class LugarService implements CRUDOperation<LugarDTO> {
     }
 
     /**
-     * Crea un nuevo lugar.
+     * Crea un nuevo lugar libre (sin boleto asignado).
      * Verifica que no exista ya ese número de asiento en la misma zona.
      *
      * @param newData DTO con los datos del lugar
@@ -80,9 +86,9 @@ public class LugarService implements CRUDOperation<LugarDTO> {
      */
     @Override
     public int create(LugarDTO newData) {
-        if (newData.getIdZona() != null) {
+        if (newData.getIdZona() != null && newData.getNumeroAsiento() != null) {
             Optional<Zona> zona = zonaRepo.findById(newData.getIdZona());
-            if (zona.isPresent() && newData.getNumeroAsiento() != null) {
+            if (zona.isPresent()) {
                 Optional<Lugar> found = lugarRepo
                         .findByNumeroAsientoAndZona(newData.getNumeroAsiento(), zona.get());
                 if (found.isPresent()) {
@@ -140,8 +146,8 @@ public class LugarService implements CRUDOperation<LugarDTO> {
     }
 
     /**
-     * Actualiza un lugar existente.
-     * ⚠️ Tampoco actualizamos boleto aquí por la misma razón — lado inverso.
+     * Actualiza los datos físicos de un lugar (asiento, fila, zona).
+     * No toca el boleto asignado — eso se gestiona con asignarBoleto().
      *
      * @param id      ID del lugar a actualizar
      * @param newData Nuevos datos del lugar
@@ -160,11 +166,42 @@ public class LugarService implements CRUDOperation<LugarDTO> {
                 zona.ifPresent(entity::setZona);
             }
 
-            // ⚠️ boleto no se toca aquí
+            // boleto no se toca aquí
             lugarRepo.save(entity);
             return 0;
         }
         return 1;
+    }
+
+    /**
+     * Asigna un boleto a un lugar (marca el lugar como ocupado).
+     * Usado internamente por el flujo de compra.
+     * Verifica que el lugar exista, que el boleto exista,
+     * y que el lugar no tenga ya un boleto asignado.
+     *
+     * @param idLugar      ID del lugar a ocupar
+     * @param codigoBoleto Código del boleto a asignar
+     * @return 0 si fue exitoso,
+     *         1 si el lugar no existe,
+     *         2 si el lugar ya tiene un boleto asignado
+     */
+    public int asignarBoleto(Long idLugar, Long codigoBoleto) {
+        Optional<Lugar> found = lugarRepo.findById(idLugar);
+        if (found.isEmpty()) {
+            return 1;
+        }
+
+        Lugar lugar = found.get();
+
+        if (lugar.getBoleto() != null) {
+            return 2; // lugar ya ocupado
+        }
+
+        Optional<Boleto> boleto = boletoRepo.findById(codigoBoleto);
+        boleto.ifPresent(lugar::setBoleto);
+
+        lugarRepo.save(lugar);
+        return 0;
     }
 
     /**
