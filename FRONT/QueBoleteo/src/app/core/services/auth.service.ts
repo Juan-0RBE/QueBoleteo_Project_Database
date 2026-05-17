@@ -71,6 +71,19 @@ export class AuthService {
     return localStorage.getItem(this.USER_KEY);
   }
 
+  getCorreo(): string | null {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return null;
+
+      const payload = JSON.parse(atob(token.split('.')[1]));
+
+      return payload.sub || payload.email || payload.correo || null;
+    } catch {
+      return null;
+    }
+  }
+
   isLoggedIn(): boolean {
     return !!this.getToken();
   }

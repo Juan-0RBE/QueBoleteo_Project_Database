@@ -70,7 +70,19 @@
         </span>
       </div>
 
-    </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="nombreUsuario">Nombre de Usuario</label>
+          <span class="p-input-icon-left w-full">
+          <i class="pi pi-user"></i>
+          <input
+            pInputText
+            id="nomberUsuario"
+            [(ngModel)]="form.nombreUsuario"
+          />
+        </span>
+        </div>
+      </div>
 
     <!--Documento + Correo electrónico-->
     <div class="field-row">
@@ -191,3 +203,4 @@
 
   </div>
 </div>
+
