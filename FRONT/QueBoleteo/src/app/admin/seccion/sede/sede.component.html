@@ -30,6 +30,11 @@
       </div>
 
       <div class="field">
+        <label>Carrera</label>
+        <input pInputText [(ngModel)]="formularioSede.carrera" placeholder="Ej: Carrera 68D" />
+      </div>
+
+      <div class="field">
         <label>Accesibilidad</label>
         <div class="flex align-items-center gap-2" style="margin-top:0.25rem">
           <p-checkbox [(ngModel)]="formularioSede.tieneAccesibilidad" [binary]="true" inputId="acc"></p-checkbox>

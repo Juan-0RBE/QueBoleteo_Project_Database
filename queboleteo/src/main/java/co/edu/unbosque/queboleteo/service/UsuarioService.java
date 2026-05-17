@@ -123,6 +123,7 @@ public class UsuarioService implements CRUDOperation<UsuarioDTO> {
 	public int deleteByUsername(String username) {
 
 		Optional<Usuario> found = usuarioRepo.findByNombreUsuario(username);
+		System.out.println(found.toString());
 
 		if (found.isPresent()) {
 			usuarioRepo.delete(found.get());
@@ -251,6 +252,7 @@ public class UsuarioService implements CRUDOperation<UsuarioDTO> {
 	 * Obtener usuario por username
 	 */
 	public UsuarioDTO getByUsername(String username) {
+		System.out.println(username);
 
 		Optional<Usuario> found = usuarioRepo.findByNombreUsuario(username);
 

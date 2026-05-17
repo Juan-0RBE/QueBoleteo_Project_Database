@@ -8,8 +8,6 @@ import { OrganizadorService, Organizador } from '../../../core/services/organiza
 import { SelectModule } from 'primeng/select';
 import { TagModule } from 'primeng/tag';
 import { TextareaModule } from 'primeng/textarea';
-import { Artista, ArtistaService } from '../../../core/services/artista.service';
-import { GrupoService } from '../../../core/services/grupo.service';
 
 @Component({
   selector: 'app-admin-organizador',
@@ -47,7 +45,7 @@ export class AdminOrganizadorComponent implements OnInit {
   cargarOrganizadores(): void {
     this.organizadorService.getAll().subscribe({
       next: (data) => this.organizadores = data,
-      error: () => this.errorMsg = 'Error al cargar los artistas'
+      error: () => this.errorMsg = 'Error al cargar los organizadores'
     });
   }
 
@@ -74,12 +72,12 @@ export class AdminOrganizadorComponent implements OnInit {
       // Edición — llama al PUT del backend
       this.organizadorService.update(this.organizadorEditandoId, this.formulario).subscribe({
         next: () => {
-          this.successMsg = 'Artista actualizado correctamente';
+          this.successMsg = 'Organizador actualizado correctamente';
           this.cancelar();
           this.cargarOrganizadores();
         },
         error: () => {
-          this.errorMsg = 'Error al actualizar el artista';
+          this.errorMsg = 'Error al actualizar el organizador';
           this.loading = false;
         }
       });
@@ -87,12 +85,12 @@ export class AdminOrganizadorComponent implements OnInit {
       // Creación — llama al POST del backend
       this.organizadorService.create(this.formulario).subscribe({
         next: () => {
-          this.successMsg = 'Artista creado correctamente';
+          this.successMsg = 'Organizador creado correctamente';
           this.cancelar();
           this.cargarOrganizadores();
         },
         error: () => {
-          this.errorMsg = 'Error al crear el artista';
+          this.errorMsg = 'Error al crear el organizador';
           this.loading = false;
         }
       });
@@ -102,10 +100,10 @@ export class AdminOrganizadorComponent implements OnInit {
   eliminar(nombreOrganizador: string): void {
     this.organizadorService.delete(nombreOrganizador).subscribe({
       next: () => {
-        this.successMsg = 'Artista eliminado correctamente';
+        this.successMsg = 'Organizador eliminado correctamente';
         this.cargarOrganizadores();
       },
-      error: () => this.errorMsg = 'Error al eliminar el artista'
+      error: () => this.errorMsg = 'Error al eliminar el organizador'
     });
   }
 
