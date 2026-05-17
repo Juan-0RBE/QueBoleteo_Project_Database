@@ -3,17 +3,11 @@ package co.edu.unbosque.queboleteo.dto;
 public class GrupoDTO {
 
 	private Long idGrupo;
-
 	private String nombreGrupo;
-
 	private String descripcionGrupo;
-
 	private String imagenGrupo;
-
 	private String paisOrigenGrupo;
-
 	private Integer tiempoDuracion;
-
 	private String lenguajeGrupo;
 
 	public GrupoDTO() {
@@ -27,8 +21,7 @@ public class GrupoDTO {
 	 * @param tiempoDuracion
 	 * @param lenguajeGrupo
 	 */
-	public GrupoDTO(String nombreGrupo, String descripcionGrupo,
-			String imagenGrupo, String paisOrigenGrupo,
+	public GrupoDTO(String nombreGrupo, String descripcionGrupo, String imagenGrupo, String paisOrigenGrupo,
 			Integer tiempoDuracion, String lenguajeGrupo) {
 
 		super();

@@ -3,11 +3,11 @@
   <!-- Encabezado -->
   <div class="section-header">
     <div>
-      <h1 class="section-title"><i class="pi pi-microphone"></i> Artistas</h1>
-      <p class="section-sub">Gestiona los artistas registrados en la plataforma</p>
+      <h1 class="section-title"><i class="pi pi-microphone"></i> Grupo</h1>
+      <p class="section-sub">Gestiona los grupos registrados en la plataforma</p>
     </div>
     <p-button
-      label="Nuevo artista"
+      label="Nuevo grupo"
       icon="pi pi-plus"
       styleClass="btn-admin-primary"
       (onClick)="abrirCrear()">
@@ -16,39 +16,39 @@
 
   <!-- Formulario -->
   <div class="admin-form-card" *ngIf="mostrarFormulario">
-    <h2 class="form-title">{{ modoEdicion ? 'Editar artista' : 'Nuevo artista' }}</h2>
+    <h2 class="form-title">{{ modoEdicion ? 'Editar grupo' : 'Nuevo grupo' }}</h2>
 
     <div class="form-grid">
 
       <div class="field">
-        <label>Nombre del artista *</label>
-        <input pInputText [(ngModel)]="formulario.nombreArtista" placeholder="Nombre artístico" />
+        <label>Nombre del grupo *</label>
+        <input pInputText [(ngModel)]="formulario.nombreGrupo" placeholder="Nombre grupo" />
       </div>
 
 
       <div class="field">
         <label>País de origen</label>
-        <input pInputText [(ngModel)]="formulario.paisOrigenArtista" placeholder="Ej: Colombia" />
+        <input pInputText [(ngModel)]="formulario.paisOrigenGrupo" placeholder="Ej: Colombia" />
       </div>
 
       <div class="field">
-        <label>Edad</label>
-        <input pInputText type="number" [(ngModel)]="formulario.edadArtista" placeholder="Ej: 30" />
+        <label>Tiempo Duración</label>
+        <input pInputText type="number" [(ngModel)]="formulario.tiempoDuracion" placeholder="Ej: 30" />
       </div>
 
       <div class="field">
         <label>Lenguaje principal</label>
-        <input pInputText [(ngModel)]="formulario.lenguajeArtista" placeholder="Ej: Español" />
+        <input pInputText [(ngModel)]="formulario.lenguajeGrupo" placeholder="Ej: Español" />
       </div>
 
       <div class="field field--full">
         <label>URL de imagen</label>
-        <input pInputText [(ngModel)]="formulario.imagenArtista" placeholder="https://..." />
+        <input pInputText [(ngModel)]="formulario.imagenGrupo" placeholder="https://..." />
       </div>
 
       <div class="field field--full">
         <label>Descripción</label>
-        <textarea pTextarea [(ngModel)]="formulario.descripcionArtista" placeholder="Breve descripción del artista..." rows="3">
+        <textarea pTextarea [(ngModel)]="formulario.descripcionGrupo" placeholder="Breve descripción del grupo..." rows="3">
 </textarea>
       </div>
 
@@ -69,7 +69,7 @@
         (onClick)="cancelar()">
       </p-button>
       <p-button
-        [label]="modoEdicion ? 'Guardar cambios' : 'Crear artista'"
+        [label]="modoEdicion ? 'Guardar cambios' : 'Crear grupo'"
         icon="pi pi-check"
         styleClass="btn-admin-primary"
         (onClick)="guardar()">
@@ -80,8 +80,8 @@
   <!-- Tabla -->
   <div class="admin-table-card">
     <p-table
-      [value]="artistas"
-      [paginator]="artistas.length > 8"
+      [value]="grupos"
+      [paginator]="grupos.length > 8"
       [rows]="8"
       styleClass="admin-table">
 
@@ -89,24 +89,24 @@
         <tr>
           <th>Nombre</th>
           <th>País</th>
-          <th>Edad</th>
+          <th>Antigüedad</th>
           <th>Lenguaje</th>
           <th>Acciones</th>
         </tr>
       </ng-template>
 
-      <ng-template pTemplate="body" let-artista>
+      <ng-template pTemplate="body" let-grupo>
         <tr>
-          <td><strong>{{ artista.nombreArtista }}</strong></td>
-          <td>{{ artista.paisOrigenArtista || '—' }}</td>
-          <td>{{ artista.edadArtista || '—' }}</td>
-          <td>{{ artista.lenguajeArtista || '—' }}</td>
+          <td><strong>{{ grupo.nombreGrupo }}</strong></td>
+          <td>{{ grupo.paisOrigenGrupo || '—' }}</td>
+          <td>{{ grupo.tiempoDuracion || '—' }}</td>
+          <td>{{ grupo.lenguajeGrupo || '—' }}</td>
           <td>
             <div class="table-actions">
-              <button class="action-btn edit" (click)="abrirEditar(artista)">
+              <button class="action-btn edit" (click)="abrirEditar(grupo)">
                 <i class="pi pi-pencil"></i>
               </button>
-              <button class="action-btn delete" (click)="eliminar(artista.idArtista!)">
+              <button class="action-btn delete" (click)="eliminar(grupo.idGrupo!)">
                 <i class="pi pi-trash"></i>
               </button>
             </div>

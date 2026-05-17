@@ -21,6 +21,7 @@
             pInputText
             id="primerNombre"
             placeholder="Juan"
+            [(ngModel)]="form.primerNombre"
           />
         </span>
       </div>
@@ -33,6 +34,7 @@
             pInputText
             id="segundoNombre"
             placeholder="Carlos (opcional)"
+            [(ngModel)]="form.segundoNombre"
           />
         </span>
       </div>
@@ -50,6 +52,7 @@
             pInputText
             id="primerApellido"
             placeholder="Pérez"
+            [(ngModel)]="form.primerApellido"
           />
         </span>
       </div>
@@ -62,6 +65,7 @@
             pInputText
             id="segundoApellido"
             placeholder="García (opcional)"
+            [(ngModel)]="form.segundoApellido"
           />
         </span>
       </div>
@@ -79,6 +83,7 @@
             pInputText
             id="documentId"
             placeholder="12345678"
+            [(ngModel)]="form.documentoIdentidad"
           />
         </span>
       </div>
@@ -92,6 +97,7 @@
             id="email"
             type="email"
             placeholder="tu@correo.com"
+            [(ngModel)]="form.correo"
           />
         </span>
       </div>
@@ -109,7 +115,8 @@
             inputId="phone"
             mask="(999) 999-9999"
             placeholder="(300) 000-0000"
-            styleClass="w-full">
+            styleClass="w-full"
+            [(ngModel)]="form.numeroTelefono">
           </p-inputMask>
         </span>
       </div>
@@ -121,7 +128,8 @@
           [maxDate]="maxDate"
           dateFormat="dd/mm/yy"
           placeholder="DD/MM/AAAA"
-          styleClass="w-full">
+          styleClass="w-full"
+          [(ngModel)]="form.fechaNacimiento">
         </p-datepicker>
       </div>
 
@@ -141,7 +149,8 @@
           promptLabel="Ingresa una contraseña"
           weakLabel="Débil"
           mediumLabel="Media"
-          strongLabel="Fuerte">
+          strongLabel="Fuerte"
+          [(ngModel)]="form.clave">
         </p-password>
       </div>
 
@@ -164,8 +173,15 @@
       label="Crear cuenta"
       icon="pi pi-user-plus"
       iconPos="right"
-      styleClass="btn-auth">
+      styleClass="btn-auth"
+      (onClick)="onRegistro()" [loading]="loading"
+    >
     </p-button>
+
+
+    <!-- Para errores -->
+    <small *ngIf="errorMsg"   class="p-error">{{ errorMsg }}</small>
+    <small *ngIf="successMsg" style="color: green">{{ successMsg }}</small>
 
     <!-- Footer -->
     <div class="auth-footer">

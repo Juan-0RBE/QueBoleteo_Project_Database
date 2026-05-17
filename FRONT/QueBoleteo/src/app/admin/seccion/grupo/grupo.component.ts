@@ -7,58 +7,59 @@ import { SelectModule } from 'primeng/select';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { TextareaModule } from 'primeng/textarea';
-import { ArtistaService, Artista } from '../../../core/services/artista.service';
+import { GrupoService, Grupo } from '../../../core/services/grupo.service';
 
 @Component({
-  selector: 'app-admin-artista',
+  selector: 'app-admin-grupo',
   standalone: true,
   imports: [
     CommonModule, FormsModule,
     ButtonModule, InputTextModule, SelectModule,
     TableModule, TagModule, TextareaModule,
   ],
-  templateUrl: './artista.component.html',
-  styleUrls: ['./artista.component.css']
+  templateUrl: './grupo.component.html',
+  styleUrls: ['./grupo.component.css']
 })
-export class AdminArtistaComponent implements OnInit {
+
+export class AdminGrupoComponent implements OnInit {
 
   mostrarFormulario = false;
   modoEdicion = false;
-  artistaEditandoId: number | null = null;
+  grupoEditandoId: number | null = null;
 
-  artistas: Artista[] = [];
-  formulario: Artista = this.formularioVacio();
+  grupos: Grupo[] = [];
+  formulario: Grupo = this.formularioVacio();
 
   errorMsg: string = '';
   successMsg: string = '';
   loading: boolean = false;
 
-  constructor(private artistaService: ArtistaService) {}
+  constructor(private grupoService: GrupoService) {}
 
   // Se ejecuta automáticamente al abrir la pantalla
   ngOnInit(): void {
-    this.cargarArtistas();
+    this.cargarGrupos();
   }
 
   // Llama al backend y llena la tabla
-  cargarArtistas(): void {
-    this.artistaService.getAll().subscribe({
-      next: (data) => this.artistas = data,
-      error: () => this.errorMsg = 'Error al cargar los artistas'
+  cargarGrupos(): void {
+    this.grupoService.getAll().subscribe({
+      next: (data) => this.grupos = data,
+      error: () => this.errorMsg = 'Error al cargar los grupos'
     });
   }
 
   abrirCrear(): void {
     this.formulario = this.formularioVacio();
     this.modoEdicion = false;
-    this.artistaEditandoId = null;
+    this.grupoEditandoId = null;
     this.mostrarFormulario = true;
   }
 
-  abrirEditar(artista: Artista): void {
-    this.formulario = { ...artista };
+  abrirEditar(grupo: Grupo): void {
+    this.formulario = { ...grupo};
     this.modoEdicion = true;
-    this.artistaEditandoId = artista.idArtista ?? null;
+    this.grupoEditandoId = grupo.idGrupo ?? null;
     this.mostrarFormulario = true;
   }
 
@@ -67,42 +68,43 @@ export class AdminArtistaComponent implements OnInit {
     this.successMsg = '';
     this.loading = true;
 
-    if (this.modoEdicion && this.artistaEditandoId !== null) {
+    if (this.modoEdicion && this.grupoEditandoId !== null) {
       // Edición — llama al PUT del backend
-      this.artistaService.update(this.artistaEditandoId, this.formulario).subscribe({
+      this.grupoService.update(this.grupoEditandoId, this.formulario).subscribe({
         next: () => {
-          this.successMsg = 'Artista actualizado correctamente';
+          this.successMsg = 'Grupo actualizado correctamente';
           this.cancelar();
-          this.cargarArtistas();
+          this.cargarGrupos();
         },
         error: () => {
-          this.errorMsg = 'Error al actualizar el artista';
+          this.errorMsg = 'Error al actualizar el grupo';
           this.loading = false;
         }
       });
     } else {
       // Creación — llama al POST del backend
-      this.artistaService.create(this.formulario).subscribe({
+      this.grupoService.create(this.formulario).subscribe({
         next: () => {
-          this.successMsg = 'Artista creado correctamente';
+          this.successMsg = 'Grupo creado correctamente';
           this.cancelar();
-          this.cargarArtistas();
+          this.cargarGrupos();
         },
         error: () => {
-          this.errorMsg = 'Error al crear el artista';
+          this.errorMsg = 'Error al crear el Grupo';
           this.loading = false;
         }
       });
     }
   }
 
+
   eliminar(id: number): void {
-    this.artistaService.delete(id).subscribe({
+    this.grupoService.delete(id).subscribe({
       next: () => {
-        this.successMsg = 'Artista eliminado correctamente';
-        this.cargarArtistas();
+        this.successMsg = 'Grupo eliminado correctamente';
+        this.cargarGrupos();
       },
-      error: () => this.errorMsg = 'Error al eliminar el artista'
+      error: () => this.errorMsg = 'Error al eliminar el grupo'
     });
   }
 
@@ -110,18 +112,20 @@ export class AdminArtistaComponent implements OnInit {
     this.mostrarFormulario = false;
     this.formulario = this.formularioVacio();
     this.modoEdicion = false;
-    this.artistaEditandoId = null;
+    this.grupoEditandoId = null;
     this.loading = false;
   }
 
-  private formularioVacio(): Artista {
+  private formularioVacio(): Grupo {
     return {
-      nombreArtista: '',
-      descripcionArtista: '',
-      imagenArtista: '',
-      paisOrigenArtista: '',
-      edadArtista: 0,
-      lenguajeArtista: ''
+      nombreGrupo: '',
+      descripcionGrupo: '',
+      imagenGrupo: '',
+      paisOrigenGrupo: '',
+      tiempoDuracion: 0,
+      lenguajeGrupo: ''
     };
   }
+
+
 }
