@@ -9,6 +9,21 @@
     <p-button label="Nuevo concierto" icon="pi pi-plus" styleClass="btn-admin-primary" (onClick)="abrirCrear()"></p-button>
   </div>
 
+  <!-- Error de carga -->
+  <div class="info-banner error" *ngIf="errorCarga">
+    <i class="pi pi-exclamation-triangle"></i>
+    <span>{{ errorCarga }}</span>
+    <button class="retry-btn" (click)="cargarSedes()">
+      <i class="pi pi-refresh"></i> Reintentar
+    </button>
+  </div>
+
+  <!-- Aviso si no hay sedes -->
+  <div class="info-banner" *ngIf="!cargandoSedes && sedes.length === 0 && !errorCarga">
+    <i class="pi pi-info-circle"></i>
+    <span>No hay sedes registradas. Ve a <strong>Sedes</strong> y crea una antes de agregar conciertos.</span>
+  </div>
+
   <!-- Formulario concierto -->
   <div class="admin-form-card" *ngIf="mostrarFormulario">
     <h2 class="form-title">{{ modoEdicion ? 'Editar concierto' : 'Nuevo concierto' }}</h2>
@@ -24,24 +39,57 @@
         <input pInputText [(ngModel)]="formulario.artista" placeholder="Nombre del artista" />
       </div>
 
+      <!-- Selector de sede desde backend -->
       <div class="field">
         <label>Sede</label>
-        <input pInputText [(ngModel)]="formulario.sede" placeholder="Nombre de la sede" />
+        <div class="select-with-loader">
+          <p-select
+            [ngModel]="formulario.nombreSede"
+            (ngModelChange)="onSedeChange($event)"
+            [options]="opcionesSedes"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="{{ cargandoSedes ? 'Cargando sedes...' : 'Selecciona una sede' }}"
+            [disabled]="cargandoSedes"
+            [showClear]="true"
+            styleClass="w-full">
+          </p-select>
+          <i class="pi pi-spin pi-spinner loader-icon" *ngIf="cargandoSedes"></i>
+        </div>
+        <small class="field-hint" *ngIf="!cargandoSedes && sedes.length === 0">
+          No hay sedes disponibles
+        </small>
       </div>
 
       <div class="field">
         <label>Fecha del concierto</label>
-        <p-datepicker [(ngModel)]="formulario.fecha" dateFormat="dd/mm/yy" placeholder="DD/MM/AAAA" styleClass="w-full"></p-datepicker>
+        <p-datepicker
+          [(ngModel)]="formulario.fecha"
+          dateFormat="dd/mm/yy"
+          placeholder="DD/MM/AAAA"
+          styleClass="w-full">
+        </p-datepicker>
       </div>
 
       <div class="field">
         <label>Edad mínima</label>
-        <p-inputnumber [(ngModel)]="formulario.edadMinima" [min]="0" [max]="99" placeholder="0 = sin restricción" styleClass="w-full"></p-inputnumber>
+        <p-inputnumber
+          [(ngModel)]="formulario.edadMinima"
+          [min]="0" [max]="99"
+          placeholder="0 = sin restricción"
+          styleClass="w-full">
+        </p-inputnumber>
       </div>
 
       <div class="field">
         <label>Estado</label>
-        <p-select [(ngModel)]="formulario.estado" [options]="estados" optionLabel="label" optionValue="value" styleClass="w-full"></p-select>
+        <p-select
+          [(ngModel)]="formulario.estado"
+          [options]="estados"
+          optionLabel="label"
+          optionValue="value"
+          styleClass="w-full">
+        </p-select>
       </div>
 
       <div class="field field--full">
@@ -89,7 +137,7 @@
           </td>
           <td><strong>{{ c.nombre }}</strong></td>
           <td>{{ c.artista }}</td>
-          <td>{{ c.sede || '—' }}</td>
+          <td>{{ c.nombreSede || '—' }}</td>
           <td>{{ formatFecha(c.fecha) }}</td>
           <td><span class="genre-badge">{{ c.estado }}</span></td>
           <td><span class="zona-count">{{ c.zonas.length }} zona{{ c.zonas.length !== 1 ? 's' : '' }}</span></td>
@@ -106,24 +154,51 @@
           <td colspan="8" class="zonas-panel-cell">
             <div class="zonas-panel">
 
-              <!-- Encabezado zonas -->
               <div class="zonas-header">
                 <span class="zonas-title">
                   <i class="pi pi-map-marker"></i>
                   Zonas y precios — {{ c.nombre }}
+                  <span class="sede-badge" *ngIf="c.nombreSede">
+                    <i class="pi pi-building"></i> {{ c.nombreSede }}
+                  </span>
                 </span>
-                <button class="btn-add-zona" (click)="abrirCrearZona(c.id)">
+                <button
+                  class="btn-add-zona"
+                  (click)="abrirCrearZona(c.id)"
+                  [disabled]="!c.nombreSede || zonasDisponibles(c).length === 0">
                   <i class="pi pi-plus"></i> Nueva zona
                 </button>
+              </div>
+
+              <!-- Aviso sin sede -->
+              <div class="zona-warning" *ngIf="!c.nombreSede">
+                <i class="pi pi-exclamation-triangle"></i>
+                <span>Este concierto no tiene sede asignada. Edítalo y selecciona una sede.</span>
+              </div>
+
+              <!-- Aviso sin zonas en la sede -->
+              <div class="zona-warning" *ngIf="c.nombreSede && zonasDisponibles(c).length === 0">
+                <i class="pi pi-exclamation-triangle"></i>
+                <span>La sede seleccionada no tiene zonas. Ve a <strong>Sedes</strong> y agrega zonas primero.</span>
               </div>
 
               <!-- Formulario zona -->
               <div class="zona-form" *ngIf="conciertoConFormularioZona === c.id">
                 <div class="zona-form-grid">
 
-                  <div class="field">
-                    <label>Nombre de la zona *</label>
-                    <input pInputText [(ngModel)]="formularioZona.nombreZona" placeholder="Ej: Piso, VIP, Palco" />
+                  <!-- Chips de zonas de la sede -->
+                  <div class="field field--full">
+                    <label>Zona de la sede</label>
+                    <div class="zona-selector">
+                      <button
+                        *ngFor="let zona of zonasDisponibles(c)"
+                        class="zona-chip"
+                        [class.selected]="formularioZona.zonaId === zona.idZona"
+                        (click)="onZonaChange(zona)">
+                        <i class="pi" [ngClass]="zona.tieneAsiento ? 'pi-th-large' : 'pi-users'"></i>
+                        {{ zona.nombreZona }}
+                      </button>
+                    </div>
                   </div>
 
                   <div class="field">
@@ -139,7 +214,7 @@
                   </div>
 
                   <div class="field">
-                    <label>Cantidad disponible</label>
+                    <label>Boletas disponibles</label>
                     <p-inputnumber
                       [(ngModel)]="formularioZona.cantidadDisponible"
                       [min]="0"
@@ -150,24 +225,23 @@
 
                   <div class="field field--full">
                     <label>Descripción de la zona</label>
-                    <textarea pTextarea [(ngModel)]="formularioZona.descripcion" placeholder="Ej: Acceso al piso principal frente al escenario..." rows="2"></textarea>
+                    <textarea pTextarea [(ngModel)]="formularioZona.descripcion" placeholder="Ej: Acceso al piso principal..." rows="2"></textarea>
                   </div>
 
                 </div>
                 <div class="zona-form-actions">
-                  <button class="btn-zona-cancel" (click)="cancelarZona()">
-                    <i class="pi pi-times"></i> Cancelar
-                  </button>
+                  <button class="btn-zona-cancel" (click)="cancelarZona()"><i class="pi pi-times"></i> Cancelar</button>
                   <button class="btn-zona-save" (click)="guardarZona(c)">
                     <i class="pi pi-check"></i> {{ modoEdicionZona ? 'Guardar cambios' : 'Agregar zona' }}
                   </button>
                 </div>
               </div>
 
-              <!-- Estado vacío -->
-              <div class="zonas-empty" *ngIf="c.zonas.length === 0 && conciertoConFormularioZona !== c.id">
+              <!-- Empty state -->
+              <div class="zonas-empty"
+                   *ngIf="c.zonas.length === 0 && conciertoConFormularioZona !== c.id && c.nombreSede && zonasDisponibles(c).length > 0">
                 <i class="pi pi-tag"></i>
-                <p>Este concierto no tiene zonas. Agrega la primera.</p>
+                <p>No hay zonas configuradas para este concierto.</p>
               </div>
 
               <!-- Lista de zonas -->
@@ -181,9 +255,7 @@
                     <span class="zona-capacidad">
                       <i class="pi pi-ticket"></i> {{ zona.cantidadDisponible | number }} boletas
                     </span>
-                    <span class="zona-descripcion" *ngIf="zona.descripcion">
-                      {{ zona.descripcion }}
-                    </span>
+                    <span class="zona-descripcion" *ngIf="zona.descripcion">{{ zona.descripcion }}</span>
                   </div>
                   <div class="zona-actions">
                     <button class="action-btn edit" (click)="abrirEditarZona(c.id, zona)"><i class="pi pi-pencil"></i></button>
