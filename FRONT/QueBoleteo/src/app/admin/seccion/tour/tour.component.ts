@@ -6,15 +6,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TableModule } from 'primeng/table';
 import { DatePickerModule } from 'primeng/datepicker';
 import { TextareaModule } from 'primeng/textarea';
-
-export interface Tour {
-  id: number;
-  nombre: string;
-  artista: string;
-  fechaInicial: Date | null;
-  fechaFinal: Date | null;
-  descripcion: string;
-}
+import { TourService, Tour } from '../../../core/services/tour.service';
+import { Artista } from '../../../core/services/artista.service';
 
 @Component({
   selector: 'app-admin-tour',
@@ -27,29 +20,105 @@ export class AdminTourComponent {
 
   mostrarFormulario = false;
   modoEdicion = false;
+  tourEditandoId: number | null = null;
+
   tours: Tour[] = [];
   formulario: Tour = this.formularioVacio();
 
-  formularioVacio(): Tour {
-    return { id: 0, nombre: '', artista: '', fechaInicial: null, fechaFinal: null, descripcion: '' };
+  errorMsg: string = '';
+  successMsg: string = '';
+  loading: boolean = false;
+
+  constructor(private tourService: TourService) {}
+
+  // Se ejecuta automáticamente al abrir la pantalla
+  ngOnInit(): void {
+    this.cargarTours();
   }
 
-  abrirCrear(): void { this.formulario = this.formularioVacio(); this.modoEdicion = false; this.mostrarFormulario = true; }
-  abrirEditar(t: Tour): void { this.formulario = { ...t }; this.modoEdicion = true; this.mostrarFormulario = true; }
+  // Llama al backend y llena la tabla
+  cargarTours(): void {
+    this.tourService.getAll().subscribe({
+      next: (data) => this.tours = data,
+      error: () => this.errorMsg = 'Error al cargar los tours'
+    });
+  }
+
+  abrirCrear(): void {
+    this.formulario = this.formularioVacio();
+    this.modoEdicion = false;
+    this.tourEditandoId = null;
+    this.mostrarFormulario = true;
+  }
+
+  abrirEditar(tour: Tour): void {
+    this.formulario = { ...tour };
+    this.modoEdicion = true;
+    this.tourEditandoId = tour.idTour ?? null;
+    this.mostrarFormulario = true;
+  }
 
   guardar(): void {
-    if (!this.formulario.nombre) return;
-    if (this.modoEdicion) {
-      const idx = this.tours.findIndex(t => t.id === this.formulario.id);
-      if (idx !== -1) this.tours[idx] = { ...this.formulario };
+    this.errorMsg = '';
+    this.successMsg = '';
+    this.loading = true;
+
+    if (this.modoEdicion && this.tourEditandoId !== null) {
+      // Edición — llama al PUT del backend
+      this.tourService.update(this.tourEditandoId, this.formulario).subscribe({
+        next: () => {
+          this.successMsg = 'Tour actualizado correctamente';
+          this.cancelar();
+          this.cargarTours();
+        },
+        error: () => {
+          this.errorMsg = 'Error al actualizar el tour';
+          this.loading = false;
+        }
+      });
     } else {
-      const nuevoId = this.tours.length ? Math.max(...this.tours.map(t => t.id)) + 1 : 1;
-      this.tours = [...this.tours, { ...this.formulario, id: nuevoId }];
+      // Creación — llama al POST del backend
+      this.tourService.create(this.formulario).subscribe({
+        next: () => {
+          this.successMsg = 'Tour creado correctamente';
+          this.cancelar();
+          this.cargarTours();
+        },
+        error: () => {
+          this.errorMsg = 'Error al crear el tour';
+          this.loading = false;
+        }
+      });
     }
-    this.cancelar();
   }
 
-  eliminar(id: number): void { this.tours = this.tours.filter(t => t.id !== id); }
-  cancelar(): void { this.mostrarFormulario = false; this.formulario = this.formularioVacio(); }
+  eliminar(id: number): void {
+    this.tourService.delete(id).subscribe({
+      next: () => {
+        this.successMsg = 'Tour eliminado correctamente';
+        this.cargarTours();
+      },
+      error: () => this.errorMsg = 'Error al eliminar el tour'
+    });
+  }
+
+  cancelar(): void {
+    this.mostrarFormulario = false;
+    this.formulario = this.formularioVacio();
+    this.modoEdicion = false;
+    this.tourEditandoId = null;
+    this.loading = false;
+  }
+
+  private formularioVacio(): Tour {
+    return {
+      nombreTour: '',
+      descripcionTour: '',
+      imagenTour: '',
+      fechaInicial: '',
+      fechaFinal: ''
+    };
+  }
+
   formatFecha(f: Date | null): string { return f ? new Date(f).toLocaleDateString('es-CO') : '—'; }
 }
