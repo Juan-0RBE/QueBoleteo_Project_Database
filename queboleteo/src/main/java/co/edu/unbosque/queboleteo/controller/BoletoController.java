@@ -19,6 +19,7 @@ import co.edu.unbosque.queboleteo.dto.BoletoDTO;
 import co.edu.unbosque.queboleteo.service.BoletoService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
@@ -26,6 +27,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping(path = { "/boleto" })
 @Tag(name = "Gestión de Boletos",
     description = "Endpoints para la gestión de boletos")
+@SecurityRequirement(name = "bearerAuth")
 public class BoletoController {
 
     @Autowired

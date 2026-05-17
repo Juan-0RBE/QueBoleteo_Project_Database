@@ -19,6 +19,7 @@ import co.edu.unbosque.queboleteo.dto.ArtistaIndividualDTO;
 import co.edu.unbosque.queboleteo.service.ArtistaIndividualService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
@@ -26,6 +27,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping(path = { "/artistaindividual" })
 @Tag(name = "Gestión de Artistas Individuales", 
 	description = "Endpoints para la gestión de artistas individuales")
+@SecurityRequirement(name = "bearerAuth")
 public class ArtistaIndividualController {
 
 	@Autowired

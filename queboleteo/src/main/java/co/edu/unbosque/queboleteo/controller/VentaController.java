@@ -21,6 +21,7 @@ import co.edu.unbosque.queboleteo.entity.ZonaConcierto;
 import co.edu.unbosque.queboleteo.service.VentaService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import co.edu.unbosque.queboleteo.dto.CompraRequestDto;
@@ -30,6 +31,7 @@ import co.edu.unbosque.queboleteo.dto.CompraResponseDto;
 @CrossOrigin(origins = { "*" })
 @RequestMapping(path = { "/venta" })
 @Tag(name = "Gestión de Ventas", description = "Endpoints para la gestión de ventas")
+@SecurityRequirement(name = "bearerAuth")
 public class VentaController {
 
 	@Autowired

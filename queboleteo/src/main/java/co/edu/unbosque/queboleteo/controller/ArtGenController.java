@@ -18,12 +18,14 @@ import co.edu.unbosque.queboleteo.dto.ArtGenDTO;
 import co.edu.unbosque.queboleteo.service.ArtGenService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @CrossOrigin(origins = { "*" })
 @RequestMapping(path = { "/artgen" })
 @Tag(name = "Artista-Género", description = "Endpoints para la relación entre artistas individuales y géneros")
+@SecurityRequirement(name = "bearerAuth")
 public class ArtGenController {
 
 	@Autowired

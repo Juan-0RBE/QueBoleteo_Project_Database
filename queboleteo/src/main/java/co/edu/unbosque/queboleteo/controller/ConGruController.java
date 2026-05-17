@@ -18,12 +18,14 @@ import co.edu.unbosque.queboleteo.dto.ConGruDTO;
 import co.edu.unbosque.queboleteo.service.ConGruService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @CrossOrigin(origins = { "*" })
 @RequestMapping(path = { "/congru" })
 @Tag(name = "Concierto-Grupo", description = "Endpoints para la relación entre conciertos y grupos")
+@SecurityRequirement(name = "bearerAuth")
 public class ConGruController {
 
 	@Autowired

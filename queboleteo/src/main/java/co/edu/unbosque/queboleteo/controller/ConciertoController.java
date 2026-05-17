@@ -19,6 +19,7 @@ import co.edu.unbosque.queboleteo.dto.ConciertoDTO;
 import co.edu.unbosque.queboleteo.service.ConciertoService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
@@ -26,6 +27,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping(path = { "/concierto" })
 @Tag(name = "Gestión de Conciertos",
     description = "Endpoints para la gestión de conciertos")
+@SecurityRequirement(name = "bearerAuth")
 public class ConciertoController {
 
     @Autowired

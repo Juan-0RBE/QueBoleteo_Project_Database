@@ -19,6 +19,7 @@ import co.edu.unbosque.queboleteo.dto.LugarDTO;
 import co.edu.unbosque.queboleteo.service.LugarService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
@@ -26,6 +27,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping(path = { "/lugar" })
 @Tag(name = "Gestión de Lugares",
     description = "Endpoints para la gestión de lugares en zonas")
+@SecurityRequirement(name = "bearerAuth")
 public class LugarController {
 
     @Autowired

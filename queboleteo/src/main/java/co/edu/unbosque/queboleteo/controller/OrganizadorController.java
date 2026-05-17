@@ -19,6 +19,7 @@ import co.edu.unbosque.queboleteo.dto.OrganizadorDTO;
 import co.edu.unbosque.queboleteo.service.OrganizadorService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
@@ -28,6 +29,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @CrossOrigin(origins = { "*" })
 @RequestMapping(path = { "/organizador" })
 @Tag(name = "Gestión de Organizadores", description = "Endpoints para la gestión de organizadores")
+@SecurityRequirement(name = "bearerAuth")
 public class OrganizadorController {
 
 	@Autowired

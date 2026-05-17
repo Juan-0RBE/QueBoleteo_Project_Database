@@ -19,6 +19,7 @@ import co.edu.unbosque.queboleteo.dto.GeneroDTO;
 import co.edu.unbosque.queboleteo.service.GeneroService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
@@ -29,6 +30,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping(path = { "/genero" })
 @Tag(name = "Gestión de Géneros",
 	description = "Endpoints para la gestión de géneros musicales")
+@SecurityRequirement(name = "bearerAuth")
 public class GeneroController {
 
 	@Autowired
