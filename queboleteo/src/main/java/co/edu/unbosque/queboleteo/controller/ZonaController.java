@@ -148,6 +148,8 @@ public class ZonaController {
             return new ResponseEntity<>("Lugares generados correctamente", HttpStatus.CREATED);
         } else if (status == 1) {
             return new ResponseEntity<>("Zona no encontrada", HttpStatus.NOT_FOUND);
+        } else if (status == 3) {
+            return new ResponseEntity<>("Esta zona ya tiene lugares configurados", HttpStatus.CONFLICT);
         } else {
             return new ResponseEntity<>(
                 "Datos inválidos. Para zona con asientos envía filas y asientosPorFila. " +

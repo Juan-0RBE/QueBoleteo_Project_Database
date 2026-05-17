@@ -20,6 +20,7 @@
           id="email"
           type="email"
           placeholder="tu@correo.com"
+          [(ngModel)]="credentials.nombreUsuario"
         />
       </span>
     </div>
@@ -32,9 +33,14 @@
         placeholder="••••••••"
         [feedback]="false"
         [toggleMask]="true"
-        styleClass="w-full">
+        styleClass="w-full"
+        [(ngModel)]="credentials.clave">
       </p-password>
     </div>
+
+
+    <!-- Para mostrar errores -->
+    <small *ngIf="errorMsg" class="p-error">{{ errorMsg }}</small>
 
     <!-- Submit -->
     <p-button
@@ -42,7 +48,8 @@
       label="Iniciar sesión"
       icon="pi pi-sign-in"
       iconPos="right"
-      styleClass="btn-auth">
+      styleClass="btn-auth"
+      (onClick)="onLogin()" [loading]="loading">
     </p-button>
 
     <!-- Footer -->

@@ -35,6 +35,8 @@ public interface LugarRepository extends JpaRepository<Lugar, Long> {
 	// Cuenta los lugares totales de una zona
 	// (para inicializar CantidadDisponible en ZonaConciertoService)
 	Integer countByZona_IdZona(Long idZona);
+	
+	long countByZona(Zona zona);
 }
 
 /**

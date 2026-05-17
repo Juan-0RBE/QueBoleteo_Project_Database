@@ -207,6 +207,9 @@ public class ZonaService implements CRUDOperation<ZonaDTO> {
 			return 1;
 		}
 		Zona zona = found.get();
+		
+	    long lugaresExistentes = lugarRepo.countByZona(zona);
+	    if (lugaresExistentes > 0) return 3;  // nuevo código: ya configurada
 
 		List<Lugar> lugares = new ArrayList<>();
 

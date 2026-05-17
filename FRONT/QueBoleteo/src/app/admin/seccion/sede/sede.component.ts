@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+//import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
@@ -7,13 +7,23 @@ import { TableModule } from 'primeng/table';
 import { CheckboxModule } from 'primeng/checkbox';
 import { SelectModule } from 'primeng/select';
 import { InputNumberModule } from 'primeng/inputnumber';
-import { SedesService, Sede, Zona, Lugar } from './sede.service';
+import { SedeService, Sede, Zona, ConfiguracionLugar } from '../../../core/services/sede.service';
+
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+
 
 interface GeneradorAsientos {
   filaInicio: string;
   filaFin: string;
   asientoInicio: number;
   asientoFin: number;
+}
+
+interface LugarVista {
+  idLugar: number;
+  fila: string;
+  numeroAsiento: number;
+  idZona: number;
 }
 
 @Component({
@@ -33,189 +43,370 @@ export class AdminSedeComponent implements OnInit {
   // ── Estado sede ──
   mostrarFormularioSede = false;
   modoEdicionSede = false;
+  sedeEditandoNombre: string | null = null;
   sedes: Sede[] = [];
   formularioSede: Sede = this.sedeVacia();
 
   // ── Estado zona ──
-  sedeConFormularioZona: number | null = null;
+  // sedeExpandida guarda el nombreSede de la fila expandida
+  sedeExpandida: string | null = null;
+  // zonasPorSede guarda las zonas ya cargadas de la sede expandida
+  zonasPorSede: Zona[] = [];
+  sedeConFormularioZona: string | null = null;
   modoEdicionZona = false;
+  zonaEditandoId: number | null = null;
   formularioZona: Zona = this.zonaVacia();
 
   // ── Estado lugares ──
-  zonaConLugares: { sedeId: number; zonaId: number } | null = null;
+  zonaActivaLugares: Zona | null = null;
   mostrarGenerador = false;
-  generador: GeneradorAsientos = this.generadorVacio();
+  formLugares: ConfiguracionLugar = {
+    filas: 0,
+    asientosPorFila: 0,
+    capacidadGeneral: 0
+  };
+
+  conteoZonasPorSede: Map<string, number> = new Map();
+
+
+  // ── Mensajes ──
+  errorMsg = '';
+  successMsg = '';
 
   tiposZona = [
     { label: 'Zona general (sin asientos)', value: false },
     { label: 'Asientos numerados',          value: true  },
   ];
 
-  constructor(private sedesService: SedesService) {}
+  constructor(private sedeService: SedeService,
+  private cdr: ChangeDetectorRef  // ← agrega
+) {}
 
   ngOnInit(): void {
-    this.sedes = this.sedesService.getSedes();
+    this.cargarSedes();
   }
 
-  private sincronizar(): void {
-    this.sedesService.setSedes([...this.sedes]);
+  // ── CRUD SEDE ──────────────────────────────────
+
+/*  cargarSedes(): void {
+    this.sedeService.getAllSedes().subscribe({
+      next: (data) => this.sedes = data,
+      error: () => this.errorMsg = 'Error al cargar las sedes'
+    });
+  }*/
+
+  cargarSedes(): void {
+    this.sedeService.getAllSedes().subscribe({
+      next: (sedes) => {
+        this.sedes = sedes;
+        // Carga el conteo de zonas para todas las sedes
+        this.sedeService.getAllZonas().subscribe({
+          next: (zonas) => {
+            this.conteoZonasPorSede = new Map();
+            zonas.forEach(z => {
+              const actual = this.conteoZonasPorSede.get(z.nombreSede) ?? 0;
+              this.conteoZonasPorSede.set(z.nombreSede, actual + 1);
+            });
+          }
+        });
+      },
+      error: () => this.errorMsg = 'Error al cargar las sedes'
+    });
   }
 
-  sedeVacia(): Sede {
-    return { id: 0, nombre: '', ciudad: '', direccion: '', accesibilidad: false, zonas: [], expandida: false };
-  }
-
-  zonaVacia(): Zona {
-    return { id: 0, nombre: '', tieneAsientos: false, capacidad: 0, lugares: [] };
-  }
-
-  generadorVacio(): GeneradorAsientos {
-    return { filaInicio: 'A', filaFin: 'E', asientoInicio: 1, asientoFin: 20 };
-  }
-
-  // ── CRUD Sede ──
   abrirCrearSede(): void {
     this.formularioSede = this.sedeVacia();
     this.modoEdicionSede = false;
+    this.sedeEditandoNombre = null;
     this.mostrarFormularioSede = true;
   }
 
   abrirEditarSede(sede: Sede): void {
-    this.formularioSede = { ...sede, zonas: [...sede.zonas] };
+    this.formularioSede = { ...sede };
     this.modoEdicionSede = true;
+    this.sedeEditandoNombre = sede.nombreSede;
     this.mostrarFormularioSede = true;
   }
 
   guardarSede(): void {
-    if (!this.formularioSede.nombre) return;
-    if (this.modoEdicionSede) {
-      const idx = this.sedes.findIndex(s => s.id === this.formularioSede.id);
-      if (idx !== -1) this.sedes[idx] = { ...this.formularioSede };
+    if (!this.formularioSede.nombreSede) return;
+    this.errorMsg = '';
+    this.successMsg = '';
+
+    if (this.modoEdicionSede && this.sedeEditandoNombre) {
+      this.sedeService.updateSede(this.sedeEditandoNombre, this.formularioSede).subscribe({
+        next: () => {
+          this.successMsg = 'Sede actualizada correctamente';
+          this.cancelarSede();
+          this.cargarSedes();
+        },
+        error: () => this.errorMsg = 'Error al actualizar la sede'
+      });
     } else {
-      const nuevoId = this.sedes.length ? Math.max(...this.sedes.map(s => s.id)) + 1 : 1;
-      this.sedes = [...this.sedes, { ...this.formularioSede, id: nuevoId, zonas: [], expandida: false }];
+      this.sedeService.createSede(this.formularioSede).subscribe({
+        next: () => {
+          this.successMsg = 'Sede creada correctamente';
+          this.cancelarSede();
+          this.cargarSedes();
+        },
+        error: () => this.errorMsg = 'Error al crear la sede'
+      });
     }
-    this.sincronizar();
-    this.cancelarSede();
   }
 
-  eliminarSede(id: number): void {
-    this.sedes = this.sedes.filter(s => s.id !== id);
-    this.sincronizar();
+  eliminarSede(nombreSede: string): void {
+    this.sedeService.deleteSede(nombreSede).subscribe({
+      next: () => {
+        this.successMsg = 'Sede eliminada correctamente';
+        if (this.sedeExpandida === nombreSede) this.sedeExpandida = null;
+        this.cargarSedes();
+      },
+      error: () => this.errorMsg = 'Error al eliminar la sede'
+    });
   }
 
   cancelarSede(): void {
     this.mostrarFormularioSede = false;
     this.formularioSede = this.sedeVacia();
+    this.modoEdicionSede = false;
+    this.sedeEditandoNombre = null;
   }
 
+  // Expande o colapsa la fila de una sede
   toggleExpandir(sede: Sede): void {
-    sede.expandida = !sede.expandida;
-    if (!sede.expandida) {
-      if (this.sedeConFormularioZona === sede.id) this.cancelarZona();
+    if (this.sedeExpandida === sede.nombreSede) {
+      this.sedeExpandida = null;
+      this.zonasPorSede = [];
+      this.cancelarZona();
+      this.cerrarLugares();
+    } else {
+      this.sedeExpandida = sede.nombreSede;
+      this.cargarZonasDeSede(sede.nombreSede);
       this.cerrarLugares();
     }
   }
 
-  // ── CRUD Zona ──
-  abrirCrearZona(sedeId: number): void {
+  // ── CRUD ZONA ──────────────────────────────────
+
+  cargarZonasDeSede(nombreSede: string): void {
+    this.sedeService.getAllZonas().subscribe({
+      next: (data) => {
+        this.zonasPorSede = data.filter(z => z.nombreSede === nombreSede);
+      },
+      error: () => this.errorMsg = 'Error al cargar las zonas'
+    });
+  }
+
+  abrirCrearZona(nombreSede: string): void {
     this.formularioZona = this.zonaVacia();
+    this.formularioZona.nombreSede = nombreSede;
     this.modoEdicionZona = false;
-    this.sedeConFormularioZona = sedeId;
+    this.zonaEditandoId = null;
+    this.sedeConFormularioZona = nombreSede;
     this.cerrarLugares();
   }
 
-  abrirEditarZona(sedeId: number, zona: Zona): void {
-    this.formularioZona = { ...zona, lugares: [...zona.lugares] };
+  abrirEditarZona(nombreSede: string, zona: Zona): void {
+    this.formularioZona = { ...zona };
     this.modoEdicionZona = true;
-    this.sedeConFormularioZona = sedeId;
+    this.zonaEditandoId = zona.idZona ?? null;
+    this.sedeConFormularioZona = nombreSede;
     this.cerrarLugares();
   }
 
-  guardarZona(sede: Sede): void {
-    if (!this.formularioZona.nombre) return;
-    if (this.modoEdicionZona) {
-      const idx = sede.zonas.findIndex((z: { id: any }) => z.id === this.formularioZona.id);
-      if (idx !== -1) sede.zonas[idx] = { ...this.formularioZona };
+  guardarZona(): void {
+    if (!this.formularioZona.nombreZona) return;
+    this.errorMsg = '';
+    this.successMsg = '';
+
+    if (this.modoEdicionZona && this.zonaEditandoId !== null) {
+      this.sedeService.updateZona(this.zonaEditandoId, this.formularioZona).subscribe({
+        next: () => {
+          this.successMsg = 'Zona actualizada correctamente';
+          this.cancelarZona();
+          this.cargarZonasDeSede(this.sedeExpandida!);
+        },
+        error: () => this.errorMsg = 'Error al actualizar la zona'
+      });
     } else {
-      const nuevoId = sede.zonas.length
-        ? Math.max(...sede.zonas.map((z: { id: any }) => z.id)) + 1
-        : 1;
-      sede.zonas = [...sede.zonas, { ...this.formularioZona, id: nuevoId, lugares: [] }];
+      this.sedeService.createZona(this.formularioZona).subscribe({
+        next: () => {
+          this.successMsg = 'Zona creada correctamente';
+          this.cancelarZona();
+          this.cargarZonasDeSede(this.sedeExpandida!);
+        },
+        error: () => this.errorMsg = 'Error al crear la zona'
+      });
     }
-    this.sincronizar();
-    this.cancelarZona();
   }
 
-  eliminarZona(sede: Sede, zonaId: number): void {
-    sede.zonas = sede.zonas.filter((z: { id: number }) => z.id !== zonaId);
-    this.sincronizar();
+  eliminarZona(idZona: number): void {
+    this.sedeService.deleteZona(idZona).subscribe({
+      next: () => {
+        this.successMsg = 'Zona eliminada correctamente';
+        this.cargarZonasDeSede(this.sedeExpandida!);
+      },
+      error: () => this.errorMsg = 'Error al eliminar la zona'
+    });
   }
 
   cancelarZona(): void {
     this.sedeConFormularioZona = null;
     this.formularioZona = this.zonaVacia();
+    this.modoEdicionZona = false;
+    this.zonaEditandoId = null;
   }
 
-  // ── Gestión de lugares ──
-  abrirLugares(sedeId: number, zonaId: number): void {
-    this.zonaConLugares = { sedeId, zonaId };
+  // ── LUGARES ────────────────────────────────────
+
+/*  abrirLugares(zona: Zona): void {
+    this.zonaActivaLugares = zona;
     this.mostrarGenerador = false;
-    this.generador = this.generadorVacio();
-    this.cancelarZona(); // cierra formulario de zona si estaba abierto
-  }
+    this.formLugares = {};
+    this.cancelarZona();
+  }*/
 
   cerrarLugares(): void {
-    this.zonaConLugares = null;
+    this.zonaActivaLugares = null;
     this.mostrarGenerador = false;
+    this.formLugares = { filas: 0, asientosPorFila: 0, capacidadGeneral: 0 };
   }
 
-  getZona(sedeId: number, zonaId: number): Zona | undefined {
-    return this.sedes
-      .find((s) => s.id === sedeId)
-      ?.zonas.find((z: { id: number }) => z.id === zonaId);
-  }
-
+  // Calcula preview del total de asientos a generar
   get totalLugaresGenerador(): number {
-    const g = this.generador;
-    if (!g.filaInicio || !g.filaFin) return 0;
-    const filas   = g.filaFin.toUpperCase().charCodeAt(0) - g.filaInicio.toUpperCase().charCodeAt(0) + 1;
-    const asientos = g.asientoFin - g.asientoInicio + 1;
-    return filas > 0 && asientos > 0 ? filas * asientos : 0;
+    if (this.zonaActivaLugares?.tieneAsiento) {
+      const f = this.formLugares.filas ?? 0;
+      const a = this.formLugares.asientosPorFila ?? 0;
+      return f > 0 && a > 0 ? f * a : 0;
+    }
+    return this.formLugares.capacidadGeneral ?? 0;
+  }
+/*  configurarLugares(): void {
+    console.log('zonaActiva:', this.zonaActivaLugares);
+    console.log('formLugares:', this.formLugares);  // ← agrega esto
+    if (!this.zonaActivaLugares?.idZona) return;
+    this.errorMsg = '';
+    this.successMsg = '';
+
+    this.sedeService.configurarLugares(this.zonaActivaLugares.idZona, this.formLugares).subscribe({
+      next: () => {
+        this.successMsg = 'Lugares configurados correctamente';
+        this.cerrarLugares();
+      },
+      error: () => this.errorMsg = 'Error al configurar los lugares'
+    });
+  }*/
+
+  zonasConfiguradas: Set<number> = new Set();
+/*  configurarLugares(): void {
+    if (!this.zonaActivaLugares?.idZona) return;
+    this.errorMsg = '';
+    this.successMsg = '';
+
+    this.sedeService.configurarLugares(this.zonaActivaLugares.idZona, this.formLugares).subscribe({
+      next: () => {
+        this.successMsg = 'Lugares configurados correctamente';
+        this.zonasConfiguradas.add(this.zonaActivaLugares!.idZona!); // ← agrega esto
+        this.mostrarGenerador = false;
+      },
+      error: (err) => {
+        // Si el backend devuelve 409 es porque ya está configurada
+        this.errorMsg = err.status === 409
+          ? 'Esta zona ya tiene lugares configurados'
+          : 'Error al configurar los lugares';
+      }
+    });
+  }*/
+
+  configurarLugares(): void {
+    if (!this.zonaActivaLugares?.idZona) return;
+    this.errorMsg = '';
+    this.successMsg = '';
+
+    this.sedeService.configurarLugares(this.zonaActivaLugares.idZona, this.formLugares).subscribe({
+      next: () => {
+        this.successMsg = 'Lugares configurados correctamente';
+        this.mostrarGenerador = false;
+        // Recarga el mapa visual
+        this.sedeService.getAllLugares().subscribe({
+          next: (data) => {
+            const filtrados = data.filter((l: any) => l.idZona === this.zonaActivaLugares?.idZona);
+            this.lugaresDeZonaActiva = filtrados.length;
+            this.lugaresVista = filtrados;
+          },
+          error: () => {
+            this.lugaresDeZonaActiva = 0;
+            this.lugaresVista = [];
+          }
+        });
+      },
+      error: (err) => {
+        this.errorMsg = err.status === 409
+          ? 'Esta zona ya tiene lugares configurados'
+          : 'Error al configurar los lugares';
+      }
+    });
   }
 
-  generarLugares(sede: Sede, zona: Zona): void {
-    const g = this.generador;
-    if (!g.filaInicio || !g.filaFin || g.asientoInicio < 1 || g.asientoFin < g.asientoInicio) return;
+  // ── OBJETOS VACÍOS ─────────────────────────────
 
-    const nuevos = this.sedesService.generarLugares(g.filaInicio, g.filaFin, g.asientoInicio, g.asientoFin);
+  sedeVacia(): Sede {
+    return {
+      nombreSede: '', calle: '', carrera: '',
+      ciudad: '', tieneAccesibilidad: false,
+      imagenSede: '', imagenSeccion: ''
+    };
+  }
 
-    // Mantiene ID global único sumando al máximo actual
-    const maxId = zona.lugares.length ? Math.max(...zona.lugares.map((l: { id: any }) => l.id)) : 0;
-    const conIds = nuevos.map((l: any, i: number) => ({ ...l, id: maxId + i + 1 }));
+  zonaVacia(): Zona {
+    return { nombreZona: '', tieneAsiento: false, nombreSede: '' };
+  }
 
-    zona.lugares = [...zona.lugares, ...conIds];
-    zona.capacidad = zona.lugares.length;
-    this.sincronizar();
+  lugaresDeZonaActiva: number = 0;
+  lugaresVista: LugarVista[] = [];  // ← agrega esta
+  cargandoLugares: boolean = false;
+  abrirLugares(zona: Zona): void {
+    this.zonaActivaLugares = zona;
     this.mostrarGenerador = false;
-    this.generador = this.generadorVacio();
+    this.formLugares = { filas: 0, asientosPorFila: 0, capacidadGeneral: 0 };
+    this.lugaresDeZonaActiva = 0;
+    this.lugaresVista = [];
+    this.cargandoLugares = true;
+    this.cancelarZona();
+
+    this.sedeService.getAllLugares().subscribe({
+      next: (data) => {
+        console.log('Lugares recibidos:', data);
+        console.log('idZona buscado:', zona.idZona);
+        const filtrados = data.filter((l: any) => l.idZona === zona.idZona);
+        console.log('Lugares filtrados:', filtrados);
+        this.lugaresDeZonaActiva = filtrados.length;
+        this.lugaresVista = filtrados;
+        this.cargandoLugares = false;
+        this.cdr.detectChanges();  // ← agrega
+      },
+      error: (err) => {
+        console.log('Error:', err.status);
+        this.lugaresDeZonaActiva = 0;
+        this.lugaresVista = [];
+        this.cargandoLugares = false;
+        this.cdr.detectChanges();  // ← agrega
+      }
+    });
   }
 
-  limpiarLugares(sede: Sede, zona: Zona): void {
-    zona.lugares = [];
-    zona.capacidad = 0;
-    this.sincronizar();
-  }
-
-  // Agrupa lugares por fila para mostrarlos ordenados
-  getLugaresPorFila(zona: Zona): { fila: string; asientos: Lugar[] }[] {
-    const mapa = new Map<string, Lugar[]>();
-    for (const l of zona.lugares) {
-      if (!mapa.has(l.fila)) mapa.set(l.fila, []);
-      mapa.get(l.fila)!.push(l);
+  getLugaresPorFila(): { fila: string; asientos: LugarVista[] }[] {
+    const mapa = new Map<string, LugarVista[]>();
+    for (const l of this.lugaresVista) {
+      const fila = l.fila ?? 'General';
+      if (!mapa.has(fila)) mapa.set(fila, []);
+      mapa.get(fila)!.push(l);
     }
     return Array.from(mapa.entries())
       .sort(([a], [b]) => a.localeCompare(b))
-      .map(([fila, asientos]) => ({ fila, asientos: asientos.sort((a, b) => a.numeroAsiento - b.numeroAsiento) }));
+      .map(([fila, asientos]) => ({
+        fila,
+        asientos: asientos.sort((a, b) => a.numeroAsiento - b.numeroAsiento)
+      }));
   }
 }

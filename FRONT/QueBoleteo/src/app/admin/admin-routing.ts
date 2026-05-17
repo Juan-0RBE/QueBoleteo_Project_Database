@@ -5,6 +5,7 @@ import { AdminConciertoComponent } from './seccion/concierto/concierto.component
 import { AdminTourComponent } from './seccion/tour/tour.component';
 import { AdminSedeComponent } from './seccion/sede/sede.component';
 import { AdminOrganizadorComponent } from './seccion/organizador/organizador.component';
+import { AdminGrupoComponent } from './seccion/grupo/grupo.component';
 
 export const adminRouting: Routes = [
   {
@@ -13,6 +14,7 @@ export const adminRouting: Routes = [
     children: [
       { path: '', redirectTo: 'artista', pathMatch: 'full' },
       { path: 'artista', component: AdminArtistaComponent },
+      { path: 'grupo', component: AdminGrupoComponent },
       { path: 'concierto',    component: AdminConciertoComponent    },
       { path: 'tour',         component: AdminTourComponent         },
       { path: 'sede',         component: AdminSedeComponent         },
