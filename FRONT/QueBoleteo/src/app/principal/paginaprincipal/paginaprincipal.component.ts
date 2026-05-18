@@ -85,6 +85,7 @@ export class PaginaPrincipalComponent implements OnInit {
   ];
 
   isLoggedIn: boolean = false;
+  isAdmin: boolean = false;
   nombreUsuario: string = '';
   private authSubscription!: Subscription;
 
@@ -103,6 +104,7 @@ export class PaginaPrincipalComponent implements OnInit {
       next: (logged: boolean) => {
         this.isLoggedIn = logged;
         this.nombreUsuario = logged ? (this.authService.getUsername() || 'Usuario') : '';
+        this.isAdmin = logged && this.authService.isAdmin();
       }
     });
   }
