@@ -239,4 +239,19 @@ public class ZonaConciertoService implements CRUDOperation<ZonaConciertoDTO> {
 		zonaConciertoRepo.save(entity);
 		return 0;
 	}
+	
+	/**
+	 * Obtiene todas las zonas-concierto de un concierto específico.
+	 *
+	 * @param idConcierto ID del concierto
+	 * @return Lista de DTOs filtrada por concierto
+	 */
+	public List<ZonaConciertoDTO> getByConciertoId(Long idConcierto) {
+	    Optional<Concierto> concierto = conciertoRepo.findById(idConcierto);
+	    if (concierto.isEmpty()) return new ArrayList<>();
+	    List<ZonaConcierto> entityList = zonaConciertoRepo.findByConcierto(concierto.get());
+	    List<ZonaConciertoDTO> dtoList = new ArrayList<>();
+	    entityList.forEach(entity -> dtoList.add(toDTO(entity)));
+	    return dtoList;
+	}
 }

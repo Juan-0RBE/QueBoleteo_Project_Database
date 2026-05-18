@@ -210,7 +210,7 @@ export class AdminSedeComponent implements OnInit {
     this.cerrarLugares();
   }
 
-  guardarZona(): void {
+/*  guardarZona(): void {
     if (!this.formularioZona.nombreZona) return;
     this.errorMsg = '';
     this.successMsg = '';
@@ -230,6 +230,70 @@ export class AdminSedeComponent implements OnInit {
           this.successMsg = 'Zona creada correctamente';
           this.cancelarZona();
           this.cargarZonasDeSede(this.sedeExpandida!);
+        },
+        error: () => this.errorMsg = 'Error al crear la zona'
+      });
+    }
+  }*/
+
+  guardarZona(): void {
+    if (!this.formularioZona.nombreZona) return;
+    this.errorMsg = '';
+    this.successMsg = '';
+
+    if (this.modoEdicionZona && this.zonaEditandoId !== null) {
+      this.sedeService.updateZona(this.zonaEditandoId, this.formularioZona).subscribe({
+        next: () => {
+          this.successMsg = 'Zona actualizada correctamente';
+          this.cancelarZona();
+          this.cargarZonasDeSede(this.sedeExpandida!);
+        },
+        error: () => this.errorMsg = 'Error al actualizar la zona'
+      });
+    } else {
+      this.sedeService.createZona(this.formularioZona).subscribe({
+        next: () => {
+          // Si es zona general y tiene capacidad definida,
+          // configurar los lugares automáticamente
+          if (!this.formularioZona.tieneAsiento &&
+            this.formLugares.capacidadGeneral &&
+            this.formLugares.capacidadGeneral > 0) {
+            // Recargamos las zonas para obtener el idZona recién creado
+            this.sedeService.getAllZonas().subscribe({
+              next: (zonas) => {
+                const zonaCreada = zonas.find(
+                  z => z.nombreZona === this.formularioZona.nombreZona &&
+                    z.nombreSede === this.formularioZona.nombreSede
+                );
+                if (zonaCreada?.idZona) {
+                  this.sedeService.configurarLugares(
+                    zonaCreada.idZona,
+                    { capacidadGeneral: this.formLugares.capacidadGeneral }
+                  ).subscribe({
+                    next: () => {
+                      this.successMsg = 'Zona general creada y configurada correctamente';
+                      this.formLugares = { filas: 0, asientosPorFila: 0, capacidadGeneral: 0 };
+                      this.cancelarZona();
+                      this.cargarZonasDeSede(this.sedeExpandida!);
+                    },
+                    error: () => {
+                      this.successMsg = 'Zona creada pero error al configurar capacidad';
+                      this.cancelarZona();
+                      this.cargarZonasDeSede(this.sedeExpandida!);
+                    }
+                  });
+                } else {
+                  this.cancelarZona();
+                  this.cargarZonasDeSede(this.sedeExpandida!);
+                }
+              }
+            });
+          } else {
+            // Zona con asientos — se configura manualmente después
+            this.successMsg = 'Zona creada correctamente';
+            this.cancelarZona();
+            this.cargarZonasDeSede(this.sedeExpandida!);
+          }
         },
         error: () => this.errorMsg = 'Error al crear la zona'
       });

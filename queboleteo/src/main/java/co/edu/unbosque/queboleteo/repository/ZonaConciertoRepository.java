@@ -35,4 +35,5 @@ public interface ZonaConciertoRepository extends JpaRepository<ZonaConcierto, Lo
      * @return Optional con el registro si existe
      */
     java.util.Optional<ZonaConcierto> findByZonaAndConcierto(Zona zona, Concierto concierto);
+    
 }
