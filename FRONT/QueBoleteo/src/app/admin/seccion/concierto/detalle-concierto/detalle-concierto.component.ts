@@ -5,8 +5,24 @@ import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { DividerModule } from 'primeng/divider';
-import { ConciertoDTO, ConciertoService } from '../../../../core/services/concierto.service';
+import { ResenaService, ResenaDTO } from '../../../../core/services/resena.service';
+
+
 import { forkJoin } from 'rxjs';
+
+import {
+  ConciertoDTO,
+  ConciertoService
+} from '../../../../core/services/concierto.service';
+
+import {
+  CompraService,
+  CompraRequest,
+  Lugar
+} from '../../../../core/services/compra.service';
+
+import { AuthService } from '../../../../core/services/auth.service';
+
 
 export interface ZonaDisponible {
   id: number;
@@ -65,15 +81,25 @@ export class DetalleConciertoComponent implements OnInit {
     zonas: []
   };
 
-  zonaSeleccionada: ZonaDisponible | null = null;
+  asientosPorZona: { [zonaId: number]: Lugar[][] } = {};
+
+  asientosSeleccionados: { [zonaId: number]: Set<number> } = {};
+
+  cargandoAsientos: { [zonaId: number]: boolean } = {};
+
   cantidades: { [zonaId: number]: number } = {};
   loading: boolean = true; // Control de estado de carga
+
+
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private conciertoService: ConciertoService,
-    private cdr: ChangeDetectorRef,
+    private compraService: CompraService,
+    private authService: AuthService,
+    private resenaService: ResenaService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -86,7 +112,20 @@ export class DetalleConciertoComponent implements OnInit {
       // Si no viene un ID válido, redirigimos a la página principal
       this.router.navigate(['/principal/paginaprincipal']);
     }
+
+    this.cargarDetalleConcierto(idConcierto);
+
   }
+
+  resenas: ResenaDTO[] = [];
+  cargandoResenas: boolean = false;
+
+  nuevaResena = {
+    comentario: '',
+    calificacion: 0
+  };
+
+  enviandoResena: boolean = false;
 
   cargarDetalleConcierto(id: number): void {
     this.loading = true;
@@ -108,8 +147,11 @@ export class DetalleConciertoComponent implements OnInit {
               const zonaInfo = zonasMaestras.find((zm: any) => zm.idZona === zc.idZona);
 
               return {
-                id: zc.idZona,
-                nombre: zonaInfo ? zonaInfo.nombreZona : 'Localidad',
+                idZona: zc.idZona,
+
+                idZonaConcierto: zc.idZonaConcierto ?? zc.id ?? zc.idPrecio,
+
+                nombre: zonaInfo?.nombreZona || 'Zona',
                 precio: zc.precio || 0,
                 cantidadDisponible: zc.cantidadDisponible ?? 0,
                 descripcion: `Entrada válida para la zona ${zonaInfo ? zonaInfo.nombreZona : ''}.`,
@@ -137,6 +179,7 @@ export class DetalleConciertoComponent implements OnInit {
             // Inicializamos los inputs numéricos del carrito
             this.concierto.zonas.forEach((z: ZonaDisponible) => this.cantidades[z.id] = 0);
             this.loading = false;
+            this.cargarResenas();
             this.cdr.detectChanges();
           },
           error: (err) => {
@@ -153,12 +196,8 @@ export class DetalleConciertoComponent implements OnInit {
     });
   }
 
-  getCantidad(zonaId: number): number {
-    return this.cantidades[zonaId] || 0;
-  }
-
-  setCantidad(zonaId: number, valor: number): void {
-    this.cantidades[zonaId] = Math.max(0, valor || 0);
+  getCantidad(idZona: number): number {
+    return this.cantidades[idZona] || 0;
   }
 
   incrementar(zona: ZonaDisponible): void {
@@ -173,13 +212,6 @@ export class DetalleConciertoComponent implements OnInit {
     if (actual > 0) this.cantidades[zonaId] = actual - 1;
   }
 
-  get itemsSeleccionados(): ItemSeleccionado[] {
-    if (!this.concierto || !this.concierto.zonas) return [];
-    return this.concierto.zonas
-      .filter((z: ZonaDisponible) => this.getCantidad(z.id) > 0)
-      .map((z: ZonaDisponible) => ({ zona: z, cantidad: this.getCantidad(z.id) }));
-  }
-
   get totalBoletas(): number {
     return this.itemsSeleccionados.reduce((acc, i) => acc + i.cantidad, 0);
   }
@@ -188,7 +220,7 @@ export class DetalleConciertoComponent implements OnInit {
     return this.itemsSeleccionados.reduce((acc, i) => acc + i.zona.precio * i.cantidad, 0);
   }
 
-  formatPrecio(valor: number): string {
+  formatPrecio(v: number): string {
     return new Intl.NumberFormat('es-CO', {
       style: 'currency', currency: 'COP', maximumFractionDigits: 0
     }).format(valor);
@@ -202,5 +234,197 @@ export class DetalleConciertoComponent implements OnInit {
         total: this.totalPrecio
       }
     });
+  }
+
+
+  toggleAsiento(zonaId: number, idLugar: number): void {
+
+    const set = this.asientosSeleccionados[zonaId];
+    if (!set) return;
+
+    if (set.has(idLugar)) {
+      set.delete(idLugar);
+    } else {
+      set.add(idLugar);
+    }
+  }
+
+  esAsientoSeleccionado(zonaId: number, idLugar: number): boolean {
+    return this.asientosSeleccionados[zonaId]?.has(idLugar) ?? false;
+  }
+
+  comprar(zona: ZonaDisponible): void {
+
+    const username = this.authService.getUsernameString(); // ← este nunca retorna null (retorna '' si no hay)
+
+    if (!username) {
+      alert('Debes iniciar sesión');
+      return;
+    }
+
+    // Resto de la validación de cantidad...
+    let cantidad: number;
+    let idsLugaresElegidos: number[] | undefined;
+
+    if (zona.tieneAsientos) {
+      const seleccion = this.asientosSeleccionados[zona.idZona];
+      if (!seleccion || seleccion.size === 0) {
+        alert('Selecciona al menos un asiento');
+        return;
+      }
+      idsLugaresElegidos = Array.from(seleccion);
+      cantidad = idsLugaresElegidos.length;
+    } else {
+      cantidad = this.getCantidad(zona.idZona);
+      if (cantidad <= 0) {
+        alert('Selecciona al menos 1 boleta');
+        return;
+      }
+    }
+
+    this.authService.getCorreoByUsername(username).subscribe({
+
+      next: (correoUsuario: string) => {
+
+        const compra: CompraRequest = {
+          correoUsuario,
+          idZonaConcierto: zona.idZonaConcierto,
+          cantidad,
+          ...(idsLugaresElegidos ? { idsLugaresElegidos } : {})
+        };
+
+        console.log('DTO enviado:', compra);
+
+        this.compraService.realizarCompra(compra).subscribe({
+          next: (response) => {
+            alert(`Compra realizada correctamente.\n\nVenta #${response.idVenta}\nBoletos: ${response.codigosBoletos.join(', ')}`);
+            delete this.asientosPorZona[zona.idZona];
+            this.asientosSeleccionados[zona.idZona] = new Set();
+          },
+          error: (error) => {
+            console.error(error);
+            alert(error.error || 'Error realizando compra');
+          }
+        });
+      },
+
+      error: () => {
+        alert('No se pudo obtener el correo del usuario');
+      }
+    });
+  }
+
+  get itemsSeleccionados(): any[] {
+
+    const items: any[] = [];
+
+    this.concierto.zonas.forEach(z => {
+      const cantidad = this.getCantidad(z.idZona);
+
+      if (cantidad > 0 && !z.tieneAsientos) {
+        items.push({
+          zona: z,
+          cantidad
+        });
+      }
+    });
+
+    Object.keys(this.asientosSeleccionados).forEach((zonaIdStr) => {
+
+      const zonaId = Number(zonaIdStr);
+      const zona = this.concierto.zonas.find(z => z.idZona === zonaId);
+
+      const seleccion = this.asientosSeleccionados[zonaId];
+
+      if (zona && seleccion && seleccion.size > 0) {
+        items.push({
+          zona,
+          cantidad: seleccion.size,
+          asientos: Array.from(seleccion)
+        });
+      }
+    });
+
+    return items;
+  }
+
+  cargarResenas(): void {
+    if (!this.concierto.nombre) return;
+
+    this.cargandoResenas = true;
+
+    this.resenaService.getByConcierto(this.concierto.nombre).subscribe({
+      next: (data) => {
+        this.resenas = data ?? [];   // ← si data es null, usar []
+        this.cargandoResenas = false;
+      },
+      error: () => {
+        this.resenas = [];
+        this.cargandoResenas = false;
+      }
+    });
+  }
+
+  enviarResena(): void {
+
+    if (!this.nuevaResena.comentario.trim()) {
+      alert('Escribe un comentario');
+      return;
+    }
+
+    if (this.nuevaResena.calificacion < 1 || this.nuevaResena.calificacion > 5) {
+      alert('La calificación debe estar entre 1 y 5');
+      return;
+    }
+
+    const username = this.authService.getUsernameString();
+
+    if (!username) {
+      alert('Debes iniciar sesión para dejar una reseña');
+      return;
+    }
+
+    this.authService.getCorreoByUsername(username).subscribe({
+
+      next: (correo: string) => {
+
+        const dto: ResenaDTO = {
+          comentario: this.nuevaResena.comentario,
+          calificacion: this.nuevaResena.calificacion,
+          correoUsuario: correo,
+          idConcierto: this.concierto.id
+        };
+
+        this.enviandoResena = true;
+
+        this.resenaService.crear(dto).subscribe({
+
+          next: () => {
+            alert('¡Reseña publicada!');
+            this.nuevaResena = { comentario: '', calificacion: 0 };
+            this.enviandoResena = false;
+            this.cargarResenas(); // recargar lista
+          },
+
+          error: (err) => {
+            this.enviandoResena = false;
+            alert(err.error || 'Error al publicar la reseña');
+          }
+        });
+      },
+
+      error: () => {
+        alert('No se pudo obtener el correo del usuario');
+      }
+    });
+  }
+
+  estrellas(n: number): number[] {
+    return Array(n).fill(0);
+  }
+
+  setCalificacion(n: number): void {
+    this.nuevaResena.calificacion = n;
+    this.cdr.detectChanges();
   }
 }
