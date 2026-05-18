@@ -138,4 +138,23 @@ public class ZonaConciertoController {
 					HttpStatus.BAD_REQUEST);
 		}
 	}
+	
+	/**
+	 * Obtiene las zonas de un concierto
+	 * 
+	 * @param idConcierto
+	 * @return
+	 */
+	@Operation(summary = "Obtener zonas de un concierto")
+	@GetMapping("/concierto/{idConcierto}")
+	public ResponseEntity<List<ZonaConciertoDTO>> getByConciertoId(@PathVariable Long idConcierto) {
+	    List<ZonaConciertoDTO> lista = zonaConciertoService.getByConciertoId(idConcierto);
+	    if (lista.isEmpty())
+	        return new ResponseEntity<>(lista, HttpStatus.NO_CONTENT);
+	    return new ResponseEntity<>(lista, HttpStatus.OK);
+	}
+	
+	
+	
+	
 }
