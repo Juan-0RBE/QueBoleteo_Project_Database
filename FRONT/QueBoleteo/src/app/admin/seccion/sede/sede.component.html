@@ -42,14 +42,17 @@
           </div>
         </div>
 
+        <div class="field field--full">
+          <label>URL imagen de la sede</label>
+          <input pInputText [(ngModel)]="formularioSede.imagenSede" placeholder="https://..." />
+        </div>
+
       </div>
       <div class="form-actions">
         <p-button label="Cancelar" icon="pi pi-times" styleClass="btn-admin-outline" (onClick)="cancelarSede()"></p-button>
         <p-button [label]="modoEdicionSede ? 'Guardar cambios' : 'Crear sede'" icon="pi pi-check" styleClass="btn-admin-primary" (onClick)="guardarSede()"></p-button>
       </div>
     </div>
-
-
 
     <!-- Para mostrar errores -->
     <small *ngIf="errorMsg"   class="p-error">{{ errorMsg }}</small>
@@ -138,6 +141,11 @@
                       <div class="field" *ngIf="!formularioZona.tieneAsiento">
                         <label>Capacidad</label>
                         <p-inputnumber [(ngModel)]="formLugares.capacidadGeneral" [min]="1" placeholder="N° personas" styleClass="w-full"></p-inputnumber>
+                      </div>
+
+                      <div class="field field--full">
+                        <label>URL imagen de sección</label>
+                        <input pInputText [(ngModel)]="formularioSede.imagenSeccion" placeholder="https://..." />
                       </div>
 
                     </div>

@@ -86,6 +86,11 @@
                   placeholder="Ej: No se permite ingreso con menores..." rows="2"></textarea>
       </div>
 
+      <div class="field field--full">
+        <label>URL del logo</label>
+        <input pInputText [(ngModel)]="formulario.imagenConcierto" placeholder="https://..." />
+      </div>
+
     </div>
 
     <small *ngIf="errorMsg"   class="p-error">{{ errorMsg }}</small>
@@ -142,6 +147,7 @@
                       title="Gestionar organizadores">
                 <i class="pi pi-building"></i>
               </button>
+
               <!-- Zonas -->
               <button class="action-btn"
                       [class.active]="conciertoZonaAbierto === c.idConcierto"
