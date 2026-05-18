@@ -1,4 +1,3 @@
-import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
@@ -9,7 +8,7 @@ import { TagModule } from 'primeng/tag';
 import { TextareaModule } from 'primeng/textarea';
 import { ArtistaService, Artista, ArtGen } from '../../../core/services/artista.service';
 import { GeneroService, Genero } from '../../../core/services/genero.service';
-
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-admin-artista',
@@ -46,7 +45,8 @@ export class AdminArtistaComponent implements OnInit {
   successGenero: string = '';
 
   constructor(private artistaService: ArtistaService,
-  private generoService: GeneroService
+  private generoService: GeneroService,
+              private cdr: ChangeDetectorRef
   ) {}
 
   // Se ejecuta automáticamente al abrir la pantalla
@@ -58,7 +58,10 @@ export class AdminArtistaComponent implements OnInit {
   // Llama al backend y llena la tabla
   cargarArtistas(): void {
     this.artistaService.getAll().subscribe({
-      next: (data) => this.artistas = data,
+      next: (data) => {
+        this.artistas = data;
+        this.cdr.detectChanges();
+      },
       error: () => this.errorMsg = 'Error al cargar los artistas'
     });
   }
