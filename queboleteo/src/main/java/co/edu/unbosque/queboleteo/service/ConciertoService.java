@@ -37,8 +37,7 @@ public class ConciertoService implements CRUDOperation<ConciertoDTO> {
 	// ─────────────────────────────────────────────
 
 	/**
-	 * Convierte un DTO a entidad. ⚠️ No usamos ModelMapper porque los campos de
-	 * relación (idTour → Tour, nombreSede → Sede) no se mapean automáticamente.
+	 * Convierte un DTO a entidad.
 	 *
 	 * @param dto DTO del concierto
 	 * @return Entidad Concierto lista para persistir
@@ -112,8 +111,13 @@ public class ConciertoService implements CRUDOperation<ConciertoDTO> {
 	 */
 	@Override
 	public int create(ConciertoDTO newData) {
-		if (newData == null || newData.getNombreSede() == null || newData.getNombreSede().trim().isEmpty() || sedeRepo.findByNombreSede(newData.getNombreSede())==null) {
-			return 2; 
+		if (newData == null || newData.getNombreSede() == null || newData.getNombreSede().trim().isEmpty()
+				|| sedeRepo.findByNombreSede(newData.getNombreSede()) == null) {
+			return 2;
+		}
+		boolean esMismoDia = conciertoRepo.existsBySedeFecha(newData.getNombreSede(), newData.getFechaConcierto());
+		if (esMismoDia) {
+			return 3;			
 		}
 
 		Optional<Concierto> found = conciertoRepo.findByNombreConcierto(newData.getNombreConcierto());
