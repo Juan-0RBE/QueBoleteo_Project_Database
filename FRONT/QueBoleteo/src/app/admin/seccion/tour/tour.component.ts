@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
@@ -29,7 +29,7 @@ export class AdminTourComponent {
   successMsg: string = '';
   loading: boolean = false;
 
-  constructor(private tourService: TourService) {}
+  constructor(private tourService: TourService, private cdr: ChangeDetectorRef) {}
 
   // Se ejecuta automáticamente al abrir la pantalla
   ngOnInit(): void {
@@ -39,7 +39,10 @@ export class AdminTourComponent {
   // Llama al backend y llena la tabla
   cargarTours(): void {
     this.tourService.getAll().subscribe({
-      next: (data) => this.tours = data,
+      next: (data) => {
+        this.tours = data;
+        this.cdr.detectChanges();
+      },
       error: () => this.errorMsg = 'Error al cargar los tours'
     });
   }

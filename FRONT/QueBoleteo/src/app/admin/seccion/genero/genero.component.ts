@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
@@ -34,7 +34,7 @@ export class AdminGeneroComponent {
   successMsg: string = '';
   loading: boolean = false;
 
-  constructor(private generoService: GeneroService) {}
+  constructor(private generoService: GeneroService, private cdr: ChangeDetectorRef) {}
 
   // Se ejecuta automáticamente al abrir la pantalla
   ngOnInit(): void {
@@ -44,7 +44,10 @@ export class AdminGeneroComponent {
   // Llama al backend y llena la tabla
   cargarGeneros(): void {
     this.generoService.getAll().subscribe({
-      next: (data) => this.generos = data,
+      next: (data) => {
+        this.generos = data;
+        this.cdr.detectChanges();
+      },
       error: () => this.errorMsg = 'Error al cargar los artistas'
     });
   }
