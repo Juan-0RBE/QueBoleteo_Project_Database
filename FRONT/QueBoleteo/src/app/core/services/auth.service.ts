@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
@@ -35,6 +35,9 @@ export class AuthService {
   private readonly ROLE_KEY  = 'qb_role';
   private readonly USER_KEY  = 'qb_user';
 
+  private loggedInSubject = new BehaviorSubject<boolean>(!!this.getToken());
+  isLoggedIn$ = this.loggedInSubject.asObservable();
+
   constructor(private http: HttpClient) {}
 
   login(data: LoginRequest): Observable<LoginResponse> {
@@ -43,6 +46,8 @@ export class AuthService {
         localStorage.setItem(this.TOKEN_KEY, res.token);
         localStorage.setItem(this.ROLE_KEY,  res.role);
         localStorage.setItem(this.USER_KEY,  data.nombreUsuario);
+
+        this.loggedInSubject.next(true);
       })
     );
   }
@@ -57,6 +62,8 @@ export class AuthService {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.ROLE_KEY);
     localStorage.removeItem(this.USER_KEY);
+
+    this.loggedInSubject.next(false)
   }
 
   getToken(): string | null {
@@ -85,7 +92,7 @@ export class AuthService {
   }
 
   isLoggedIn(): boolean {
-    return !!this.getToken();
+    return this.loggedInSubject.value;
   }
 
   isAdmin(): boolean {

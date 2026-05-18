@@ -10,17 +10,18 @@
       <p>Inicia sesión para acceder a tus boletas y eventos</p>
     </div>
 
-    <!-- Email -->
+    <!-- Username -->
     <div class="field">
-      <label for="email">Correo electrónico</label>
-      <span class="p-input-icon-left w-full">
-        <i class="pi pi-envelope"></i>
+      <label for="username">Nombre de Usuario</label>
+      <span class="p-iconfield w-full">
+        <i class="pi pi-user p-inputicon"></i>
         <input
           pInputText
-          id="email"
-          type="email"
-          placeholder="tu@correo.com"
+          id="username"
+          type="text"
+          placeholder="Nombre de Usuario"
           [(ngModel)]="credentials.nombreUsuario"
+          class="w-full"
         />
       </span>
     </div>
@@ -34,6 +35,7 @@
         [feedback]="false"
         [toggleMask]="true"
         styleClass="w-full"
+        inputStyleClass="w-full"
         [(ngModel)]="credentials.clave">
       </p-password>
     </div>

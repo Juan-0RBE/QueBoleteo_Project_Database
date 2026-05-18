@@ -1,1 +1,48 @@
 @import '../auth.css';
+
+/* --- Corrección para el Icono de Usuario --- */
+.p-iconfield {
+  position: relative;
+  display: inline-block;
+}
+
+/* Fuerza el centrado vertical exacto del icono del usuario */
+.p-iconfield .p-inputicon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 1rem;
+  margin-top: 0 !important; /* Elimina desfases heredados */
+  color: #94a3b8; /* Un tono gris sutil para que combine */
+}
+
+/* Añade espacio al texto para que no pise el icono */
+.p-iconfield .p-inputtext {
+  padding-left: 2.75rem !important;
+}
+
+
+/* --- Corrección para el Ojo de la Contraseña --- */
+/* Limita el ancho del p-password para que sus elementos internos se alineen bien */
+:host ::ng-deep .p-password {
+  position: relative;
+  display: flex;
+  width: 100%;
+}
+
+/* Centra el ojo verticalmente y lo acerca al borde derecho del input */
+:host ::ng-deep .p-password .p-password-toggle-icon {
+  position: absolute;
+  top: 50%;
+  right: 1.25rem; /* Ajusta este valor si quieres el ojo más cerca/lejos del borde */
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #94a3b8;
+  z-index: 10;
+}
+
+/* Asegura que el input ocupe todo el ancho sin empujar al icono */
+:host ::ng-deep .p-password input {
+  width: 100%;
+  padding-right: 3rem !important; /* Espacio para que el texto largo no quede debajo del ojo */
+}

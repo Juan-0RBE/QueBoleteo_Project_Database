@@ -14,15 +14,19 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
   selector: 'app-admin-artista',
   standalone: true,
   imports: [
-    CommonModule, FormsModule,
-    ButtonModule, InputTextModule, SelectModule,
-    TableModule, TagModule, TextareaModule,
+    CommonModule,
+    FormsModule,
+    ButtonModule,
+    InputTextModule,
+    SelectModule,
+    TableModule,
+    TagModule,
+    TextareaModule,
   ],
   templateUrl: './artista.component.html',
-  styleUrls: ['./artista.component.css']
+  styleUrls: ['./artista.component.css'],
 })
 export class AdminArtistaComponent implements OnInit {
-
   mostrarFormulario = false;
   modoEdicion = false;
   artistaEditandoId: number | null = null;
@@ -44,9 +48,10 @@ export class AdminArtistaComponent implements OnInit {
   errorGenero: string = '';
   successGenero: string = '';
 
-  constructor(private artistaService: ArtistaService,
-  private generoService: GeneroService,
-              private cdr: ChangeDetectorRef
+  constructor(
+    private artistaService: ArtistaService,
+    private generoService: GeneroService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   // Se ejecuta automáticamente al abrir la pantalla
@@ -62,14 +67,14 @@ export class AdminArtistaComponent implements OnInit {
         this.artistas = data;
         this.cdr.detectChanges();
       },
-      error: () => this.errorMsg = 'Error al cargar los artistas'
+      error: () => (this.errorMsg = 'Error al cargar los artistas'),
     });
   }
 
   cargarTodosLosGeneros(): void {
     this.generoService.getAll().subscribe({
-      next: (data) => this.todosLosGeneros = data,
-      error: () => {}
+      next: (data) => (this.todosLosGeneros = data),
+      error: () => {},
     });
   }
 
@@ -105,7 +110,7 @@ export class AdminArtistaComponent implements OnInit {
         error: () => {
           this.errorMsg = 'Error al actualizar el artista';
           this.loading = false;
-        }
+        },
       });
     } else {
       // Creación — llama al POST del backend
@@ -118,7 +123,7 @@ export class AdminArtistaComponent implements OnInit {
         error: () => {
           this.errorMsg = 'Error al crear el artista';
           this.loading = false;
-        }
+        },
       });
     }
   }
@@ -129,7 +134,7 @@ export class AdminArtistaComponent implements OnInit {
         this.successMsg = 'Artista eliminado correctamente';
         this.cargarArtistas();
       },
-      error: () => this.errorMsg = 'Error al eliminar el artista'
+      error: () => (this.errorMsg = 'Error al eliminar el artista'),
     });
   }
 
@@ -159,19 +164,18 @@ export class AdminArtistaComponent implements OnInit {
     this.cargarGenerosAsociados(id);
   }
 
-
-
   cargarGenerosAsociados(idArtista: number): void {
     this.artistaService.getGenerosByArtista(idArtista).subscribe({
-      next: (data) => this.generosAsociados = data ?? [],
-      error: () => this.generosAsociados = []
+      next: (data) => (this.generosAsociados = data ?? []),
+      error: () => (this.generosAsociados = []),
     });
   }
 
-
   // Devuelve el nombre de un género dado su ID
   nombreGenero(idGenero: number): string {
-    return this.todosLosGeneros.find(g => g.idGenero === idGenero)?.nombreGenero ?? `#${idGenero}`;
+    return (
+      this.todosLosGeneros.find((g) => g.idGenero === idGenero)?.nombreGenero ?? `#${idGenero}`
+    );
   }
 
   asociarGenero(): void {
@@ -182,7 +186,7 @@ export class AdminArtistaComponent implements OnInit {
 
     const dto: ArtGen = {
       idArtista: this.artistaGeneroAbierto,
-      idGenero: this.generoSeleccionado.idGenero!
+      idGenero: this.generoSeleccionado.idGenero!,
     };
 
     this.artistaService.asociarGenero(dto).subscribe({
@@ -192,10 +196,9 @@ export class AdminArtistaComponent implements OnInit {
         this.cargarGenerosAsociados(this.artistaGeneroAbierto!);
       },
       error: (err) => {
-        this.errorGenero = err.status === 406
-          ? 'Ese género ya está asociado'
-          : 'Error al asociar el género';
-      }
+        this.errorGenero =
+          err.status === 406 ? 'Ese género ya está asociado' : 'Error al asociar el género';
+      },
     });
   }
 
@@ -209,14 +212,14 @@ export class AdminArtistaComponent implements OnInit {
         this.successGenero = 'Género desasociado correctamente';
         this.cargarGenerosAsociados(this.artistaGeneroAbierto!);
       },
-      error: () => this.errorGenero = 'Error al desasociar el género'
+      error: () => (this.errorGenero = 'Error al desasociar el género'),
     });
   }
 
   // Géneros disponibles = todos los géneros menos los ya asociados
   get generosDisponibles(): Genero[] {
-    const asociadosIds = new Set(this.generosAsociados.map(a => a.idGenero));
-    return this.todosLosGeneros.filter(g => !asociadosIds.has(g.idGenero!));
+    const asociadosIds = new Set(this.generosAsociados.map((a) => a.idGenero));
+    return this.todosLosGeneros.filter((g) => !asociadosIds.has(g.idGenero!));
   }
 
   cerrarPanelGeneros(): void {
@@ -228,7 +231,6 @@ export class AdminArtistaComponent implements OnInit {
     this.successGenero = '';
   }
 
-
   private formularioVacio(): Artista {
     return {
       nombreArtista: '',
@@ -236,7 +238,7 @@ export class AdminArtistaComponent implements OnInit {
       imagenArtista: '',
       paisOrigenArtista: '',
       edadArtista: 0,
-      lenguajeArtista: ''
+      lenguajeArtista: '',
     };
   }
 }
