@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { DividerModule } from 'primeng/divider';
+import { ResenaService, ResenaDTO } from '../../../../core/services/resena.service';
 
 
 import { forkJoin } from 'rxjs';
@@ -22,9 +23,6 @@ import {
 
 import { AuthService } from '../../../../core/services/auth.service';
 
-/* =========================
-   MODELOS UI
-========================= */
 
 export interface ZonaDisponible {
   idZona: number;
@@ -72,9 +70,6 @@ export interface ConciertoVisualizacion {
 })
 
 export class DetalleConciertoComponent implements OnInit {
-  /* =========================
-     ESTADO
-  ========================= */
 
   concierto: ConciertoVisualizacion = {
     id: 0,
@@ -91,20 +86,16 @@ export class DetalleConciertoComponent implements OnInit {
     zonas: []
   };
 
-/*
-  itemsSeleccionados: any[] = [];
-*/
-// Matriz de filas → cada celda tiene el Lugar real del backend
   asientosPorZona: { [zonaId: number]: Lugar[][] } = {};
 
-// Set de idLugar (number, no string)
   asientosSeleccionados: { [zonaId: number]: Set<number> } = {};
 
-// Para mostrar spinner mientras carga el mapa
   cargandoAsientos: { [zonaId: number]: boolean } = {};
 
   cantidades: { [zonaId: number]: number } = {};
   loading: boolean = true;
+
+
 
   constructor(
     private router: Router,
@@ -112,12 +103,9 @@ export class DetalleConciertoComponent implements OnInit {
     private conciertoService: ConciertoService,
     private compraService: CompraService,
     private authService: AuthService,
+    private resenaService: ResenaService,
     private cdr: ChangeDetectorRef
   ) {}
-
-  /* =========================
-     INIT
-  ========================= */
 
   ngOnInit(): void {
 
@@ -129,11 +117,18 @@ export class DetalleConciertoComponent implements OnInit {
     }
 
     this.cargarDetalleConcierto(idConcierto);
+
   }
 
-  /* =========================
-     CARGA CONCIERTO
-  ========================= */
+  resenas: ResenaDTO[] = [];
+  cargandoResenas: boolean = false;
+
+  nuevaResena = {
+    comentario: '',
+    calificacion: 0
+  };
+
+  enviandoResena: boolean = false;
 
   cargarDetalleConcierto(id: number): void {
 
@@ -159,7 +154,6 @@ export class DetalleConciertoComponent implements OnInit {
               return {
                 idZona: zc.idZona,
 
-                // ⚠️ IMPORTANTE: AJUSTA ESTE CAMPO SI TU BACKEND USA OTRO NOMBRE
                 idZonaConcierto: zc.idZonaConcierto ?? zc.id ?? zc.idPrecio,
 
                 nombre: zonaInfo?.nombreZona || 'Zona',
@@ -196,6 +190,7 @@ export class DetalleConciertoComponent implements OnInit {
             });
 
             this.loading = false;
+            this.cargarResenas();
             this.cdr.detectChanges();
           },
 
@@ -215,10 +210,6 @@ export class DetalleConciertoComponent implements OnInit {
 
     });
   }
-
-  /* =========================
-     CANTIDADES
-  ========================= */
 
   getCantidad(idZona: number): number {
     return this.cantidades[idZona] || 0;
@@ -242,20 +233,6 @@ export class DetalleConciertoComponent implements OnInit {
     }
   }
 
-  /* =========================
-     SELECCIÓN
-  ========================= */
-
-/*  get itemsSeleccionados(): ItemSeleccionado[] {
-
-    return this.concierto.zonas
-      .filter(z => this.getCantidad(z.idZona) > 0)
-      .map(z => ({
-        zona: z,
-        cantidad: this.getCantidad(z.idZona)
-      }));
-  }*/
-
   get totalBoletas(): number {
     return this.itemsSeleccionados
       .reduce((a, b) => a + b.cantidad, 0);
@@ -265,71 +242,6 @@ export class DetalleConciertoComponent implements OnInit {
     return this.itemsSeleccionados
       .reduce((a, b) => a + b.cantidad * b.zona.precio, 0);
   }
-
-  /* =========================
-     COMPRA
-  ========================= */
-
-/*  comprar(zona: ZonaDisponible): void {
-
-    const cantidad = this.getCantidad(zona.idZona);
-
-    if (cantidad <= 0) {
-      alert('Selecciona al menos 1 boleta');
-      return;
-    }
-
-    const username = this.authService.getUsername();
-
-    if (!username) {
-      alert('Debes iniciar sesión');
-      return;
-    }
-
-    this.authService.getCorreoByUsername(username)
-      .subscribe({
-
-        next: (correoUsuario: string) => {
-
-          const compra: CompraRequest = {
-            correoUsuario: correoUsuario,
-            idZonaConcierto: zona.idZonaConcierto,
-            cantidad: cantidad
-          };
-
-          console.log('DTO enviado:', compra);
-
-          this.compraService.realizarCompra(compra)
-            .subscribe({
-
-              next: (response) => {
-                alert(
-                  `Compra realizada correctamente.
-
-Venta #${response.idVenta}
-Boletos: ${response.codigosBoletos.join(', ')}`
-                );
-              },
-
-              error: (error) => {
-                console.error(error);
-                alert(error.error || 'Error realizando compra');
-              }
-
-            });
-
-        },
-
-        error: () => {
-          alert('No se pudo obtener el correo del usuario');
-        }
-
-      });
-  }*/
-
-  /* =========================
-     UTIL
-  ========================= */
 
   formatPrecio(v: number): string {
     return new Intl.NumberFormat('es-CO', {
@@ -420,71 +332,6 @@ Boletos: ${response.codigosBoletos.join(', ')}`
     return this.asientosSeleccionados[zonaId]?.has(idLugar) ?? false;
   }
 
-
-
-  /*comprar(zona: ZonaDisponible): void {
-
-    let cantidad = this.getCantidad(zona.idZona);
-
-    // 🟣 SI ES ZONA CON ASIENTOS → tomar del set
-    if (zona.tieneAsientos) {
-      const seleccion = this.asientosSeleccionados[zona.idZona];
-      cantidad = seleccion ? seleccion.size : 0;
-    }
-
-    if (cantidad <= 0) {
-      alert('Selecciona al menos 1 boleta');
-      return;
-    }
-
-    const username = this.authService.getUsername();
-
-    if (!username) {
-      alert('Debes iniciar sesión');
-      return;
-    }
-
-    this.authService.getCorreoByUsername(username)
-      .subscribe({
-
-        next: (correoUsuario: string) => {
-
-          const compra: CompraRequest = {
-            correoUsuario: correoUsuario,
-            idZonaConcierto: zona.idZonaConcierto,
-            cantidad: cantidad
-          };
-
-          console.log('DTO enviado:', compra);
-
-          this.compraService.realizarCompra(compra)
-            .subscribe({
-
-              next: (response) => {
-                alert(
-                  `Compra realizada correctamente.
-
-Venta #${response.idVenta}
-Boletos: ${response.codigosBoletos.join(', ')}`
-                );
-              },
-
-              error: (error) => {
-                console.error(error);
-                alert(error.error || 'Error realizando compra');
-              }
-
-            });
-
-        },
-
-        error: () => {
-          alert('No se pudo obtener el correo del usuario');
-        }
-
-      });
-  }*/
-
   comprar(zona: ZonaDisponible): void {
 
     const username = this.authService.getUsernameString(); // ← este nunca retorna null (retorna '' si no hay)
@@ -550,7 +397,6 @@ Boletos: ${response.codigosBoletos.join(', ')}`
 
     const items: any[] = [];
 
-    // 🟡 ZONAS GENERALES
     this.concierto.zonas.forEach(z => {
       const cantidad = this.getCantidad(z.idZona);
 
@@ -562,7 +408,6 @@ Boletos: ${response.codigosBoletos.join(', ')}`
       }
     });
 
-    // 🔵 ASIENTOS
     Object.keys(this.asientosSeleccionados).forEach((zonaIdStr) => {
 
       const zonaId = Number(zonaIdStr);
@@ -580,5 +425,85 @@ Boletos: ${response.codigosBoletos.join(', ')}`
     });
 
     return items;
+  }
+
+  cargarResenas(): void {
+    if (!this.concierto.nombre) return;
+
+    this.cargandoResenas = true;
+
+    this.resenaService.getByConcierto(this.concierto.nombre).subscribe({
+      next: (data) => {
+        this.resenas = data ?? [];   // ← si data es null, usar []
+        this.cargandoResenas = false;
+      },
+      error: () => {
+        this.resenas = [];
+        this.cargandoResenas = false;
+      }
+    });
+  }
+
+  enviarResena(): void {
+
+    if (!this.nuevaResena.comentario.trim()) {
+      alert('Escribe un comentario');
+      return;
+    }
+
+    if (this.nuevaResena.calificacion < 1 || this.nuevaResena.calificacion > 5) {
+      alert('La calificación debe estar entre 1 y 5');
+      return;
+    }
+
+    const username = this.authService.getUsernameString();
+
+    if (!username) {
+      alert('Debes iniciar sesión para dejar una reseña');
+      return;
+    }
+
+    this.authService.getCorreoByUsername(username).subscribe({
+
+      next: (correo: string) => {
+
+        const dto: ResenaDTO = {
+          comentario: this.nuevaResena.comentario,
+          calificacion: this.nuevaResena.calificacion,
+          correoUsuario: correo,
+          idConcierto: this.concierto.id
+        };
+
+        this.enviandoResena = true;
+
+        this.resenaService.crear(dto).subscribe({
+
+          next: () => {
+            alert('¡Reseña publicada!');
+            this.nuevaResena = { comentario: '', calificacion: 0 };
+            this.enviandoResena = false;
+            this.cargarResenas(); // recargar lista
+          },
+
+          error: (err) => {
+            this.enviandoResena = false;
+            alert(err.error || 'Error al publicar la reseña');
+          }
+        });
+      },
+
+      error: () => {
+        alert('No se pudo obtener el correo del usuario');
+      }
+    });
+  }
+
+  estrellas(n: number): number[] {
+    return Array(n).fill(0);
+  }
+
+  setCalificacion(n: number): void {
+    this.nuevaResena.calificacion = n;
+    this.cdr.detectChanges();
   }
 }
