@@ -103,6 +103,13 @@
           <td>{{ artista.lenguajeArtista || '—' }}</td>
           <td>
             <div class="table-actions">
+              <button
+                class="action-btn"
+                [class.active]="artistaGeneroAbierto === artista.idArtista"
+                (click)="togglePanelGeneros(artista)"
+                title="Gestionar géneros">
+                <i class="pi pi-tag"></i>
+              </button>
               <button class="action-btn edit" (click)="abrirEditar(artista)">
                 <i class="pi pi-pencil"></i>
               </button>
@@ -112,6 +119,102 @@
             </div>
           </td>
         </tr>
+
+        <!-- Fila expandible: panel de géneros -->
+        <tr *ngIf="artistaGeneroAbierto === artista.idArtista">
+          <td colspan="5" style="padding: 0 !important; background: #0d0d14;">
+            <div style="
+      padding: 1rem 1.5rem 1.25rem;
+      border-top: 2px solid rgba(124,58,237,0.5);">
+
+              <!-- Encabezado -->
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+        <span style="
+          font-family: 'Syne', sans-serif;
+          font-size: 0.82rem;
+          font-weight: 700;
+          color: #c4a7ff;
+          text-transform: uppercase;
+          letter-spacing: 0.06em;">
+          <i class="pi pi-tag" style="margin-right: 0.4rem;"></i>
+          Géneros de <span style="color: #f0eef8;">{{ nombreArtistaPanel }}</span>
+        </span>
+                <button class="action-btn" (click)="cerrarPanelGeneros()" title="Cerrar">
+                  <i class="pi pi-times" style="color: #7a7890;"></i>
+                </button>
+              </div>
+
+              <!-- Fila única: chips + dropdown + botón -->
+              <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+
+                <!-- Chips -->
+                <ng-container *ngIf="generosAsociados.length > 0; else sinGeneros">
+          <span
+            *ngFor="let ag of generosAsociados"
+            style="
+              display: inline-flex;
+              align-items: center;
+              gap: 0.3rem;
+              background: rgba(124,58,237,0.2);
+              color: #c4a7ff;
+              border: 1px solid rgba(124,58,237,0.35);
+              border-radius: 999px;
+              padding: 0.22rem 0.65rem;
+              font-size: 0.8rem;
+              font-weight: 500;
+              white-space: nowrap;">
+            {{ nombreGenero(ag.idGenero) }}
+            <button
+              (click)="desasociarGenero(ag.idGenero)"
+              title="Quitar"
+              style="
+                background: none; border: none; cursor: pointer;
+                padding: 0; display: flex; align-items: center;
+                color: #c4a7ff; opacity: 0.6; line-height: 1;">
+              <i class="pi pi-times" style="font-size: 0.6rem;"></i>
+            </button>
+          </span>
+                </ng-container>
+                <ng-template #sinGeneros>
+          <span style="font-size: 0.82rem; color: #46445a; font-style: italic;">
+            Sin géneros asociados
+          </span>
+                </ng-template>
+
+                <!-- Separador visual si hay chips -->
+                <span
+                  *ngIf="generosAsociados.length > 0"
+                  style="width: 1px; height: 20px; background: rgba(255,255,255,0.08); margin: 0 0.25rem;">
+        </span>
+
+                <!-- Dropdown -->
+                <p-select
+                  [options]="generosDisponibles"
+                  [(ngModel)]="generoSeleccionado"
+                  optionLabel="nombreGenero"
+                  placeholder="Añadir género..."
+                  appendTo="body"
+                  style="min-width: 180px;">
+                </p-select>
+
+                <!-- Botón asociar -->
+                <p-button
+                  label="Asociar"
+                  icon="pi pi-plus"
+                  styleClass="btn-admin-primary"
+                  [disabled]="!generoSeleccionado"
+                  (onClick)="asociarGenero()">
+                </p-button>
+
+                <!-- Mensajes inline -->
+                <small *ngIf="errorGenero"   class="p-error" style="margin-left: 0.5rem;">{{ errorGenero }}</small>
+                <small *ngIf="successGenero" style="color: #4ade80; font-size: 0.8rem; margin-left: 0.5rem;">{{ successGenero }}</small>
+
+              </div>
+            </div>
+          </td>
+        </tr>
+
       </ng-template>
 
     </p-table>
