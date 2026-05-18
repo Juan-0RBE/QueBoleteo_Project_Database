@@ -23,7 +23,7 @@ export interface RegisterRequest {
   segundoNombre?: string;
   primerApellido: string;
   segundoApellido?: string;
-  fechaNacimiento: string;   // "YYYY-MM-DD"
+  fechaNacimiento: string;
   edad?: number;
   numeroTelefono?: string;
 }
@@ -49,7 +49,7 @@ export class AuthService {
 
   register(data: RegisterRequest): Observable<string> {
     return this.http.post(`${environment.apiUrl}/auth/register`, data, {
-      responseType: 'text'   // el backend devuelve un string plano, no JSON
+      responseType: 'text'
     });
   }
 
@@ -69,6 +69,19 @@ export class AuthService {
 
   getUsername(): string | null {
     return localStorage.getItem(this.USER_KEY);
+  }
+
+  getCorreo(): string | null {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return null;
+
+      const payload = JSON.parse(atob(token.split('.')[1]));
+
+      return payload.sub || payload.email || payload.correo || null;
+    } catch {
+      return null;
+    }
   }
 
   isLoggedIn(): boolean {
