@@ -4,70 +4,53 @@
   <div class="section-header">
     <div>
       <h1 class="section-title"><i class="pi pi-ticket"></i> Conciertos</h1>
-      <p class="section-sub">Gestiona los conciertos y sus zonas de precio</p>
+      <p class="section-sub">Gestiona los conciertos registrados en la plataforma</p>
     </div>
     <p-button label="Nuevo concierto" icon="pi pi-plus" styleClass="btn-admin-primary" (onClick)="abrirCrear()"></p-button>
   </div>
 
-  <!-- Error de carga -->
-  <div class="info-banner error" *ngIf="errorCarga">
-    <i class="pi pi-exclamation-triangle"></i>
-    <span>{{ errorCarga }}</span>
-    <button class="retry-btn" (click)="cargarSedes()">
-      <i class="pi pi-refresh"></i> Reintentar
-    </button>
-  </div>
-
-  <!-- Aviso si no hay sedes -->
-  <div class="info-banner" *ngIf="!cargandoSedes && sedes.length === 0 && !errorCarga">
-    <i class="pi pi-info-circle"></i>
-    <span>No hay sedes registradas. Ve a <strong>Sedes</strong> y crea una antes de agregar conciertos.</span>
-  </div>
-
-  <!-- Formulario concierto -->
+  <!-- Formulario -->
   <div class="admin-form-card" *ngIf="mostrarFormulario">
     <h2 class="form-title">{{ modoEdicion ? 'Editar concierto' : 'Nuevo concierto' }}</h2>
     <div class="form-grid">
 
       <div class="field">
         <label>Nombre del concierto *</label>
-        <input pInputText [(ngModel)]="formulario.nombre" placeholder="Ej: Noche Eléctrica" />
+        <input pInputText [(ngModel)]="formulario.nombreConcierto" placeholder="Ej: Noche Eléctrica" />
       </div>
 
       <div class="field">
-        <label>Artista *</label>
-        <input pInputText [(ngModel)]="formulario.artista" placeholder="Nombre del artista" />
+        <label>Sede *</label>
+        <p-select
+          [(ngModel)]="formulario.nombreSede"
+          [options]="sedes"
+          optionLabel="nombreSede"
+          optionValue="nombreSede"
+          placeholder="Selecciona una sede..."
+          appendTo="body">
+        </p-select>
       </div>
 
-      <!-- Selector de sede desde backend -->
       <div class="field">
-        <label>Sede</label>
-        <div class="select-with-loader">
-          <p-select
-            [ngModel]="formulario.nombreSede"
-            (ngModelChange)="onSedeChange($event)"
-            [options]="opcionesSedes"
-            optionLabel="label"
-            optionValue="value"
-            placeholder="{{ cargandoSedes ? 'Cargando sedes...' : 'Selecciona una sede' }}"
-            [disabled]="cargandoSedes"
-            [showClear]="true"
-            styleClass="w-full">
-          </p-select>
-          <i class="pi pi-spin pi-spinner loader-icon" *ngIf="cargandoSedes"></i>
-        </div>
-        <small class="field-hint" *ngIf="!cargandoSedes && sedes.length === 0">
-          No hay sedes disponibles
-        </small>
+        <label>Tour (opcional)</label>
+        <p-select
+          [(ngModel)]="formulario.idTour"
+          [options]="tours"
+          optionLabel="nombreTour"
+          optionValue="idTour"
+          placeholder="Selecciona un tour..."
+          [showClear]="true"
+          appendTo="body">
+        </p-select>
       </div>
 
       <div class="field">
         <label>Fecha del concierto</label>
         <p-datepicker
-          [(ngModel)]="formulario.fecha"
+          [(ngModel)]="formulario.fechaConcierto"
           dateFormat="dd/mm/yy"
           placeholder="DD/MM/AAAA"
-          styleClass="w-full">
+          appendTo="body">
         </p-datepicker>
       </div>
 
@@ -76,52 +59,54 @@
         <p-inputnumber
           [(ngModel)]="formulario.edadMinima"
           [min]="0" [max]="99"
-          placeholder="0 = sin restricción"
-          styleClass="w-full">
+          placeholder="0 = sin restricción">
         </p-inputnumber>
       </div>
 
       <div class="field">
         <label>Estado</label>
         <p-select
-          [(ngModel)]="formulario.estado"
+          [(ngModel)]="formulario.estadoConcierto"
           [options]="estados"
           optionLabel="label"
           optionValue="value"
-          styleClass="w-full">
+          appendTo="body">
         </p-select>
       </div>
 
       <div class="field field--full">
         <label>Descripción</label>
-        <textarea pTextarea [(ngModel)]="formulario.descripcion" placeholder="Descripción del evento..." rows="3"></textarea>
+        <textarea pTextarea [(ngModel)]="formulario.descripcionConcierto"
+                  placeholder="Descripción del evento..." rows="3"></textarea>
+      </div>
+
+      <div class="field field--full">
+        <label>Recomendaciones / advertencias</label>
+        <textarea pTextarea [(ngModel)]="formulario.recomendacion"
+                  placeholder="Ej: No se permite ingreso con menores..." rows="2"></textarea>
       </div>
 
     </div>
+
+    <small *ngIf="errorMsg"   class="p-error">{{ errorMsg }}</small>
+    <small *ngIf="successMsg" style="color: #4ade80; font-size: 0.8rem;">{{ successMsg }}</small>
+
     <div class="form-actions">
       <p-button label="Cancelar" icon="pi pi-times" styleClass="btn-admin-outline" (onClick)="cancelar()"></p-button>
       <p-button [label]="modoEdicion ? 'Guardar cambios' : 'Crear concierto'" icon="pi pi-check" styleClass="btn-admin-primary" (onClick)="guardar()"></p-button>
     </div>
   </div>
 
-  <!-- Tabla conciertos -->
+  <!-- Tabla -->
   <div class="admin-table-card">
-    <p-table
-      [value]="conciertos"
-      [paginator]="conciertos.length > 8"
-      [rows]="8"
-      styleClass="admin-table"
-      emptyMessage="No hay conciertos registrados aún.">
+    <p-table [value]="conciertos" [paginator]="conciertos.length > 8" [rows]="8" styleClass="admin-table">
 
       <ng-template pTemplate="header">
         <tr>
-          <th style="width:3rem"></th>
           <th>Nombre</th>
-          <th>Artista</th>
           <th>Sede</th>
           <th>Fecha</th>
           <th>Estado</th>
-          <th>Zonas</th>
           <th>Acciones</th>
         </tr>
       </ng-template>
@@ -130,138 +115,269 @@
 
         <!-- Fila principal -->
         <tr>
-          <td>
-            <button class="expand-btn" (click)="toggleExpandir(c)">
-              <i class="pi" [ngClass]="c.expandida ? 'pi-chevron-down' : 'pi-chevron-right'"></i>
-            </button>
-          </td>
-          <td><strong>{{ c.nombre }}</strong></td>
-          <td>{{ c.artista }}</td>
+          <td><strong>{{ c.nombreConcierto }}</strong></td>
           <td>{{ c.nombreSede || '—' }}</td>
-          <td>{{ formatFecha(c.fecha) }}</td>
-          <td><span class="genre-badge">{{ c.estado }}</span></td>
-          <td><span class="zona-count">{{ c.zonas.length }} zona{{ c.zonas.length !== 1 ? 's' : '' }}</span></td>
+          <td>{{ formatFecha(c.fechaConcierto) }}</td>
+          <td><span class="genre-badge">{{ c.estadoConcierto }}</span></td>
           <td>
             <div class="table-actions">
+              <!-- Artistas -->
+              <button class="action-btn"
+                      [class.active]="conciertoArtistaAbierto === c.idConcierto"
+                      (click)="togglePanelArtistas(c)"
+                      title="Gestionar artistas">
+                <i class="pi pi-microphone"></i>
+              </button>
+              <!-- Grupos -->
+              <button class="action-btn"
+                      [class.active]="conciertoGrupoAbierto === c.idConcierto"
+                      (click)="togglePanelGrupos(c)"
+                      title="Gestionar grupos">
+                <i class="pi pi-users"></i>
+              </button>
+              <!-- Organizadores -->
+              <button class="action-btn"
+                      [class.active]="conciertoOrgAbierto === c.idConcierto"
+                      (click)="togglePanelOrganizadores(c)"
+                      title="Gestionar organizadores">
+                <i class="pi pi-building"></i>
+              </button>
+              <!-- Zonas -->
+              <button class="action-btn"
+                      [class.active]="conciertoZonaAbierto === c.idConcierto"
+                      (click)="togglePanelZonas(c)"
+                      title="Gestionar zonas y precios">
+                <i class="pi pi-map-marker"></i>
+              </button>
               <button class="action-btn edit" (click)="abrirEditar(c)"><i class="pi pi-pencil"></i></button>
-              <button class="action-btn delete" (click)="eliminar(c.id)"><i class="pi pi-trash"></i></button>
+              <button class="action-btn delete" (click)="eliminar(c.idConcierto!)"><i class="pi pi-trash"></i></button>
             </div>
           </td>
         </tr>
 
-        <!-- Panel expandible de zonas -->
-        <tr *ngIf="c.expandida">
-          <td colspan="8" class="zonas-panel-cell">
-            <div class="zonas-panel">
-
-              <div class="zonas-header">
-                <span class="zonas-title">
-                  <i class="pi pi-map-marker"></i>
-                  Zonas y precios — {{ c.nombre }}
-                  <span class="sede-badge" *ngIf="c.nombreSede">
-                    <i class="pi pi-building"></i> {{ c.nombreSede }}
-                  </span>
+        <!-- Panel: artistas -->
+        <tr *ngIf="conciertoArtistaAbierto === c.idConcierto">
+          <td colspan="5" style="padding: 0 !important; background: #0d0d14;">
+            <div style="padding: 1rem 1.5rem 1.25rem; border-top: 2px solid rgba(124,58,237,0.5);">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+                <span style="font-family:'Syne',sans-serif; font-size:0.82rem; font-weight:700; color:#c4a7ff; text-transform:uppercase; letter-spacing:0.06em;">
+                  <i class="pi pi-microphone" style="margin-right:0.4rem;"></i>
+                  Artistas de <span style="color:#f0eef8;">{{ nombreConciertoPanel }}</span>
                 </span>
-                <button
-                  class="btn-add-zona"
-                  (click)="abrirCrearZona(c.id)"
-                  [disabled]="!c.nombreSede || zonasDisponibles(c).length === 0">
-                  <i class="pi pi-plus"></i> Nueva zona
+                <button class="action-btn" (click)="cerrarPanelArtistas()"><i class="pi pi-times" style="color:#7a7890;"></i></button>
+              </div>
+              <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+                <ng-container *ngIf="artistasAsociados.length > 0; else sinArtistas">
+                  <span *ngFor="let ca of artistasAsociados" style="display:inline-flex; align-items:center; gap:0.3rem; background:rgba(124,58,237,0.2); color:#c4a7ff; border:1px solid rgba(124,58,237,0.35); border-radius:999px; padding:0.22rem 0.65rem; font-size:0.8rem; font-weight:500; white-space:nowrap;">
+                    {{ nombreArtista(ca.idArtista) }}
+                    <button (click)="desasociarArtista(ca.idArtista)" style="background:none; border:none; cursor:pointer; padding:0; display:flex; align-items:center; color:#c4a7ff; opacity:0.6;">
+                      <i class="pi pi-times" style="font-size:0.6rem;"></i>
+                    </button>
+                  </span>
+                </ng-container>
+                <ng-template #sinArtistas>
+                  <span style="font-size:0.82rem; color:#46445a; font-style:italic;">Sin artistas asociados</span>
+                </ng-template>
+                <span *ngIf="artistasAsociados.length > 0" style="width:1px; height:20px; background:rgba(255,255,255,0.08); margin:0 0.25rem;"></span>
+                <p-select [options]="artistasDisponibles" [(ngModel)]="artistaSeleccionado" optionLabel="nombreArtista" placeholder="Añadir artista..." appendTo="body" style="min-width:180px;"></p-select>
+                <p-button label="Asociar" icon="pi pi-plus" styleClass="btn-admin-primary" [disabled]="!artistaSeleccionado" (onClick)="asociarArtista()"></p-button>
+                <small *ngIf="errorArtista" class="p-error" style="margin-left:0.5rem;">{{ errorArtista }}</small>
+                <small *ngIf="successArtista" style="color:#4ade80; font-size:0.8rem; margin-left:0.5rem;">{{ successArtista }}</small>
+              </div>
+            </div>
+          </td>
+        </tr>
+
+        <!-- Panel: grupos -->
+        <tr *ngIf="conciertoGrupoAbierto === c.idConcierto">
+          <td colspan="5" style="padding: 0 !important; background: #0d0d14;">
+            <div style="padding: 1rem 1.5rem 1.25rem; border-top: 2px solid rgba(240,36,122,0.5);">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+                <span style="font-family:'Syne',sans-serif; font-size:0.82rem; font-weight:700; color:#ff8ab4; text-transform:uppercase; letter-spacing:0.06em;">
+                  <i class="pi pi-users" style="margin-right:0.4rem;"></i>
+                  Grupos de <span style="color:#f0eef8;">{{ nombreConciertoPanel }}</span>
+                </span>
+                <button class="action-btn" (click)="cerrarPanelGrupos()"><i class="pi pi-times" style="color:#7a7890;"></i></button>
+              </div>
+              <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+                <ng-container *ngIf="gruposAsociados.length > 0; else sinGrupos">
+                  <span *ngFor="let cg of gruposAsociados" style="display:inline-flex; align-items:center; gap:0.3rem; background:rgba(240,36,122,0.15); color:#ff8ab4; border:1px solid rgba(240,36,122,0.3); border-radius:999px; padding:0.22rem 0.65rem; font-size:0.8rem; font-weight:500; white-space:nowrap;">
+                    {{ nombreGrupo(cg.idGrupo) }}
+                    <button (click)="desasociarGrupo(cg.idGrupo)" style="background:none; border:none; cursor:pointer; padding:0; display:flex; align-items:center; color:#ff8ab4; opacity:0.6;">
+                      <i class="pi pi-times" style="font-size:0.6rem;"></i>
+                    </button>
+                  </span>
+                </ng-container>
+                <ng-template #sinGrupos>
+                  <span style="font-size:0.82rem; color:#46445a; font-style:italic;">Sin grupos asociados</span>
+                </ng-template>
+                <span *ngIf="gruposAsociados.length > 0" style="width:1px; height:20px; background:rgba(255,255,255,0.08); margin:0 0.25rem;"></span>
+                <p-select [options]="gruposDisponibles" [(ngModel)]="grupoSeleccionado" optionLabel="nombreGrupo" placeholder="Añadir grupo..." appendTo="body" style="min-width:180px;"></p-select>
+                <p-button label="Asociar" icon="pi pi-plus" styleClass="btn-admin-primary" [disabled]="!grupoSeleccionado" (onClick)="asociarGrupo()"></p-button>
+                <small *ngIf="errorGrupo" class="p-error" style="margin-left:0.5rem;">{{ errorGrupo }}</small>
+                <small *ngIf="successGrupo" style="color:#4ade80; font-size:0.8rem; margin-left:0.5rem;">{{ successGrupo }}</small>
+              </div>
+            </div>
+          </td>
+        </tr>
+
+        <!-- Panel: organizadores -->
+        <tr *ngIf="conciertoOrgAbierto === c.idConcierto">
+          <td colspan="5" style="padding: 0 !important; background: #0d0d14;">
+            <div style="padding: 1rem 1.5rem 1.25rem; border-top: 2px solid rgba(99,179,237,0.5);">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+                <span style="font-family:'Syne',sans-serif; font-size:0.82rem; font-weight:700; color:#90cdf4; text-transform:uppercase; letter-spacing:0.06em;">
+                  <i class="pi pi-building" style="margin-right:0.4rem;"></i>
+                  Organizadores de <span style="color:#f0eef8;">{{ nombreConciertoPanel }}</span>
+                </span>
+                <button class="action-btn" (click)="cerrarPanelOrganizadores()"><i class="pi pi-times" style="color:#7a7890;"></i></button>
+              </div>
+              <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+                <ng-container *ngIf="organizadoresAsociados.length > 0; else sinOrgs">
+                  <span *ngFor="let co of organizadoresAsociados" style="display:inline-flex; align-items:center; gap:0.3rem; background:rgba(99,179,237,0.15); color:#90cdf4; border:1px solid rgba(99,179,237,0.3); border-radius:999px; padding:0.22rem 0.65rem; font-size:0.8rem; font-weight:500; white-space:nowrap;">
+                    {{ co.nombreOrganizador }}
+                    <button (click)="desasociarOrganizador(co.nombreOrganizador)" style="background:none; border:none; cursor:pointer; padding:0; display:flex; align-items:center; color:#90cdf4; opacity:0.6;">
+                      <i class="pi pi-times" style="font-size:0.6rem;"></i>
+                    </button>
+                  </span>
+                </ng-container>
+                <ng-template #sinOrgs>
+                  <span style="font-size:0.82rem; color:#46445a; font-style:italic;">Sin organizadores asociados</span>
+                </ng-template>
+                <span *ngIf="organizadoresAsociados.length > 0" style="width:1px; height:20px; background:rgba(255,255,255,0.08); margin:0 0.25rem;"></span>
+                <p-select [options]="organizadoresDisponibles" [(ngModel)]="organizadorSeleccionado" optionLabel="nombreOrganizador" placeholder="Añadir organizador..." appendTo="body" style="min-width:200px;"></p-select>
+                <p-button label="Asociar" icon="pi pi-plus" styleClass="btn-admin-primary" [disabled]="!organizadorSeleccionado" (onClick)="asociarOrganizador()"></p-button>
+                <small *ngIf="errorOrg" class="p-error" style="margin-left:0.5rem;">{{ errorOrg }}</small>
+                <small *ngIf="successOrg" style="color:#4ade80; font-size:0.8rem; margin-left:0.5rem;">{{ successOrg }}</small>
+              </div>
+            </div>
+          </td>
+        </tr>
+
+        <!-- Panel: zonas y precios -->
+        <tr *ngIf="conciertoZonaAbierto === c.idConcierto">
+          <td colspan="5" style="padding: 0 !important; background: #0d0d14;">
+            <div style="padding: 1rem 1.5rem 1.25rem; border-top: 2px solid rgba(52,211,153,0.5);">
+
+              <!-- Encabezado -->
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+        <span style="font-family:'Syne',sans-serif; font-size:0.82rem; font-weight:700; color:#6ee7b7; text-transform:uppercase; letter-spacing:0.06em;">
+          <i class="pi pi-map-marker" style="margin-right:0.4rem;"></i>
+          Zonas de <span style="color:#f0eef8;">{{ nombreConciertoPanel }}</span>
+        </span>
+                <button class="action-btn" (click)="cerrarPanelZonas()">
+                  <i class="pi pi-times" style="color:#7a7890;"></i>
                 </button>
               </div>
 
-              <!-- Aviso sin sede -->
-              <div class="zona-warning" *ngIf="!c.nombreSede">
-                <i class="pi pi-exclamation-triangle"></i>
-                <span>Este concierto no tiene sede asignada. Edítalo y selecciona una sede.</span>
-              </div>
+              <!-- Lista de zonas configuradas -->
+              <div style="display:flex; flex-direction:column; gap:0.4rem; margin-bottom:0.75rem;">
+                <ng-container *ngIf="zonasConcierto.length > 0; else sinZonas">
+                  <div *ngFor="let zc of zonasConcierto"
+                       style="display:flex; align-items:center; gap:0.6rem; background:rgba(52,211,153,0.08); border:1px solid rgba(52,211,153,0.2); border-radius:10px; padding:0.45rem 0.75rem;">
 
-              <!-- Aviso sin zonas en la sede -->
-              <div class="zona-warning" *ngIf="c.nombreSede && zonasDisponibles(c).length === 0">
-                <i class="pi pi-exclamation-triangle"></i>
-                <span>La sede seleccionada no tiene zonas. Ve a <strong>Sedes</strong> y agrega zonas primero.</span>
-              </div>
+                    <!-- Nombre zona -->
+                    <span style="color:#f0eef8; font-size:0.85rem; font-weight:500; min-width:120px;">
+              {{ nombreZona(zc.idZona) }}
+            </span>
 
-              <!-- Formulario zona -->
-              <div class="zona-form" *ngIf="conciertoConFormularioZona === c.id">
-                <div class="zona-form-grid">
-
-                  <!-- Chips de zonas de la sede -->
-                  <div class="field field--full">
-                    <label>Zona de la sede</label>
-                    <div class="zona-selector">
-                      <button
-                        *ngFor="let zona of zonasDisponibles(c)"
-                        class="zona-chip"
-                        [class.selected]="formularioZona.zonaId === zona.idZona"
-                        (click)="onZonaChange(zona)">
-                        <i class="pi" [ngClass]="zona.tieneAsiento ? 'pi-th-large' : 'pi-users'"></i>
-                        {{ zona.nombreZona }}
+                    <!-- Modo lectura o edición -->
+                    <ng-container *ngIf="editandoZona !== zc.idPrecio; else modoEdicionZona">
+              <span style="background:rgba(52,211,153,0.15); color:#6ee7b7; border-radius:999px; padding:0.15rem 0.6rem; font-size:0.75rem;">
+                {{ formatPrecio(zc.precio) }}
+              </span>
+                      <span style="color:#7a7890; font-size:0.78rem;">
+                <i class="pi pi-ticket" style="margin-right:0.2rem;"></i>{{ zc.cantidadDisponible }} boletas
+              </span>
+                      <button class="action-btn edit" (click)="iniciarEdicionZona(zc)" title="Editar" style="margin-left:auto;">
+                        <i class="pi pi-pencil"></i>
                       </button>
-                    </div>
-                  </div>
+                    </ng-container>
 
-                  <div class="field">
-                    <label>Precio (COP)</label>
-                    <p-inputnumber
-                      [(ngModel)]="formularioZona.precio"
-                      [min]="0"
-                      mode="currency"
-                      currency="COP"
-                      locale="es-CO"
-                      styleClass="w-full">
-                    </p-inputnumber>
-                  </div>
+                    <ng-template #modoEdicionZona>
+                      <div style="display:flex; align-items:center; gap:0.4rem; flex:1;">
+                        <p-inputnumber
+                          [(ngModel)]="precioEditando"
+                          [min]="0"
+                          mode="currency"
+                          currency="COP"
+                          locale="es-CO"
+                          styleClass="w-full"
+                          style="min-width:140px;">
+                        </p-inputnumber>
+                        <p-inputnumber
+                          [(ngModel)]="cantidadEditando"
+                          [min]="0"
+                          placeholder="Boletas"
+                          style="min-width:100px;">
+                        </p-inputnumber>
+                        <button class="action-btn" (click)="guardarEdicionZona(zc)" title="Guardar"
+                                style="color:#4ade80; border-color:rgba(74,222,128,0.3);">
+                          <i class="pi pi-check"></i>
+                        </button>
+                        <button class="action-btn" (click)="cancelarEdicionZona()" title="Cancelar">
+                          <i class="pi pi-times" style="color:#7a7890;"></i>
+                        </button>
+                      </div>
+                    </ng-template>
 
-                  <div class="field">
-                    <label>Boletas disponibles</label>
-                    <p-inputnumber
-                      [(ngModel)]="formularioZona.cantidadDisponible"
-                      [min]="0"
-                      placeholder="Número de boletas"
-                      styleClass="w-full">
-                    </p-inputnumber>
-                  </div>
+                    <!-- Eliminar -->
+                    <button class="action-btn delete" (click)="eliminarZonaConcierto(zc.idPrecio!)" title="Eliminar zona">
+                      <i class="pi pi-trash"></i>
+                    </button>
 
-                  <div class="field field--full">
-                    <label>Descripción de la zona</label>
-                    <textarea pTextarea [(ngModel)]="formularioZona.descripcion" placeholder="Ej: Acceso al piso principal..." rows="2"></textarea>
                   </div>
-
-                </div>
-                <div class="zona-form-actions">
-                  <button class="btn-zona-cancel" (click)="cancelarZona()"><i class="pi pi-times"></i> Cancelar</button>
-                  <button class="btn-zona-save" (click)="guardarZona(c)">
-                    <i class="pi pi-check"></i> {{ modoEdicionZona ? 'Guardar cambios' : 'Agregar zona' }}
-                  </button>
-                </div>
+                </ng-container>
+                <ng-template #sinZonas>
+          <span style="font-size:0.82rem; color:#46445a; font-style:italic;">
+            Sin zonas configuradas para este concierto
+          </span>
+                </ng-template>
               </div>
 
-              <!-- Empty state -->
-              <div class="zonas-empty"
-                   *ngIf="c.zonas.length === 0 && conciertoConFormularioZona !== c.id && c.nombreSede && zonasDisponibles(c).length > 0">
-                <i class="pi pi-tag"></i>
-                <p>No hay zonas configuradas para este concierto.</p>
+              <!-- Agregar nueva zona -->
+              <div style="display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap;
+                  padding-top:0.75rem; border-top:1px solid rgba(255,255,255,0.05);">
+
+                <ng-container *ngIf="zonasDisponibles.length > 0; else todasConfiguradas">
+                  <p-select
+                    [options]="zonasDisponibles"
+                    [(ngModel)]="zonaSeleccionada"
+                    optionLabel="nombreZona"
+                    placeholder="Seleccionar zona..."
+                    appendTo="body"
+                    style="min-width:180px;">
+                  </p-select>
+                  <p-inputnumber
+                    [(ngModel)]="precioNuevo"
+                    [min]="0"
+                    mode="currency"
+                    currency="COP"
+                    locale="es-CO"
+                    placeholder="Precio..."
+                    style="min-width:160px;">
+                  </p-inputnumber>
+                  <p-button
+                    label="Agregar zona"
+                    icon="pi pi-plus"
+                    styleClass="btn-admin-primary"
+                    [disabled]="!zonaSeleccionada"
+                    (onClick)="agregarZonaConcierto()">
+                  </p-button>
+                </ng-container>
+
+                <ng-template #todasConfiguradas>
+          <span style="font-size:0.82rem; color:#46445a; font-style:italic;">
+            Todas las zonas de esta sede ya están configuradas
+          </span>
+                </ng-template>
+
               </div>
 
-              <!-- Lista de zonas -->
-              <div class="zonas-list" *ngIf="c.zonas.length > 0">
-                <div class="zona-item" *ngFor="let zona of c.zonas">
-                  <div class="zona-info">
-                    <span class="zona-nombre">{{ zona.nombreZona }}</span>
-                    <span class="zona-precio">
-                      <i class="pi pi-tag"></i> {{ formatPrecio(zona.precio) }}
-                    </span>
-                    <span class="zona-capacidad">
-                      <i class="pi pi-ticket"></i> {{ zona.cantidadDisponible | number }} boletas
-                    </span>
-                    <span class="zona-descripcion" *ngIf="zona.descripcion">{{ zona.descripcion }}</span>
-                  </div>
-                  <div class="zona-actions">
-                    <button class="action-btn edit" (click)="abrirEditarZona(c.id, zona)"><i class="pi pi-pencil"></i></button>
-                    <button class="action-btn delete" (click)="eliminarZona(c, zona.id)"><i class="pi pi-trash"></i></button>
-                  </div>
-                </div>
+              <!-- Mensajes -->
+              <div style="margin-top:0.5rem;">
+                <small *ngIf="errorZona"   class="p-error">{{ errorZona }}</small>
+                <small *ngIf="successZona" style="color:#4ade80; font-size:0.8rem;">{{ successZona }}</small>
               </div>
 
             </div>
