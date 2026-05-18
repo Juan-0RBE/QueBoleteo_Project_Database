@@ -23,6 +23,7 @@ export class AdminComponent {
   navItems: NavItem[] = [
     { label: 'Artistas',      icon: 'pi-microphone',  ruta: 'artista'      },
     { label: 'Grupos',      icon: 'pi-microphone',  ruta: 'grupo'      },
+    { label: 'Generos',      icon: 'pi-microphone',  ruta: 'genero'      },
     { label: 'Conciertos',    icon: 'pi-ticket',      ruta: 'concierto'    },
     { label: 'Tours',         icon: 'pi-map',         ruta: 'tour'         },
     { label: 'Sedes',         icon: 'pi-building',    ruta: 'sede'         },

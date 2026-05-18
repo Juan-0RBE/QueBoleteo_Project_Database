@@ -1,5 +1,7 @@
 package co.edu.unbosque.queboleteo.service;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -54,6 +56,10 @@ public class UsuarioService implements CRUDOperation<UsuarioDTO> {
 		if (findEmailAlreadyTaken(entity.getCorreo())) {
 			return 3;
 		}
+		
+		int edad = Period.between(entity.getFechaNacimiento(), LocalDate.now()).getYears();
+		System.out.println(edad);
+		entity.setEdad(edad);
 
 		entity.setRole(Usuario.Role.USUARIO);
 		entity.setIsVerified(false);
@@ -123,6 +129,7 @@ public class UsuarioService implements CRUDOperation<UsuarioDTO> {
 	public int deleteByUsername(String username) {
 
 		Optional<Usuario> found = usuarioRepo.findByNombreUsuario(username);
+		System.out.println(found.toString());
 
 		if (found.isPresent()) {
 			usuarioRepo.delete(found.get());
@@ -251,6 +258,7 @@ public class UsuarioService implements CRUDOperation<UsuarioDTO> {
 	 * Obtener usuario por username
 	 */
 	public UsuarioDTO getByUsername(String username) {
+		System.out.println(username);
 
 		Optional<Usuario> found = usuarioRepo.findByNombreUsuario(username);
 

@@ -119,6 +119,7 @@ public class AuthController {
 					""")) @RequestBody UsuarioDTO loginRequest) {
 		try {
 			UsuarioDTO found = userService.getByUsername(loginRequest.getNombreUsuario());
+			System.out.println(found.toString());
 
 			if (found != null) {
 				if (found.isVerified()) {
