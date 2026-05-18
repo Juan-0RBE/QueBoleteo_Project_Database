@@ -142,6 +142,10 @@ export class ConciertoService {
     ).pipe(catchError(() => of([])));
   }
 
+  getZonasGlobales(): Observable<any[]> {
+    return this.http.get<any[]>(`${environment.apiUrl}/zona/all`); // <-- Ajusta '/all' si tu backend usa '/listar'
+  }
+
 // POST /zonaconcierto/crear
   crearZonaConcierto(dto: ZonaConcierto): Observable<string> {
     return this.http.post(

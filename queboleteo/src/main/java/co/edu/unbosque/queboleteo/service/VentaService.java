@@ -43,6 +43,9 @@ public class VentaService implements CRUDOperation<VentaDTO> {
 	@Autowired
 	private LugarRepository lugarRepo;
 
+	@Autowired
+	private EmailService emailService;
+
 	public VentaService() {
 	}
 
@@ -58,7 +61,6 @@ public class VentaService implements CRUDOperation<VentaDTO> {
 		entity.setValorTotal(dto.getValorTotal());
 		entity.setFechaVenta(dto.getFechaVenta());
 
-		// Resolvemos la relación con Usuario usando su correo (PK)
 		if (dto.getCorreoUsuario() != null) {
 			Optional<Usuario> usuario = usuarioRepo.findById(dto.getCorreoUsuario());
 			usuario.ifPresent(entity::setUsuario);
@@ -202,28 +204,32 @@ public class VentaService implements CRUDOperation<VentaDTO> {
 	@Transactional
 	public CompraResponseDto realizarCompra(CompraRequestDto dto) {
 
-		// 1. Verificar usuario
+		// Verificar usuario
 		Usuario usuario = usuarioRepo.findById(dto.getCorreoUsuario())
 				.orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + dto.getCorreoUsuario()));
 
-		// 2. Verificar ZonaConcierto
+		// Verificar ZonaConcierto
 		ZonaConcierto zc = zonaConciertoRepo.findById(dto.getIdZonaConcierto()).orElseThrow(
 				() -> new RuntimeException("ZonaConcierto no encontrada con id: " + dto.getIdZonaConcierto()));
 
-		// 3. Verificar disponibilidad en el contador
+		// Verificar que el concierto no haya pasado
+		LocalDateTime ahora = LocalDateTime.now();
+		if (zc.getConcierto().getFechaConcierto().isBefore(ahora)) {
+			throw new RuntimeException("No se pueden comprar boletos para un concierto que ya ocurrió.");
+		}
+
+		// Verificar disponibilidad en el contador
 		if (zc.getCantidadDisponible() < dto.getCantidad()) {
 			throw new RuntimeException("No hay suficientes lugares. Disponibles: " + zc.getCantidadDisponible()
 					+ ", solicitados: " + dto.getCantidad());
 		}
 
-		// ---------------------------------------------------------------
-		// 4. Obtener los lugares a asignar según el tipo de zona
-		// ---------------------------------------------------------------
+		// Obtener los lugares a asignar según el tipo de zona
 		List<Lugar> lugaresAAsignar = new ArrayList<>();
 
 		if (zc.getZona().getTieneAsiento()) {
 
-			// ZONA CON ASIENTOS — el usuario debe haber elegido sus lugares
+			// ZONA CON ASIENTOS
 			if (dto.getIdsLugaresElegidos() == null || dto.getIdsLugaresElegidos().isEmpty()) {
 				throw new RuntimeException("Esta zona tiene asientos. Debes enviar idsLugaresElegidos.");
 			}
@@ -232,7 +238,7 @@ public class VentaService implements CRUDOperation<VentaDTO> {
 						"La cantidad de lugares elegidos debe coincidir con la cantidad solicitada.");
 			}
 
-			// CAMBIO v4: verificar disponibilidad por ZonaConcierto, no por boleto IS NULL
+			// Verificar disponibilidad por ZonaConcierto
 			for (Long idLugar : dto.getIdsLugaresElegidos()) {
 				Lugar lugar = lugarRepo.findLugarLibreEspecifico(idLugar, zc.getZona().getIdZona(), zc.getIdPrecio())
 						.orElseThrow(() -> new RuntimeException("El lugar con id " + idLugar
@@ -242,8 +248,8 @@ public class VentaService implements CRUDOperation<VentaDTO> {
 
 		} else {
 
-			// ZONA GENERAL — asignación automática, el usuario no elige
-			// CAMBIO v4: buscar libres por ZonaConcierto específica
+			// ZONA GENERAL
+			// Buscar libres por ZonaConcierto específica
 			lugaresAAsignar = lugarRepo.findLugaresLibresPorZonaConcierto(zc.getZona().getIdZona(), zc.getIdPrecio());
 
 			if (lugaresAAsignar.size() < dto.getCantidad()) {
@@ -251,21 +257,18 @@ public class VentaService implements CRUDOperation<VentaDTO> {
 						+ lugaresAAsignar.size() + ", solicitados: " + dto.getCantidad());
 			}
 		}
-		// ---------------------------------------------------------------
 
-		// 5. Calcular valor total
+		// Calcular valor total
 		BigDecimal valorTotal = zc.getPrecio().multiply(BigDecimal.valueOf(dto.getCantidad()));
 
-		// 6. Crear y guardar la Venta
+		// Crear y guardar la Venta
 		Venta venta = new Venta();
 		venta.setUsuario(usuario);
 		venta.setFechaVenta(LocalDateTime.now());
 		venta.setValorTotal(valorTotal);
 		venta = ventaRepo.save(venta);
 
-		// 7. Crear Boletos y asignar Lugares
-		// CAMBIO v4: la FK vive en Boleto — se hace boleto.setLugar(), no
-		// lugar.setBoleto()
+		// Crear Boletos y asignar Lugares
 		List<Long> codigosBoletos = new ArrayList<>();
 		List<Long> idsLugares = new ArrayList<>();
 
@@ -277,18 +280,18 @@ public class VentaService implements CRUDOperation<VentaDTO> {
 			boleto.setEstadoBoleto("ACTIVO");
 			boleto.setZonaConcierto(zc);
 			boleto.setVenta(venta);
-			boleto.setLugar(lugar); // CAMBIO v4: FK en Boleto, no en Lugar
+			boleto.setLugar(lugar);
 			boleto = boletoRepo.save(boleto);
 
 			codigosBoletos.add(boleto.getCodigoBoleto());
 			idsLugares.add(lugar.getIdLugar());
 		}
 
-		// 8. Decrementar disponibilidad
+		// Decrementar disponibilidad
 		zc.setCantidadDisponible(zc.getCantidadDisponible() - dto.getCantidad());
 		zonaConciertoRepo.save(zc);
 
-		// 9. Retornar resumen
+		// Retornar resumen
 		CompraResponseDto response = new CompraResponseDto();
 		response.setIdVenta(venta.getIdVenta());
 		response.setValorTotal(valorTotal);
@@ -298,12 +301,125 @@ public class VentaService implements CRUDOperation<VentaDTO> {
 		return response;
 	}
 
+	@Transactional
+	public CompraResponseDto realizarCompra2(CompraRequestDto dto) {
+
+		// Verificar usuario
+		Usuario usuario = usuarioRepo.findById(dto.getCorreoUsuario())
+				.orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + dto.getCorreoUsuario()));
+
+		// Verificar ZonaConcierto
+		ZonaConcierto zc = zonaConciertoRepo.findById(dto.getIdZonaConcierto()).orElseThrow(
+				() -> new RuntimeException("ZonaConcierto no encontrada con id: " + dto.getIdZonaConcierto()));
+
+		// Verificar fecha
+		LocalDateTime ahora = LocalDateTime.now();
+		if (zc.getConcierto().getFechaConcierto().isBefore(ahora)) {
+			throw new RuntimeException("No se pueden comprar boletos para un concierto que ya ocurrió.");
+		}
+
+		// Verificar disponibilidad
+		if (zc.getCantidadDisponible() < dto.getCantidad()) {
+			throw new RuntimeException("No hay suficientes lugares. Disponibles: " + zc.getCantidadDisponible()
+					+ ", solicitados: " + dto.getCantidad());
+		}
+
+		// Lugares
+		List<Lugar> lugaresAAsignar = new ArrayList<>();
+
+		if (zc.getZona().getTieneAsiento()) {
+
+			if (dto.getIdsLugaresElegidos() == null || dto.getIdsLugaresElegidos().isEmpty()) {
+				throw new RuntimeException("Esta zona tiene asientos. Debes enviar idsLugaresElegidos.");
+			}
+
+			if (dto.getIdsLugaresElegidos().size() != dto.getCantidad()) {
+				throw new RuntimeException("La cantidad de lugares elegidos debe coincidir.");
+			}
+
+			for (Long idLugar : dto.getIdsLugaresElegidos()) {
+
+				Lugar lugar = lugarRepo.findLugarLibreEspecifico(idLugar, zc.getZona().getIdZona(), zc.getIdPrecio())
+						.orElseThrow(() -> new RuntimeException("El lugar " + idLugar + " no está disponible"));
+
+				lugaresAAsignar.add(lugar);
+			}
+
+		} else {
+
+			lugaresAAsignar = lugarRepo.findLugaresLibresPorZonaConcierto(zc.getZona().getIdZona(), zc.getIdPrecio());
+
+			if (lugaresAAsignar.size() < dto.getCantidad()) {
+				throw new RuntimeException("No hay suficientes lugares libres.");
+			}
+		}
+
+		// Total
+		BigDecimal valorTotal = zc.getPrecio().multiply(BigDecimal.valueOf(dto.getCantidad()));
+
+		// Venta
+		Venta venta = new Venta();
+		venta.setUsuario(usuario);
+		venta.setFechaVenta(LocalDateTime.now());
+		venta.setValorTotal(valorTotal);
+		venta = ventaRepo.save(venta);
+
+		// Boletos
+		List<Long> codigosBoletos = new ArrayList<>();
+		List<Long> idsLugares = new ArrayList<>();
+
+		for (int i = 0; i < dto.getCantidad(); i++) {
+
+			Lugar lugar = lugaresAAsignar.get(i);
+
+			Boleto boleto = new Boleto();
+			boleto.setEstadoBoleto("ACTIVO");
+			boleto.setZonaConcierto(zc);
+			boleto.setVenta(venta);
+			boleto.setLugar(lugar);
+
+			boleto = boletoRepo.save(boleto);
+
+			codigosBoletos.add(boleto.getCodigoBoleto());
+			idsLugares.add(lugar.getIdLugar());
+		}
+
+		// actualizar disponibilidad
+		zc.setCantidadDisponible(zc.getCantidadDisponible() - dto.getCantidad());
+		zonaConciertoRepo.save(zc);
+
+		// Response
+		CompraResponseDto response = new CompraResponseDto();
+		response.setIdVenta(venta.getIdVenta());
+		response.setValorTotal(valorTotal);
+		response.setCodigosBoletos(codigosBoletos);
+		response.setIdsLugares(idsLugares);
+
+		// =========================
+		// EMAIL (CORREGIDO)
+		// =========================
+		try {
+
+			emailService.enviarCorreoCompra(usuario.getCorreo(), usuario.getNombreUsuario(),
+					zc.getConcierto().getNombreConcierto(), // 👈 evento
+					dto.getCantidad(), valorTotal);
+
+			System.out.println("Correo enviado correctamente");
+
+		} catch (Exception e) {
+
+			System.out.println("Error enviando correo: " + e.getMessage());
+		}
+
+		return response;
+	}
+
 	// Métodos auxiliares para el endpoint de consulta
 	public ZonaConcierto getZonaConcierto(Long id) {
 		return zonaConciertoRepo.findById(id).orElseThrow(() -> new RuntimeException("ZonaConcierto no encontrada"));
 	}
 
-	// CAMBIO v4: ahora recibe también idPrecio para filtrar por concierto
+	// IdPrecio para filtrar por concierto
 	public List<Lugar> getLugaresLibres(Long idZona, Long idPrecio) {
 		return lugarRepo.findLugaresLibresPorZonaConcierto(idZona, idPrecio);
 	}

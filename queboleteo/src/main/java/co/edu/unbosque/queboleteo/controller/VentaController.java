@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import co.edu.unbosque.queboleteo.dto.VentaDTO;
 import co.edu.unbosque.queboleteo.entity.Lugar;
 import co.edu.unbosque.queboleteo.entity.ZonaConcierto;
+import co.edu.unbosque.queboleteo.service.EmailService;
 import co.edu.unbosque.queboleteo.service.VentaService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -143,6 +144,22 @@ public class VentaController {
 			return new ResponseEntity<>(response, HttpStatus.CREATED);
 		} catch (RuntimeException e) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	@Operation(summary = "Realizar compra de boletos")
+	@PostMapping("/comprar2")
+	public ResponseEntity<?> comprar2(@RequestBody CompraRequestDto dto) {
+
+		try {
+
+			CompraResponseDto response = ventaService.realizarCompra2(dto);
+
+			return ResponseEntity.status(HttpStatus.CREATED).body(response);
+
+		} catch (RuntimeException e) {
+
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}
 	}
 

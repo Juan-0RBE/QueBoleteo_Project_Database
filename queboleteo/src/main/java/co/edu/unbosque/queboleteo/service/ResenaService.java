@@ -1,5 +1,6 @@
 package co.edu.unbosque.queboleteo.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -100,8 +101,15 @@ public class ResenaService implements CRUDOperation<ResenaDTO> {
 			if (usuario.isPresent() && concierto.isPresent()) {
 				boolean comproBoleto = boletoRepo.existsByUsuarioAndConcierto(newData.getCorreoUsuario(),
 						newData.getIdConcierto());
-				if (!comproBoleto)
+				if (!comproBoleto) {
 					return 2;
+				}
+				if (concierto.isPresent()) {
+					LocalDateTime ahora = LocalDateTime.now();
+					if (concierto.get().getFechaConcierto().isAfter(ahora)) {
+						return 3;
+					}
+				}
 
 				Optional<Resena> found = resenaRepo.findByUsuarioAndConcierto(usuario.get(), concierto.get());
 				if (found.isPresent())
