@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
@@ -34,7 +34,7 @@ export class AdminOrganizadorComponent implements OnInit {
   successMsg: string = '';
   loading: boolean = false;
 
-  constructor(private organizadorService: OrganizadorService) {}
+  constructor(private organizadorService: OrganizadorService, private cdr: ChangeDetectorRef) {}
 
   // Se ejecuta automáticamente al abrir la pantalla
   ngOnInit(): void {
@@ -44,7 +44,10 @@ export class AdminOrganizadorComponent implements OnInit {
   // Llama al backend y llena la tabla
   cargarOrganizadores(): void {
     this.organizadorService.getAll().subscribe({
-      next: (data) => this.organizadores = data,
+      next: (data) => {
+        this.organizadores = data;
+        this.cdr.detectChanges();
+      },
       error: () => this.errorMsg = 'Error al cargar los organizadores'
     });
   }

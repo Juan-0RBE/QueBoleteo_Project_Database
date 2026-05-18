@@ -69,7 +69,7 @@
     <p class="hero-artist">{{ conciertoDestacado.artista }}</p>
     <div class="hero-meta">
       <span><i class="pi pi-calendar"></i> {{ conciertoDestacado.fecha }}</span>
-      <span><i class="pi pi-map-marker"></i> {{ conciertoDestacado.ciudad }}</span>
+      <span><i class="pi pi-map-marker"></i> {{ conciertoDestacado.sede }}</span>
       <span><i class="pi pi-tag"></i> Desde {{ formatPrecio(conciertoDestacado.precioDesde) }}</span>
     </div>
     <p-button
@@ -96,20 +96,20 @@
       </span>
 
       <p-select
-        [(ngModel)]="ciudadSeleccionada"
-        [options]="ciudades"
+        [(ngModel)]="sedeSeleccionada"
+        [options]="sedes"
         optionLabel="label"
         optionValue="value"
-        placeholder="Ciudad"
+        placeholder="Sede"
         styleClass="filter-select">
       </p-select>
 
       <p-select
-        [(ngModel)]="generoSeleccionado"
-        [options]="generos"
+        [(ngModel)]="estadoSeleccionado"
+        [options]="estados"
         optionLabel="label"
         optionValue="value"
-        placeholder="Género"
+        placeholder="Estado de concierto"
         styleClass="filter-select">
       </p-select>
 
@@ -143,8 +143,8 @@
     <div class="concerts-grid" *ngIf="conciertosFiltrados.length > 0">
       <div class="concert-card" *ngFor="let c of conciertosFiltrados">
         <div class="card-image">
-          <img [src]="c.imagen" [alt]="c.nombre" />
-          <span class="card-genre">{{ c.genero }}</span>
+          <img [src]="c.imagen" [alt]="c.nombre"/>
+          <span class="card-genre">{{ c.estado }}</span>
         </div>
         <div class="card-body">
           <h3 class="card-title">{{ c.nombre }}</h3>
@@ -153,7 +153,7 @@
           </p>
           <div class="card-meta">
             <span><i class="pi pi-calendar"></i> {{ c.fecha }}</span>
-            <span><i class="pi pi-map-marker"></i> {{ c.ciudad }}</span>
+            <span><i class="pi pi-map-marker"></i> {{ c.sede }}</span>
           </div>
           <div class="card-footer">
             <span class="card-price">Desde {{ formatPrecio(c.precioDesde) }}</span>
@@ -162,7 +162,7 @@
               icon="pi pi-arrow-right"
               iconPos="right"
               styleClass="btn-card"
-            [routerLink]="['/concierto', c.id]"]>
+              [routerLink]="['/concierto', c.id]" ]>
             </p-button>
           </div>
         </div>
@@ -182,7 +182,7 @@
     <div class="artists-grid">
       <div class="artist-card" *ngFor="let a of artistas">
         <div class="artist-img-wrap">
-          <img [src]="a.imagen" [alt]="a.nombre" />
+          <img [src]="a.imagen" [alt]="a.nombre"/>
         </div>
         <h4 class="artist-name">{{ a.nombre }}</h4>
         <span class="artist-genre">{{ a.genero }}</span>

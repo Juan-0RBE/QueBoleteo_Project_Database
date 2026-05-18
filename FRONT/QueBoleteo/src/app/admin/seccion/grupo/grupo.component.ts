@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
@@ -63,7 +63,8 @@ export class AdminGrupoComponent implements OnInit {
 
   constructor(private grupoService: GrupoService,
               private generoService: GeneroService,
-              private artistaService: ArtistaService
+              private artistaService: ArtistaService,
+              private cdr: ChangeDetectorRef
   ) {}
 
   // Se ejecuta automáticamente al abrir la pantalla
@@ -76,21 +77,30 @@ export class AdminGrupoComponent implements OnInit {
   // Llama al backend y llena la tabla
   cargarGrupos(): void {
     this.grupoService.getAll().subscribe({
-      next: (data) => this.grupos = data,
+      next: (data) => {
+        this.grupos = data;
+        this.cdr.detectChanges();
+      },
       error: () => this.errorMsg = 'Error al cargar los grupos'
     });
   }
 
   cargarTodosLosGeneros(): void {
     this.generoService.getAll().subscribe({
-      next: (data) => this.todosLosGeneros = data,
+      next: (data) => {
+        this.todosLosGeneros = data;
+        this.cdr.detectChanges();
+      },
       error: () => {}
     });
   }
 
   cargarTodosLosArtistas(): void {
     this.artistaService.getAll().subscribe({
-      next: (data) => this.todosLosArtistas = data,
+      next: (data) => {
+        this.todosLosArtistas = data;
+        this.cdr.detectChanges();
+      },
       error: () => {}
     });
   }
@@ -190,7 +200,10 @@ export class AdminGrupoComponent implements OnInit {
 
   cargarGenerosAsociados(idGrupo: number): void {
     this.grupoService.getGenerosByGrupo(idGrupo).subscribe({
-      next: (data) => this.generosAsociados = data ?? [],
+      next: (data) => {
+        this.generosAsociados = data ?? [];
+        this.cdr.detectChanges();
+      },
       error: () => this.generosAsociados = []
     });
   }
@@ -298,7 +311,10 @@ export class AdminGrupoComponent implements OnInit {
 
   cargarArtistasAsociados(idGrupo: number): void {
     this.grupoService.getArtistasByGrupo(idGrupo).subscribe({
-      next: (data) => this.artistasAsociados = data ?? [],
+      next: (data) => {
+        this.artistasAsociados = data ?? [];
+        this.cdr.detectChanges();
+      },
       error: () => this.artistasAsociados = []
     });
   }

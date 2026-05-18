@@ -22,8 +22,8 @@ export interface Concierto {
   artista: string;
   imagen: string;
   fecha: string;
-  ciudad: string;
-  genero: string;
+  sede: string;
+  estado: string;
   precioDesde: number;
   destacado?: boolean;
 }
@@ -56,32 +56,22 @@ export interface Artista {
 })
 export class PaginaPrincipalComponent implements OnInit {
   busqueda = '';
-  ciudadSeleccionada: string | null = null;
-  generoSeleccionado: string | null = null;
+  sedeSeleccionada: string | null = null;
+  estadoSeleccionado: string | null = null;
 
-  // Arrays de control que alimentarán el HTML
   conciertos: Concierto[] = [];
   artistas: Artista[] = [];
 
-  // Estados de carga y error para dar feedback visual si quieres
   loadingConciertos = false;
   loadingArtistas = false;
 
-  ciudades = [
-    { label: 'Todas las ciudades', value: null },
-    { label: 'Bogotá', value: 'Bogotá' },
-    { label: 'Medellín', value: 'Medellín' },
-    { label: 'Cali', value: 'Cali' },
-    { label: 'Barranquilla', value: 'Barranquilla' },
-  ];
+  sedes: { label: string; value: string | null }[] = [];
 
-  generos = [
-    { label: 'Todos los géneros', value: null },
-    { label: 'Rock', value: 'Rock' },
-    { label: 'Pop', value: 'Pop' },
-    { label: 'Electrónica', value: 'Electrónica' },
-    { label: 'Reggaeton', value: 'Reggaeton' },
-    { label: 'Jazz', value: 'Jazz' },
+  estados = [
+    { label: 'Todos los estados', value: null },
+    { label: 'Programado', value: 'Programado' },
+    { label: 'Cancelado', value: 'Cancelado' },
+    { label: 'Finalizado', value: 'Finalizado' },
   ];
 
   isLoggedIn: boolean = false;
@@ -128,14 +118,24 @@ export class PaginaPrincipalComponent implements OnInit {
         this.conciertos = dtos.map((dto) => ({
           id: dto.idConcierto,
           nombre: dto.nombreConcierto,
-          artista: dto.artista,
+          artista: dto.artista || dto.nombreArtista || '',
           imagen: dto.imagenConcierto || 'https://placehold.co/600x400?text=Concierto',
-          fecha: dto.fechaConcierto ? new Date(dto.fechaConcierto).toLocaleDateString('es-CO') : 'Por confirmar',
-          ciudad: dto.nombreSede || 'Por confirmar',
-          genero: 'Pop',
+          fecha: dto.fechaConcierto
+            ? new Date(dto.fechaConcierto).toLocaleDateString('es-CO')
+            : 'Por confirmar',
+          sede: dto.nombreSede || 'Por confirmar',
+          estado: dto.estadoConcierto || 'Sin estado',
           precioDesde: 50000,
           destacado: dto.estadoConcierto === 'Programado',
         }));
+
+        // Genera las opciones de sede dinámicamente desde los datos reales
+        const sedesUnicas = [...new Set(this.conciertos.map((c) => c.sede))];
+        this.sedes = [
+          { label: 'Todas las sedes', value: null },
+          ...sedesUnicas.map((s) => ({ label: s, value: s })),
+        ];
+
         this.loadingConciertos = false;
         this.cdr.detectChanges();
       },
@@ -167,15 +167,19 @@ export class PaginaPrincipalComponent implements OnInit {
 
   get conciertosFiltrados(): Concierto[] {
     return this.conciertos.filter((c) => {
+      const nombreConcierto = c.nombre?.toLowerCase() ?? '';
+      const artistaConcierto = c.artista?.toLowerCase() ?? '';
+      const busquedaMinuscula = this.busqueda.toLowerCase();
+
       const coincideBusqueda =
         !this.busqueda ||
-        c.nombre.toLowerCase().includes(this.busqueda.toLowerCase()) ||
-        c.artista.toLowerCase().includes(this.busqueda.toLowerCase());
+        nombreConcierto.includes(busquedaMinuscula) ||
+        artistaConcierto.includes(busquedaMinuscula);
 
-      const coincideCiudad = !this.ciudadSeleccionada || c.ciudad === this.ciudadSeleccionada;
-      const coincideGenero = !this.generoSeleccionado || c.genero === this.generoSeleccionado;
+      const coincideSede = !this.sedeSeleccionada || c.sede === this.sedeSeleccionada;
+      const coincideEstado = !this.estadoSeleccionado || c.estado === this.estadoSeleccionado;
 
-      return coincideBusqueda && coincideCiudad && coincideGenero;
+      return coincideBusqueda && coincideSede && coincideEstado;
     });
   }
 
@@ -185,8 +189,8 @@ export class PaginaPrincipalComponent implements OnInit {
 
   limpiarFiltros(): void {
     this.busqueda = '';
-    this.ciudadSeleccionada = null;
-    this.generoSeleccionado = null;
+    this.sedeSeleccionada = null;
+    this.estadoSeleccionado = null;
   }
 
   formatPrecio(valor: number): string {
