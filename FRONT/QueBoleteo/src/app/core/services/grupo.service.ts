@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { Artista } from './artista.service';
+import { catchError } from 'rxjs/operators';
 
-// Interfaz — espeja exactamente el grupoDTO de Java
+
+
 export interface Grupo {
   idGrupo?: number;        // opcional porque al crear no existe aún
   nombreGrupo: string;
@@ -13,6 +14,20 @@ export interface Grupo {
   paisOrigenGrupo: string;
   tiempoDuracion: number;
   lenguajeGrupo: string;
+}
+
+// Interfaz para la conexión con género
+
+export interface GruGen {
+  idGrupo: number;
+  idGenero: number;
+}
+
+// Interfaz para la conexión con artistas
+export interface GruArt {
+  idGrupo: number;
+  idArtista: number;
+  rol: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -50,4 +65,63 @@ export class GrupoService {
   count(): Observable<number> {
     return this.http.get<number>(`${this.url}/count`);
   }
+
+
+  // Endpoints de GRU_GEN
+
+// GET /grugen/grupo/{id}
+  getGenerosByGrupo(idGrupo: number): Observable<GruGen[]> {
+    return this.http.get<GruGen[]>(
+      `${environment.apiUrl}/grugen/grupo/${idGrupo}`
+    ).pipe(
+      catchError(() => of([]))
+    );
+  }
+
+// POST /grugen/crear
+  asociarGenero(dto: GruGen): Observable<string> {
+    return this.http.post(
+      `${environment.apiUrl}/grugen/crear`, dto, { responseType: 'text' }
+    );
+  }
+
+// DELETE /grugen/{idGrupo}/{idGenero}
+  desasociarGenero(idGrupo: number, idGenero: number): Observable<string> {
+    return this.http.delete(
+      `${environment.apiUrl}/grugen/${idGrupo}/${idGenero}`, { responseType: 'text' }
+    );
+  }
+
+  // Endpoints de GruArt
+
+  // GET /gruart/grupo/{idGrupo}
+  getArtistasByGrupo(idGrupo: number): Observable<GruArt[]> {
+    return this.http.get<GruArt[]>(
+      `${environment.apiUrl}/gruart/grupo/${idGrupo}`
+    ).pipe(
+      catchError(() => of([]))
+    );
+  }
+
+// POST /gruart/crear
+  asociarArtista(dto: GruArt): Observable<string> {
+    return this.http.post(
+      `${environment.apiUrl}/gruart/crear`, dto, { responseType: 'text' }
+    );
+  }
+
+// PUT /gruart/update/{idGrupo}/{idArtista}
+  actualizarRol(idGrupo: number, idArtista: number, dto: GruArt): Observable<string> {
+    return this.http.put(
+      `${environment.apiUrl}/gruart/update/${idGrupo}/${idArtista}`, dto, { responseType: 'text' }
+    );
+  }
+
+// DELETE /gruart/{idGrupo}/{idArtista}
+  desasociarArtista(idGrupo: number, idArtista: number): Observable<string> {
+    return this.http.delete(
+      `${environment.apiUrl}/gruart/${idGrupo}/${idArtista}`, { responseType: 'text' }
+    );
+  }
+
 }

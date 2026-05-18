@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import co.edu.unbosque.queboleteo.dto.GruArtDTO;
 import co.edu.unbosque.queboleteo.service.GruArtService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import org.springframework.web.bind.annotation.RequestBody;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -40,11 +40,16 @@ public class GruArtController {
 	@Operation(summary = "Asociar artista a grupo con rol")
 	@PostMapping("/crear")
 	public ResponseEntity<String> create(@RequestBody GruArtDTO dto) {
+	    System.out.println("idGrupo: " + dto.getIdGrupo());
+	    System.out.println("idArtista: " + dto.getIdArtista());
+	    System.out.println("rol: " + dto.getRol());
 		int status = gruArtService.create(dto);
 		if (status == 0)
 			return new ResponseEntity<>("Asociación creada correctamente", HttpStatus.CREATED);
 		if (status == 1)
 			return new ResponseEntity<>("Grupo o artista no encontrado", HttpStatus.NOT_FOUND);
+		if (status == 4)
+			return new ResponseEntity<>("Grupo o artista NO ENCONTRADO", HttpStatus.NOT_FOUND);
 		return new ResponseEntity<>("Esa asociación ya existe", HttpStatus.NOT_ACCEPTABLE);
 	}
 

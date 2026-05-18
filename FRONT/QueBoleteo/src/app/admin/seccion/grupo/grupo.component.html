@@ -103,12 +103,267 @@
           <td>{{ grupo.lenguajeGrupo || '—' }}</td>
           <td>
             <div class="table-actions">
+              <button
+                class="action-btn"
+                [class.active]="grupoGeneroAbierto === grupo.idGrupo"
+                (click)="togglePanelGeneros(grupo)"
+                title="Gestionar géneros">
+                <i class="pi pi-tag"></i>
+              </button>
+              <button
+                class="action-btn"
+                [class.active]="grupoArtistaAbierto === grupo.idGrupo"
+                (click)="togglePanelArtistas(grupo)"
+                title="Gestionar artistas">
+                <i class="pi pi-users"></i>
+              </button>
               <button class="action-btn edit" (click)="abrirEditar(grupo)">
                 <i class="pi pi-pencil"></i>
               </button>
               <button class="action-btn delete" (click)="eliminar(grupo.idGrupo!)">
                 <i class="pi pi-trash"></i>
               </button>
+            </div>
+          </td>
+        </tr>
+
+
+        <!-- Fila expandible: panel de géneros -->
+        <tr *ngIf="grupoGeneroAbierto === grupo.idGrupo">
+          <td colspan="5" style="padding: 0 !important; background: #0d0d14;">
+            <div style="
+      padding: 1rem 1.5rem 1.25rem;
+      border-top: 2px solid rgba(124,58,237,0.5);">
+
+              <!-- Encabezado -->
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+        <span style="
+          font-family: 'Syne', sans-serif;
+          font-size: 0.82rem;
+          font-weight: 700;
+          color: #c4a7ff;
+          text-transform: uppercase;
+          letter-spacing: 0.06em;">
+          <i class="pi pi-tag" style="margin-right: 0.4rem;"></i>
+          Géneros de <span style="color: #f0eef8;">{{ nombreGrupoPanel }}</span>
+        </span>
+                <button class="action-btn" (click)="cerrarPanelGeneros()" title="Cerrar">
+                  <i class="pi pi-times" style="color: #7a7890;"></i>
+                </button>
+              </div>
+
+              <!-- Fila única: chips + dropdown + botón -->
+              <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+
+                <!-- Chips -->
+                <ng-container *ngIf="generosAsociados.length > 0; else sinGeneros">
+          <span
+            *ngFor="let ag of generosAsociados"
+            style="
+              display: inline-flex;
+              align-items: center;
+              gap: 0.3rem;
+              background: rgba(124,58,237,0.2);
+              color: #c4a7ff;
+              border: 1px solid rgba(124,58,237,0.35);
+              border-radius: 999px;
+              padding: 0.22rem 0.65rem;
+              font-size: 0.8rem;
+              font-weight: 500;
+              white-space: nowrap;">
+            {{ nombreGenero(ag.idGenero) }}
+            <button
+              (click)="desasociarGenero(ag.idGenero)"
+              title="Quitar"
+              style="
+                background: none; border: none; cursor: pointer;
+                padding: 0; display: flex; align-items: center;
+                color: #c4a7ff; opacity: 0.6; line-height: 1;">
+              <i class="pi pi-times" style="font-size: 0.6rem;"></i>
+            </button>
+          </span>
+                </ng-container>
+                <ng-template #sinGeneros>
+          <span style="font-size: 0.82rem; color: #46445a; font-style: italic;">
+            Sin géneros asociados
+          </span>
+                </ng-template>
+
+                <!-- Separador visual si hay chips -->
+                <span
+                  *ngIf="generosAsociados.length > 0"
+                  style="width: 1px; height: 20px; background: rgba(255,255,255,0.08); margin: 0 0.25rem;">
+        </span>
+
+                <!-- Dropdown -->
+                <p-select
+                  [options]="generosDisponibles"
+                  [(ngModel)]="generoSeleccionado"
+                  optionLabel="nombreGenero"
+                  placeholder="Añadir género..."
+                  appendTo="body"
+                  style="min-width: 180px;">
+                </p-select>
+
+                <!-- Botón asociar -->
+                <p-button
+                  label="Asociar"
+                  icon="pi pi-plus"
+                  styleClass="btn-admin-primary"
+                  [disabled]="!generoSeleccionado"
+                  (onClick)="asociarGenero()">
+                </p-button>
+
+                <!-- Mensajes inline -->
+                <small *ngIf="errorGenero"   class="p-error" style="margin-left: 0.5rem;">{{ errorGenero }}</small>
+                <small *ngIf="successGenero" style="color: #4ade80; font-size: 0.8rem; margin-left: 0.5rem;">{{ successGenero }}</small>
+
+              </div>
+            </div>
+          </td>
+        </tr>
+
+
+        <!-- Fila expandible: panel de artistas -->
+        <tr *ngIf="grupoArtistaAbierto === grupo.idGrupo">
+          <td colspan="5" style="padding: 0 !important; background: #0d0d14;">
+            <div style="padding: 1rem 1.5rem 1.25rem; border-top: 2px solid rgba(240,36,122,0.5);">
+
+              <!-- Encabezado -->
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+        <span style="
+          font-family: 'Syne', sans-serif;
+          font-size: 0.82rem;
+          font-weight: 700;
+          color: #ff8ab4;
+          text-transform: uppercase;
+          letter-spacing: 0.06em;">
+          <i class="pi pi-users" style="margin-right: 0.4rem;"></i>
+          Artistas de <span style="color: #f0eef8;">{{ nombreGrupoPanel }}</span>
+        </span>
+                <button class="action-btn" (click)="cerrarPanelArtistas()" title="Cerrar">
+                  <i class="pi pi-times" style="color: #7a7890;"></i>
+                </button>
+              </div>
+
+              <!-- Lista de artistas asociados -->
+              <div style="display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 0.75rem;">
+                <ng-container *ngIf="artistasAsociados.length > 0; else sinArtistas">
+                  <div
+                    *ngFor="let ga of artistasAsociados"
+                    style="
+              display: flex;
+              align-items: center;
+              gap: 0.6rem;
+              background: rgba(240,36,122,0.08);
+              border: 1px solid rgba(240,36,122,0.2);
+              border-radius: 10px;
+              padding: 0.45rem 0.75rem;">
+
+                    <!-- Nombre -->
+                    <span style="color: #f0eef8; font-size: 0.85rem; font-weight: 500; min-width: 140px;">
+              {{ nombreArtista(ga.idArtista) }}
+            </span>
+
+                    <!-- Rol: modo lectura o edición -->
+                    <ng-container *ngIf="editandoRol !== ga.idArtista; else modoEdicion">
+              <span style="
+                background: rgba(240,36,122,0.15);
+                color: #ff8ab4;
+                border-radius: 999px;
+                padding: 0.15rem 0.6rem;
+                font-size: 0.75rem;">
+                {{ ga.rol || 'Sin rol' }}
+              </span>
+                      <button class="action-btn edit"
+                              (click)="iniciarEdicionRol(ga)"
+                              title="Editar rol"
+                              style="margin-left: auto;">
+                        <i class="pi pi-pencil"></i>
+                      </button>
+                    </ng-container>
+
+                    <ng-template #modoEdicion>
+                      <input
+                        pInputText
+                        [(ngModel)]="rolEditando"
+                        placeholder="Rol..."
+                        style="
+                  flex: 1;
+                  background: #1a1a26 !important;
+                  border: 1px solid rgba(240,36,122,0.4) !important;
+                  border-radius: 8px !important;
+                  color: #f0eef8 !important;
+                  font-size: 0.85rem !important;
+                  padding: 0.3rem 0.7rem !important;" />
+                      <button class="action-btn"
+                              (click)="guardarRol(ga.idArtista)"
+                              title="Guardar"
+                              style="color: #4ade80; border-color: rgba(74,222,128,0.3);">
+                        <i class="pi pi-check"></i>
+                      </button>
+                      <button class="action-btn"
+                              (click)="cancelarEdicionRol()"
+                              title="Cancelar">
+                        <i class="pi pi-times" style="color: #7a7890;"></i>
+                      </button>
+                    </ng-template>
+
+                    <!-- Botón eliminar -->
+                    <button class="action-btn delete"
+                            (click)="desasociarArtista(ga.idArtista)"
+                            title="Remover del grupo"
+                            [style.margin-left]="editandoRol !== ga.idArtista ? '' : 'auto'">
+                      <i class="pi pi-trash"></i>
+                    </button>
+
+                  </div>
+                </ng-container>
+                <ng-template #sinArtistas>
+          <span style="font-size: 0.82rem; color: #46445a; font-style: italic;">
+            Sin artistas asociados
+          </span>
+                </ng-template>
+              </div>
+
+              <!-- Fila para agregar nuevo artista -->
+              <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;
+                  padding-top: 0.75rem; border-top: 1px solid rgba(255,255,255,0.05);">
+                <p-select
+                  [options]="artistasDisponibles"
+                  [(ngModel)]="artistaSeleccionado"
+                  optionLabel="nombreArtista"
+                  placeholder="Seleccionar artista..."
+                  appendTo="body"
+                  style="min-width: 200px;">
+                </p-select>
+                <input
+                  pInputText
+                  [(ngModel)]="rolNuevo"
+                  placeholder="Rol en el grupo..."
+                  style="
+            min-width: 160px;
+            background: #1a1a26 !important;
+            border: 1px solid rgba(255,255,255,0.07) !important;
+            border-radius: 10px !important;
+            color: #f0eef8 !important;
+            font-size: 0.9rem !important;
+            padding: 0.5rem 0.9rem !important;" />
+                <p-button
+                  label="Asociar"
+                  icon="pi pi-plus"
+                  styleClass="btn-admin-primary"
+                  [disabled]="!artistaSeleccionado"
+                  (onClick)="asociarArtista()">
+                </p-button>
+              </div>
+
+              <!-- Mensajes -->
+              <div style="margin-top: 0.5rem;">
+                <small *ngIf="errorArtista"   class="p-error">{{ errorArtista }}</small>
+                <small *ngIf="successArtista" style="color: #4ade80; font-size: 0.8rem;">{{ successArtista }}</small>
+              </div>
+
             </div>
           </td>
         </tr>

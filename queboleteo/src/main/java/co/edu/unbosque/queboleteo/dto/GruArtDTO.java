@@ -2,12 +2,18 @@ package co.edu.unbosque.queboleteo.dto;
 
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class GruArtDTO {
 
-	private Long idGrupo;
-	private Long idArtista;
-	private String Rol;
+    @JsonProperty("idGrupo")
+    private Long idGrupo;
 
+    @JsonProperty("idArtista")
+    private Long idArtista;
+
+    @JsonProperty("rol")
+    private String rol;
 	public GruArtDTO() {
 		// TODO Auto-generated constructor stub
 	}
@@ -21,7 +27,7 @@ public class GruArtDTO {
 		super();
 		this.idGrupo = idGrupo;
 		this.idArtista = idArtista;
-		Rol = rol;
+		this.rol = rol;
 	}
 
 	/**
@@ -56,19 +62,19 @@ public class GruArtDTO {
 	 * @return the rol
 	 */
 	public String getRol() {
-		return Rol;
+		return rol;
 	}
 
 	/**
 	 * @param rol the rol to set
 	 */
 	public void setRol(String rol) {
-		Rol = rol;
+		this.rol = rol;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(Rol, idArtista, idGrupo);
+		return Objects.hash(idArtista, idGrupo, rol);
 	}
 
 	@Override
@@ -80,8 +86,15 @@ public class GruArtDTO {
 		if (getClass() != obj.getClass())
 			return false;
 		GruArtDTO other = (GruArtDTO) obj;
-		return Objects.equals(Rol, other.Rol) && Objects.equals(idArtista, other.idArtista)
-				&& Objects.equals(idGrupo, other.idGrupo);
+		return Objects.equals(idArtista, other.idArtista) && Objects.equals(idGrupo, other.idGrupo)
+				&& Objects.equals(rol, other.rol);
 	}
+
+	@Override
+	public String toString() {
+		return "GruArtDTO [idGrupo=" + idGrupo + ", idArtista=" + idArtista + ", rol=" + rol + "]";
+	}
+	
+	
 
 }
