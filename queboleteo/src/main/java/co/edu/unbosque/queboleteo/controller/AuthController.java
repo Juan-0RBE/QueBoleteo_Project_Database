@@ -311,4 +311,6 @@ public class AuthController {
 
 	    return new ResponseEntity<>("Usuario no encontrado", HttpStatus.NOT_FOUND);
 	}
+	
+
 }

@@ -62,7 +62,7 @@ public class UsuarioService implements CRUDOperation<UsuarioDTO> {
 		entity.setEdad(edad);
 
 		entity.setRole(Usuario.Role.USUARIO);
-		entity.setIsVerified(false);
+		entity.setIsVerified(true);
 		
 		// Solo sobreescribe el role si el DTO trae uno explícito (para crear admins)
 		if (newData.getRole() != null) {
