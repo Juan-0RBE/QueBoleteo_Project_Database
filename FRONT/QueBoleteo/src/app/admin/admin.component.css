@@ -78,4 +78,35 @@
   background: rgba(255,255,255,0.04);
 }
 
+/* ── Layout shell ── */
+.admin-shell {
+  display: flex;
+  height: 100vh;
+  overflow: hidden; /* evita scroll en el shell completo */
+}
 
+.admin-content {
+  flex: 1;
+  overflow-y: auto;       /* scrollbar solo en el contenido */
+  height: 100vh;
+  padding: 2rem;
+
+  /* Scrollbar estilizada para que pegue con el tema */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(124,58,237,0.4) transparent;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(124,58,237,0.4);
+    border-radius: 999px;
+
+    &:hover {
+      background: rgba(124,58,237,0.7);
+    }
+  }
+}

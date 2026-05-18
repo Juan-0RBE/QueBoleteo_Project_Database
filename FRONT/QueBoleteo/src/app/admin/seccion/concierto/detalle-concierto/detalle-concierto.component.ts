@@ -102,10 +102,13 @@ export class DetalleConciertoComponent implements OnInit {
           zonasMaestras: this.conciertoService.getZonasGlobales()
         }).subscribe({
           next: ({ relacionesConcierto, zonasMaestras }) => {
+            const relaciones = relacionesConcierto ?? [];
+            const maestras = zonasMaestras ?? [];
+
 
             // 3. Cruzamos la información usando las variables locales de la suscripción
-            const zonasMapeadas: ZonaDisponible[] = relacionesConcierto.map((zc: any) => {
-              const zonaInfo = zonasMaestras.find((zm: any) => zm.idZona === zc.idZona);
+            const zonasMapeadas: ZonaDisponible[] = relaciones.map((zc: any) => {
+              const zonaInfo = maestras.find((zm: any) => zm.idZona === zc.idZona);
 
               return {
                 id: zc.idZona,

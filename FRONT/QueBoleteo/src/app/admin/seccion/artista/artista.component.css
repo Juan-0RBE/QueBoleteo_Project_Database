@@ -206,9 +206,7 @@ textarea.p-inputtextarea {
   }
 }
 
-
 /* Esto es para que se pueda ver el drop down de los generos completo */
-/* Permite que el overlay del p-select salga de la tabla */
 .admin-table-card {
   overflow: visible !important;
 }
