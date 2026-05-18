@@ -15,18 +15,25 @@
     </div>
 
     <div class="navbar-actions">
-      <a routerLink="/autenticacion/login">
+      <ng-container *ngIf="!isLoggedIn; else usuarioAutenticado">
+        <a routerLink="/autenticacion/login">
+          <p-button label="Iniciar sesión" styleClass="btn-nav-outline"></p-button>
+        </a>
+        <a routerLink="/autenticacion/registro">
+          <p-button label="Registrarse" styleClass="btn-nav-solid"></p-button>
+        </a>
+      </ng-container>
+      <ng-template #usuarioAutenticado>
+        <span class="user-greeting" style="margin-right: 15px; font-weight: 500; color: var(--text-color);">
+          <i class="pi pi-user" style="margin-right: 5px;"></i>¡Hola, <strong>{{ nombreUsuario }}</strong>!
+        </span>
         <p-button
-          label="Iniciar sesión"
-          styleClass="btn-nav-outline">
+          label="Cerrar sesión"
+          icon="pi pi-sign-out"
+          styleClass="btn-nav-outline"
+          (onClick)="cerrarSesion()">
         </p-button>
-      </a>
-      <a routerLink="/autenticacion/registro">
-        <p-button
-          label="Registrarse"
-          styleClass="btn-nav-solid">
-        </p-button>
-      </a>
+      </ng-template>
     </div>
   </div>
 </nav>

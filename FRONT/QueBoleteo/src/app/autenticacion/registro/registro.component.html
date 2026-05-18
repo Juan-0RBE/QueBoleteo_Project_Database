@@ -12,15 +12,15 @@
 
     <!--Primer nombre + Segundo nombre-->
     <div class="field-row">
-
       <div class="field">
         <label for="primerNombre">Primer nombre</label>
-        <span class="p-input-icon-left w-full">
-          <i class="pi pi-user"></i>
+        <span class="p-iconfield w-full">
+          <i class="pi pi-user p-inputicon"></i>
           <input
             pInputText
             id="primerNombre"
             placeholder="Juan"
+            class="w-full"
             [(ngModel)]="form.primerNombre"
           />
         </span>
@@ -28,30 +28,30 @@
 
       <div class="field">
         <label for="segundoNombre">Segundo nombre</label>
-        <span class="p-input-icon-left w-full">
-          <i class="pi pi-user"></i>
+        <span class="p-iconfield w-full">
+          <i class="pi pi-user p-inputicon"></i>
           <input
             pInputText
             id="segundoNombre"
             placeholder="Carlos (opcional)"
+            class="w-full"
             [(ngModel)]="form.segundoNombre"
           />
         </span>
       </div>
-
     </div>
 
     <!--Primer apellido + Segundo apellido-->
     <div class="field-row">
-
       <div class="field">
         <label for="primerApellido">Primer apellido</label>
-        <span class="p-input-icon-left w-full">
-          <i class="pi pi-user"></i>
+        <span class="p-iconfield w-full">
+          <i class="pi pi-user p-inputicon"></i>
           <input
             pInputText
             id="primerApellido"
             placeholder="Pérez"
+            class="w-full"
             [(ngModel)]="form.primerApellido"
           />
         </span>
@@ -59,97 +59,99 @@
 
       <div class="field">
         <label for="segundoApellido">Segundo apellido</label>
-        <span class="p-input-icon-left w-full">
-          <i class="pi pi-user"></i>
+        <span class="p-iconfield w-full">
+          <i class="pi pi-user p-inputicon"></i>
           <input
             pInputText
             id="segundoApellido"
             placeholder="García (opcional)"
+            class="w-full"
             [(ngModel)]="form.segundoApellido"
           />
         </span>
       </div>
+    </div>
 
-      <div class="field-row">
-        <div class="field">
-          <label for="nombreUsuario">Nombre de Usuario</label>
-          <span class="p-input-icon-left w-full">
-          <i class="pi pi-user"></i>
+    <div class="field-row">
+      <div class="field">
+        <label for="nombreUsuario">Nombre de Usuario</label>
+        <span class="p-iconfield w-full">
+          <i class="pi pi-user p-inputicon"></i>
           <input
             pInputText
-            id="nomberUsuario"
+            id="nombreUsuario"
             [(ngModel)]="form.nombreUsuario"
           />
         </span>
-        </div>
       </div>
 
-    <!--Documento + Correo electrónico-->
-    <div class="field-row">
-
+      <!--Documento + Correo electrónico-->
       <div class="field">
         <label for="documentId">Documento de identidad</label>
-        <span class="p-input-icon-left w-full">
-          <i class="pi pi-id-card"></i>
+        <span class="p-iconfield w-full">
+          <i class="pi pi-id-card p-inputicon"></i>
           <input
             pInputText
             id="documentId"
             placeholder="12345678"
+            class="w-full"
             [(ngModel)]="form.documentoIdentidad"
           />
         </span>
       </div>
+    </div>
 
+    <div class="field-row">
       <div class="field">
         <label for="email">Correo electrónico</label>
-        <span class="p-input-icon-left w-full">
-          <i class="pi pi-envelope"></i>
+        <span class="p-iconfield w-full">
+          <i class="pi pi-envelope p-inputicon"></i>
           <input
             pInputText
             id="email"
             type="email"
             placeholder="tu@correo.com"
+            class="w-full"
             [(ngModel)]="form.correo"
           />
         </span>
       </div>
-
-    </div>
-
-    <!--Teléfono + Fecha de nacimiento-->
-    <div class="field-row">
-
+      <!--Teléfono + Fecha de nacimiento-->
       <div class="field">
         <label for="phone">Teléfono</label>
-        <span class="p-input-icon-left w-full">
-          <i class="pi pi-phone"></i>
+        <span class="p-iconfield w-full">
+          <i class="pi pi-phone p-inputicon"></i>
           <p-inputMask
             inputId="phone"
             mask="(999) 999-9999"
             placeholder="(300) 000-0000"
-            styleClass="w-full"
+            styleClass="w-full icon-mask-wrapper"
+            inputStyleClass="w-full mask-custom-input"
             [(ngModel)]="form.numeroTelefono">
-          </p-inputMask>
-        </span>
+            <i slot="left" class="pi pi-phone"></i>
+            </p-inputMask>
+          </span>
       </div>
+    </div>
 
-      <div class="field">
+    <div class="field-row">
+      <div class="field w-full">
         <label for="birthDate">Fecha de nacimiento</label>
         <p-datepicker
           inputId="birthDate"
           [maxDate]="maxDate"
           dateFormat="dd/mm/yy"
           placeholder="DD/MM/AAAA"
-          styleClass="w-full"
+          styleClass="w-full datepicker-custom"
+          inputStyleClass="w-full"
+          [showIcon]="true"
+          iconDisplay="input"
           [(ngModel)]="form.fechaNacimiento">
         </p-datepicker>
       </div>
-
     </div>
-
     <!--Contraseña + Confirmar-->
     <div class="field-row">
-
       <div class="field">
         <label for="password">Contraseña</label>
         <p-password
@@ -158,6 +160,7 @@
           [toggleMask]="true"
           [feedback]="true"
           styleClass="w-full"
+          inputStyleClass="w-full"
           promptLabel="Ingresa una contraseña"
           weakLabel="Débil"
           mediumLabel="Media"
@@ -173,12 +176,11 @@
           placeholder="Repite tu contraseña"
           [toggleMask]="true"
           [feedback]="false"
-          styleClass="w-full">
+          styleClass="w-full"
+          inputStyleClass="w-full">
         </p-password>
       </div>
-
     </div>
-
     <!-- Submit -->
     <p-button
       type="submit"
@@ -186,21 +188,20 @@
       icon="pi pi-user-plus"
       iconPos="right"
       styleClass="btn-auth"
-      (onClick)="onRegistro()" [loading]="loading"
-    >
+      (onClick)="onRegistro()" [loading]="loading">
     </p-button>
 
 
     <!-- Para errores -->
-    <small *ngIf="errorMsg"   class="p-error">{{ errorMsg }}</small>
-    <small *ngIf="successMsg" style="color: green">{{ successMsg }}</small>
+    <small *ngIf="errorMsg" class="p-error">{{ errorMsg }}</small>
+    <small *ngIf="successMsg"
+           style="color: #10b981; display: block; margin-top: 10px; font-weight: 500;">{{ successMsg }}</small>
 
     <!-- Footer -->
     <div class="auth-footer">
       ¿Ya tienes cuenta?
       <a routerLink="/autenticacion/login">Inicia sesión</a>
     </div>
-
   </div>
 </div>
 
