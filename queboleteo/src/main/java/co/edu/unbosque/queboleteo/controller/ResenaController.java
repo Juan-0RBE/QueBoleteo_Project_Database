@@ -46,7 +46,8 @@ public class ResenaController {
 			return new ResponseEntity<>("Reseña creada correctamente", HttpStatus.CREATED);
 		} else if (status == 2) {
 			return new ResponseEntity<>("El usuario no tiene boletos para este concierto", HttpStatus.FORBIDDEN);
-
+		} else if (status == 3) {
+			return new ResponseEntity<>("Solo puede realizar la reseña despues de que ocurra el concierto", HttpStatus.NOT_ACCEPTABLE);			
 		}
 		return new ResponseEntity<>("Este usuario ya tiene una reseña para ese concierto", HttpStatus.NOT_ACCEPTABLE);
 	}
