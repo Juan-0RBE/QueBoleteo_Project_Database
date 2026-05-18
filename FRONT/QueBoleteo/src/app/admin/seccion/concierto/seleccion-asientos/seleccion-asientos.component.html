@@ -1,0 +1,79 @@
+<p-toast></p-toast>
+
+<div class="seleccion-container">
+
+  <!-- Header -->
+  <div class="seleccion-header">
+    <button class="btn-volver" (click)="volver()">
+      <span class="pi pi-arrow-left"></span> Volver
+    </button>
+    <div class="header-info">
+      <h2>{{ context?.nombreZona }}</h2>
+      <span class="precio-badge">{{ formatPrecio(context?.precio ?? 0) }} por asiento</span>
+    </div>
+  </div>
+
+  <!-- Estado de carga -->
+  <div class="loading-state" *ngIf="loading">
+    <span class="pi pi-spin pi-spinner"></span>
+    <p>Cargando asientos disponibles…</p>
+  </div>
+
+  <!-- Sin asientos -->
+  <div class="empty-state" *ngIf="!loading && asientos.length === 0">
+    <span class="pi pi-times-circle"></span>
+    <p>No hay asientos disponibles en esta zona.</p>
+  </div>
+
+  <!-- Mapa de asientos -->
+  <div class="mapa-wrapper" *ngIf="!loading && asientos.length > 0">
+
+    <!-- Leyenda -->
+    <div class="leyenda">
+      <span class="leyenda-item libre">Disponible</span>
+      <span class="leyenda-item seleccionado">Seleccionado</span>
+    </div>
+
+    <!-- Escenario -->
+    <div class="escenario-label">ESCENARIO</div>
+
+    <!-- Grid de filas -->
+    <div class="mapa-filas">
+      <div class="fila-row" *ngFor="let fila of filas">
+        <span class="fila-label">{{ fila }}</span>
+        <div class="asientos-row">
+          <button
+            *ngFor="let asiento of getAsientosDeFila(fila)"
+            class="asiento-btn"
+            [class.seleccionado]="asiento.seleccionado"
+            (click)="toggleAsiento(asiento)"
+            [title]="'Fila ' + asiento.fila + ' — Asiento ' + asiento.numeroAsiento">
+            {{ asiento.numeroAsiento }}
+          </button>
+        </div>
+        <span class="fila-label">{{ fila }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel de resumen / acción -->
+  <div class="resumen-panel" *ngIf="!loading && asientos.length > 0">
+    <div class="resumen-info">
+      <span>
+        <strong>{{ asientosSeleccionados.length }}</strong>
+        asiento(s) seleccionado(s)
+      </span>
+      <span class="resumen-total">{{ formatPrecio(totalPrecio) }}</span>
+    </div>
+    <button
+      pButton
+      label="Confirmar compra"
+      icon="pi pi-check"
+      class="p-button-success btn-confirmar"
+      [disabled]="asientosSeleccionados.length === 0 || procesando"
+      [loading]="procesando"
+      (click)="confirmarCompra()">
+    </button>
+  </div>
+
+</div>

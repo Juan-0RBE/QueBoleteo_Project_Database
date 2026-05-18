@@ -63,45 +63,36 @@ export class ResumenComponent implements OnInit {
     this.procesando = true;
     this.errorMensaje = '';
 
-    // Crear la venta
-    this.ventaService.crearVenta(correo, this.total).subscribe({
-      next: (venta) => {
-        // Comprar boleta x zona
-        from(this.items).pipe(
-          concatMap((item: any) =>
-            this.ventaService.comprarBoletas({
-              correoUsuario:    correo,
-              idZonaConcierto:  item.zona.id,
-              cantidad:         item.cantidad,
-              // Si es numerada, envía ID, si es general, el arreglo queda vacíp
-              idLugaresElegidos: item.asientos?.map((a: any) => a.id) ?? []
-            })
-          )
-        ).subscribe({
-          next: () => {},
-          error: (err) => {
-            console.error('Error al comprar boletas:', err);
-            this.procesando = false;
-            this.errorMensaje = 'Ocurrió un error al procesar las boletas. Intenta nuevamente.';
-          },
-          complete: () => {
-            // Confirmacion
-            this.procesando = false;
-            this.router.navigate(['/compra/confirmacion'], {
-              state: {
-                concierto:    this.concierto,
-                items:        this.items,
-                total:        this.total,
-                codigoVenta:  'QB-' + venta.idVenta
-              }
-            });
+    const compraRequest = {
+      correoUsuario: correo,
+      total: this.total,
+      // Mapeamos tus items del carrito al formato que tu backend necesite
+      items: this.items.map((item: any) => ({
+        idZonaConcierto:   item.zona.id,
+        cantidad:          item.cantidad,
+        idLugaresElegidos: item.asientos?.map((a: any) => a.id) ?? []
+      }))
+    };
+
+    // 2. Ejecutamos una única petición HTTP
+    this.ventaService.realizarCompra(compraRequest).subscribe({
+      next: (response: any) => {
+        // Redirección exitosa cuando el backend responde un 201 CREATED
+        this.procesando = false;
+        this.router.navigate(['/compra/confirmacion'], {
+          state: {
+            concierto:    this.concierto,
+            items:        this.items,
+            total:        this.total,
+            codigoVenta:  'QB-' + (response.idVenta || response.id || 'EXITOSO')
           }
         });
       },
-      error: (err) => {
-        console.error('Error al crear la venta:', err);
+      error: (err: any) => {
+        // Captura el error si el backend arroja el BAD_REQUEST
+        console.error('Error al realizar la compra:', err);
         this.procesando = false;
-        this.errorMensaje = 'No se pudo crear la venta. Intenta nuevamente.';
+        this.errorMensaje = err.error || 'No se pudo procesar la compra. Intenta nuevamente.';
       }
     });
   }

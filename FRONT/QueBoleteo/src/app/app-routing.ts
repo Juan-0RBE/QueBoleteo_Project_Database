@@ -14,7 +14,10 @@ export const routes: Routes = [
   { path: 'autenticacion/registro', component: RegistroComponent },
   { path: 'principal/paginaprincipal', component: PaginaPrincipalComponent },
   { path: 'concierto/:id', component: DetalleConciertoComponent },
-  { path: 'compra/resumen', component: ResumenComponent },
-  { path: 'compra/confirmacion', component: ConfirmacionComponent },
   { path: 'admin', children: adminRouting, canActivate: [adminGuard] },
+  {
+    path: 'compra',
+    loadChildren: () => import('./compra/compra.routes').then(m => m.COMPRA_ROUTES)
+  }
+
 ];

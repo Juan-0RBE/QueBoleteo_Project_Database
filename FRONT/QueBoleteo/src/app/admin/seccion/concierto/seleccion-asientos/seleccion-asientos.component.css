@@ -1,0 +1,224 @@
+/* ── Contenedor principal ───────────────────────────────────────────────── */
+.seleccion-container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 6rem;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+.seleccion-header {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.btn-volver {
+  background: none;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0.5rem 0.9rem;
+  cursor: pointer;
+  color: #475569;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: background 0.15s;
+}
+.btn-volver:hover { background: #f1f5f9; }
+
+.header-info h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.precio-badge {
+  display: inline-block;
+  margin-top: 0.25rem;
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+  border-radius: 999px;
+  padding: 0.2rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* ── Estados ─────────────────────────────────────────────────────────────── */
+.loading-state,
+.empty-state {
+  text-align: center;
+  padding: 4rem 1rem;
+  color: #94a3b8;
+  font-size: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+.loading-state .pi,
+.empty-state .pi { font-size: 2rem; }
+
+/* ── Leyenda ─────────────────────────────────────────────────────────────── */
+.leyenda {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.leyenda-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: #475569;
+}
+
+.leyenda-item::before {
+  content: '';
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  display: inline-block;
+}
+
+.leyenda-item.libre::before {
+  background: #e2e8f0;
+  border: 1px solid #cbd5e1;
+}
+
+.leyenda-item.seleccionado::before {
+  background: #3b82f6;
+  border: 1px solid #2563eb;
+}
+
+/* ── Escenario ───────────────────────────────────────────────────────────── */
+.escenario-label {
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: #94a3b8;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 6px;
+  padding: 0.5rem 2rem;
+  width: fit-content;
+  margin: 0 auto 2rem;
+}
+
+/* ── Mapa ────────────────────────────────────────────────────────────────── */
+.mapa-wrapper {
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+
+.mapa-filas {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: fit-content;
+  margin: 0 auto;
+}
+
+.fila-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.fila-label {
+  width: 28px;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.asientos-row {
+  display: flex;
+  gap: 0.3rem;
+  flex-wrap: nowrap;
+}
+
+/* ── Botón asiento ───────────────────────────────────────────────────────── */
+.asiento-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 5px;
+  border: 1px solid #cbd5e1;
+  background: #e2e8f0;
+  color: #475569;
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s, border-color 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.asiento-btn:hover {
+  background: #bfdbfe;
+  border-color: #93c5fd;
+  transform: scale(1.1);
+}
+
+.asiento-btn.seleccionado {
+  background: #3b82f6;
+  border-color: #2563eb;
+  color: #fff;
+  transform: scale(1.08);
+}
+
+/* ── Panel de resumen fijo ───────────────────────────────────────────────── */
+.resumen-panel {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-top: 1px solid #e2e8f0;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  box-shadow: 0 -4px 16px rgba(0,0,0,0.06);
+  z-index: 100;
+}
+
+.resumen-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.9rem;
+  color: #475569;
+}
+
+.resumen-total {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.btn-confirmar {
+  min-width: 200px;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .resumen-panel {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0.75rem 1rem;
+  }
+  .btn-confirmar { width: 100%; }
+  .asiento-btn { width: 28px; height: 28px; font-size: 0.65rem; }
+}
