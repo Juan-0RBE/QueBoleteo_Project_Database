@@ -23,7 +23,7 @@ export interface RegisterRequest {
   segundoNombre?: string;
   primerApellido: string;
   segundoApellido?: string;
-  fechaNacimiento: string;   // "YYYY-MM-DD"
+  fechaNacimiento: string;
   edad?: number;
   numeroTelefono?: string;
 }
@@ -49,7 +49,7 @@ export class AuthService {
 
   register(data: RegisterRequest): Observable<string> {
     return this.http.post(`${environment.apiUrl}/auth/register`, data, {
-      responseType: 'text'   // el backend devuelve un string plano, no JSON
+      responseType: 'text'
     });
   }
 

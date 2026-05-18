@@ -1,4 +1,4 @@
-//import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
@@ -9,7 +9,7 @@ import { SelectModule } from 'primeng/select';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { SedeService, Sede, Zona, ConfiguracionLugar } from '../../../core/services/sede.service';
 
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+
 
 
 interface GeneradorAsientos {
@@ -88,17 +88,11 @@ export class AdminSedeComponent implements OnInit {
 
   // ── CRUD SEDE ──────────────────────────────────
 
-/*  cargarSedes(): void {
-    this.sedeService.getAllSedes().subscribe({
-      next: (data) => this.sedes = data,
-      error: () => this.errorMsg = 'Error al cargar las sedes'
-    });
-  }*/
-
   cargarSedes(): void {
     this.sedeService.getAllSedes().subscribe({
       next: (sedes) => {
         this.sedes = sedes;
+        this.cdr.detectChanges();
         // Carga el conteo de zonas para todas las sedes
         this.sedeService.getAllZonas().subscribe({
           next: (zonas) => {
@@ -139,6 +133,7 @@ export class AdminSedeComponent implements OnInit {
           this.successMsg = 'Sede actualizada correctamente';
           this.cancelarSede();
           this.cargarSedes();
+          this.cdr.detectChanges();
         },
         error: () => this.errorMsg = 'Error al actualizar la sede'
       });
@@ -192,6 +187,7 @@ export class AdminSedeComponent implements OnInit {
     this.sedeService.getAllZonas().subscribe({
       next: (data) => {
         this.zonasPorSede = data.filter(z => z.nombreSede === nombreSede);
+        this.cdr.detectChanges();
       },
       error: () => this.errorMsg = 'Error al cargar las zonas'
     });

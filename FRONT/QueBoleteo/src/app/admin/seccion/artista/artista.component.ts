@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
@@ -33,7 +33,7 @@ export class AdminArtistaComponent implements OnInit {
   successMsg: string = '';
   loading: boolean = false;
 
-  constructor(private artistaService: ArtistaService) {}
+  constructor(private artistaService: ArtistaService, private cdr: ChangeDetectorRef) {}
 
   // Se ejecuta automáticamente al abrir la pantalla
   ngOnInit(): void {
@@ -43,7 +43,10 @@ export class AdminArtistaComponent implements OnInit {
   // Llama al backend y llena la tabla
   cargarArtistas(): void {
     this.artistaService.getAll().subscribe({
-      next: (data) => this.artistas = data,
+      next: (data) => {
+        this.artistas = data;
+        this.cdr.detectChanges();
+      },
       error: () => this.errorMsg = 'Error al cargar los artistas'
     });
   }
