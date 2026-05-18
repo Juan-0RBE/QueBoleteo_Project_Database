@@ -189,7 +189,78 @@
 
         </section>
 
+
+
+        <!-- ===================== RESEÑAS ===================== -->
+        <section class="detalle-section">
+          <h2 class="detalle-section-title">Reseñas del evento</h2>
+
+          <div class="resena-form">
+            <h4 class="resena-form-titulo">¿Asististe? Deja tu reseña</h4>
+
+            <div class="resena-estrellas-input">
+              <span *ngFor="let i of [1,2,3,4,5]"
+                    class="estrella-input"
+                    [class.activa]="i <= nuevaResena.calificacion"
+                    (click)="setCalificacion(i)">★</span>
+            </div>
+
+            <textarea
+              class="resena-textarea"
+              [(ngModel)]="nuevaResena.comentario"
+              placeholder="Escribe tu comentario..."
+              rows="3">
+            </textarea>
+
+            <p-button
+              label="Publicar reseña"
+              icon="pi pi-send"
+              styleClass="btn-comprar"
+              [disabled]="enviandoResena"
+              (onClick)="enviarResena()">
+            </p-button>
+          </div>
+
+          <p-divider></p-divider>
+
+          <div *ngIf="cargandoResenas"
+               style="text-align:center; padding: 1rem; color: #a855f7;">
+            <i class="pi pi-spin pi-spinner"></i> Cargando reseñas...
+          </div>
+
+          <div class="resena-vacia"
+               *ngIf="!cargandoResenas && resenas.length === 0">
+            <i class="pi pi-comment"></i>
+            <p>Aún no hay reseñas para este evento</p>
+          </div>
+
+          <div class="resenas-lista"
+               *ngIf="!cargandoResenas && resenas.length > 0">
+
+            <div class="resena-card" *ngFor="let r of resenas">
+
+              <div class="resena-card-header">
+                <span class="resena-usuario">
+                  <i class="pi pi-user"></i> {{ r.correoUsuario }}
+                </span>
+                <span class="resena-estrellas">
+                  <span *ngFor="let e of estrellas(r.calificacion)" class="estrella">★</span>
+                </span>
+              </div>
+
+              <p class="resena-comentario">{{ r.comentario }}</p>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+
       </div>
+
+
 
       <!-- ===================== ASIDE ===================== -->
       <aside class="detalle-aside">
