@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import co.edu.unbosque.queboleteo.dto.VentaDTO;
 import co.edu.unbosque.queboleteo.entity.Lugar;
 import co.edu.unbosque.queboleteo.entity.ZonaConcierto;
+import co.edu.unbosque.queboleteo.service.EmailService;
 import co.edu.unbosque.queboleteo.service.VentaService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -137,6 +138,22 @@ public class VentaController {
 	 */
 	@Operation(summary = "Realizar compra de boletos")
 	@PostMapping("/comprar")
+	public ResponseEntity<?> comprar(@RequestBody CompraRequestDto dto) {
+
+		try {
+
+			CompraResponseDto response = ventaService.realizarCompra(dto);
+
+			return ResponseEntity.status(HttpStatus.CREATED).body(response);
+
+		} catch (RuntimeException e) {
+
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+		}
+	}
+	/*
+	@Operation(summary = "Realizar compra de boletos")
+	@PostMapping("/comprar")
 	public ResponseEntity<CompraResponseDto> comprar(@RequestBody CompraRequestDto dto) {
 		try {
 			CompraResponseDto response = ventaService.realizarCompra(dto);
@@ -144,7 +161,7 @@ public class VentaController {
 		} catch (RuntimeException e) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
-	}
+	}*/
 
 	/**
 	 * Retorna los lugares disponibles (libres) de una zona-concierto. Útil para que

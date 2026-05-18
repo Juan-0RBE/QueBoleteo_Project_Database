@@ -275,4 +275,18 @@ public class UsuarioController {
 				HttpStatus.NOT_FOUND);
 	}
 
+	
+	@Operation(summary = "Obtener el correo de un usuario por su username")
+	@GetMapping("/obtener/correo/{username}")
+	public ResponseEntity<String> getCorreoByUsername(@PathVariable String username) {
+	    // Reutilizamos el servicio que ya tienes programado
+	    UsuarioDTO found = usuarioServ.getByUsername(username);
+
+	    if (found != null && found.getCorreo() != null) {
+	        // Retornamos directamente la cadena del texto del correo
+	        return new ResponseEntity<>(found.getCorreo(), HttpStatus.OK);
+	    }
+
+	    return new ResponseEntity<>("Correo no encontrado", HttpStatus.NOT_FOUND);
+	}
 }
