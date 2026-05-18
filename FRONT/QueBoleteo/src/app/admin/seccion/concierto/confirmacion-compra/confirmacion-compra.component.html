@@ -1,0 +1,73 @@
+<div class="confirmacion-container" *ngIf="cargado">
+
+  <!-- Icono de éxito -->
+  <div class="icono-exito">
+    <span class="pi pi-check-circle"></span>
+  </div>
+
+  <h1>¡Compra exitosa!</h1>
+  <p class="subtitulo">
+    Tus boletos han sido generados. Guarda los códigos para el ingreso.
+  </p>
+
+  <p-divider></p-divider>
+
+  <!-- Resumen de la compra -->
+  <div class="resumen-card">
+
+    <div class="resumen-row">
+      <span class="label">Zona</span>
+      <span class="valor">{{ zona?.nombreZona }}</span>
+    </div>
+
+    <div class="resumen-row">
+      <span class="label">Número de venta</span>
+      <span class="valor codigo">#{{ respuesta.idVenta }}</span>
+    </div>
+
+    <div class="resumen-row">
+      <span class="label">Total pagado</span>
+      <span class="valor total">{{ formatPrecio(respuesta.valorTotal) }}</span>
+    </div>
+
+    <p-divider></p-divider>
+
+    <!-- Códigos de boletos -->
+    <div class="boletos-section">
+      <h3>Códigos de tus boletos</h3>
+      <div class="boletos-grid">
+        <div
+          class="boleto-chip"
+          *ngFor="let codigo of respuesta.codigosBoletos; let i = index">
+          <span class="boleto-numero">Boleto {{ i + 1 }}</span>
+          <span class="boleto-codigo">{{ codigo }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Asientos asignados (solo si aplica) -->
+    <div class="boletos-section" *ngIf="respuesta.idsLugares && respuesta.idsLugares.length > 0">
+      <h3>Asientos asignados</h3>
+      <div class="boletos-grid">
+        <div
+          class="boleto-chip lugar"
+          *ngFor="let idLugar of respuesta.idsLugares">
+          <span class="pi pi-map-marker"></span>
+          <span>Lugar #{{ idLugar }}</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="acciones">
+    <button
+      pButton
+      label="Ir al inicio"
+      icon="pi pi-home"
+      class="p-button-outlined"
+      (click)="irAlInicio()">
+    </button>
+  </div>
+
+</div>

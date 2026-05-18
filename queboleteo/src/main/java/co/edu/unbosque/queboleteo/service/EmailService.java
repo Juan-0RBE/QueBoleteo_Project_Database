@@ -1,6 +1,7 @@
 package co.edu.unbosque.queboleteo.service;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -77,9 +78,24 @@ public class EmailService {
 	}
 
 	public void enviarCorreoCompra(String correo, String nombreUsuario, String nombreEvento, int cantidadBoletos,
-			BigDecimal valorTotal) {
+			BigDecimal valorTotal, List<String> detallesBoletos) {
 
 		try {
+
+			StringBuilder detallesHtml = new StringBuilder();
+
+			for (String detalle : detallesBoletos) {
+
+				detallesHtml.append("""
+						<li style="
+							margin-bottom: 8px;
+							color: #555;
+							list-style: none;
+						">
+							%s
+						</li>
+						""".formatted(detalle));
+			}
 
 			String asunto = "Confirmación de compra - QueBoleteo";
 
@@ -140,6 +156,25 @@ public class EmailService {
 					        </tr>
 
 					        <tr>
+							    <td style="
+							        padding: 8px;
+							        font-weight: bold;
+							        vertical-align: top;
+							    ">
+							        Boletos:
+							    </td>
+
+							    <td style="padding: 8px;">
+							        <ul style="
+							            padding-left: 20px;
+							            margin: 0;
+							        ">
+							            %s
+							        </ul>
+							    </td>
+							</tr>
+
+					        <tr>
 					            <td style="
 					                padding: 8px;
 					                font-weight: bold;
@@ -171,15 +206,20 @@ public class EmailService {
 					    </p>
 
 					</div>
-					""".formatted(nombreUsuario, nombreEvento, cantidadBoletos, valorTotal.toString());
+					""".formatted(nombreUsuario, nombreEvento, cantidadBoletos, detallesHtml.toString(),
+					valorTotal.toString());
 
 			MimeMessage mimeMessage = mailSender.createMimeMessage();
 
-			MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+			//MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
 
+			MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+			
 			helper.setTo(correo);
 			helper.setSubject(asunto);
-			helper.setFrom(from);
+			//helper.setFrom(from);
+			helper.setFrom(from, "QueBoleteo");
+			helper.setReplyTo(from); //NUEVO
 			helper.setText(contenido, true);
 
 			mailSender.send(mimeMessage);

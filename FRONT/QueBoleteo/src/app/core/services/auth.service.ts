@@ -14,6 +14,15 @@ export interface LoginResponse {
   role: string;
 }
 
+
+export interface UsuarioDTO {
+  correo: string;
+  nombreUsuario: string;
+  documentoIdentidad: string;
+  primerNombre: string;
+  primerApellido: string;
+}
+
 export interface RegisterRequest {
   correo: string;
   nombreUsuario: string;
@@ -78,7 +87,11 @@ export class AuthService {
     return localStorage.getItem(this.USER_KEY);
   }
 
-  getCorreo(): string | null {
+  getUsernameString(): string {
+    return localStorage.getItem(this.USER_KEY) ?? '';
+  }
+
+    getCorreo(): string | null {
     try {
       const token = localStorage.getItem('token');
       if (!token) return null;
@@ -89,6 +102,13 @@ export class AuthService {
     } catch {
       return null;
     }
+  }
+
+
+  getCorreoByUsername(username: string): Observable<string> {
+    return this.http.get(`${environment.apiUrl}/usuario/obtener/correo/${username}`, {
+      responseType: 'text'
+    });
   }
 
   isLoggedIn(): boolean {

@@ -82,7 +82,6 @@ public class VentaService implements CRUDOperation<VentaDTO> {
 		dto.setValorTotal(entity.getValorTotal());
 		dto.setFechaVenta(entity.getFechaVenta());
 
-		// ⚠️ Extraemos solo el correo, nunca la clave ni datos de seguridad
 		if (entity.getUsuario() != null) {
 			dto.setCorreoUsuario(entity.getUsuario().getCorreo());
 		}
@@ -202,7 +201,7 @@ public class VentaService implements CRUDOperation<VentaDTO> {
 	 * @return DTO con resumen de la compra realizada
 	 */
 	@Transactional
-	public CompraResponseDto realizarCompra(CompraRequestDto dto) {
+	public CompraResponseDto realizarCompraSinCorreo(CompraRequestDto dto) {
 
 		// Verificar usuario
 		Usuario usuario = usuarioRepo.findById(dto.getCorreoUsuario())
@@ -302,7 +301,7 @@ public class VentaService implements CRUDOperation<VentaDTO> {
 	}
 
 	@Transactional
-	public CompraResponseDto realizarCompra2(CompraRequestDto dto) {
+	public CompraResponseDto realizarCompra(CompraRequestDto dto) {
 
 		// Verificar usuario
 		Usuario usuario = usuarioRepo.findById(dto.getCorreoUsuario())
@@ -367,6 +366,7 @@ public class VentaService implements CRUDOperation<VentaDTO> {
 		// Boletos
 		List<Long> codigosBoletos = new ArrayList<>();
 		List<Long> idsLugares = new ArrayList<>();
+		List<String> detallesBoletos = new ArrayList<>();
 
 		for (int i = 0; i < dto.getCantidad(); i++) {
 
@@ -382,6 +382,20 @@ public class VentaService implements CRUDOperation<VentaDTO> {
 
 			codigosBoletos.add(boleto.getCodigoBoleto());
 			idsLugares.add(lugar.getIdLugar());
+
+			String detalleLugar;
+
+			if (lugar.getFila() != null && lugar.getNumeroAsiento() != null) {
+
+				detalleLugar = "Zona: " + zc.getZona().getNombreZona() + ", fila: " + lugar.getFila() + ", asiento: "
+						+ lugar.getNumeroAsiento();
+
+			} else {
+
+				detalleLugar = "Zona: " + zc.getZona().getNombreZona() + " | General (Sin asiento asignado)";
+			}
+
+			detallesBoletos.add(detalleLugar);
 		}
 
 		// actualizar disponibilidad
@@ -395,14 +409,10 @@ public class VentaService implements CRUDOperation<VentaDTO> {
 		response.setCodigosBoletos(codigosBoletos);
 		response.setIdsLugares(idsLugares);
 
-		// =========================
-		// EMAIL (CORREGIDO)
-		// =========================
 		try {
 
 			emailService.enviarCorreoCompra(usuario.getCorreo(), usuario.getNombreUsuario(),
-					zc.getConcierto().getNombreConcierto(), // 👈 evento
-					dto.getCantidad(), valorTotal);
+					zc.getConcierto().getNombreConcierto(), dto.getCantidad(), valorTotal, detallesBoletos);
 
 			System.out.println("Correo enviado correctamente");
 

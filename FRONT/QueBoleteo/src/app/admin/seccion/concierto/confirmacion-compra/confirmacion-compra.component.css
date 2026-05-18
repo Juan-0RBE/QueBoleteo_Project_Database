@@ -1,0 +1,121 @@
+.confirmacion-container {
+  max-width: 580px;
+  margin: 3rem auto;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.icono-exito .pi {
+  font-size: 4rem;
+  color: #16a34a;
+  margin-bottom: 1rem;
+}
+
+h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0 0 0.5rem;
+}
+
+.subtitulo {
+  color: #64748b;
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+}
+
+/* ── Tarjeta resumen ─────────────────────────────────────────────────────── */
+.resumen-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: left;
+  margin-top: 1.5rem;
+}
+
+.resumen-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+}
+
+.label {
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.valor {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.valor.codigo {
+  font-family: monospace;
+  font-size: 1rem;
+  color: #2563eb;
+}
+
+.valor.total {
+  font-size: 1.2rem;
+  color: #16a34a;
+}
+
+/* ── Boletos ─────────────────────────────────────────────────────────────── */
+.boletos-section h3 {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0.75rem 0 0.5rem;
+}
+
+.boletos-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.boleto-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.5rem 0.9rem;
+  min-width: 100px;
+}
+
+.boleto-chip.lugar {
+  flex-direction: row;
+  gap: 0.4rem;
+  color: #7c3aed;
+  border-color: #ede9fe;
+  background: #f5f3ff;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.boleto-numero {
+  font-size: 0.7rem;
+  color: #94a3b8;
+}
+
+.boleto-codigo {
+  font-family: monospace;
+  font-weight: 700;
+  font-size: 1rem;
+  color: #1e293b;
+}
+
+/* ── Acciones ────────────────────────────────────────────────────────────── */
+.acciones {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+}

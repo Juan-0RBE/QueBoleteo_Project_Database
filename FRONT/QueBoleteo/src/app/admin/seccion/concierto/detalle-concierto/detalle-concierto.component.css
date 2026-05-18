@@ -439,3 +439,33 @@
 
   i { color: var(--violet); font-size: 0.75rem; flex-shrink: 0; }
 }
+
+
+
+.seat-grid {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.row {
+  display: flex;
+  gap: 5px;
+}
+
+.seat {
+  width: 28px;
+  height: 28px;
+  font-size: 10px;
+  border-radius: 4px;
+  border: 1px solid #444;
+  background: #1e1b4b;
+  color: white;
+  cursor: pointer;
+}
+
+.seat.selected {
+  background: #7c3aed;
+  transform: scale(1.1);
+}
