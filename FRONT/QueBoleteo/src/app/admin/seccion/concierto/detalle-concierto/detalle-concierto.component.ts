@@ -6,6 +6,7 @@ import { ButtonModule } from 'primeng/button';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { DividerModule } from 'primeng/divider';
 import { ResenaService, ResenaDTO } from '../../../../core/services/resena.service';
+import { ArtistaService} from '../../../../core/services/artista.service';
 
 
 import { forkJoin } from 'rxjs';
@@ -104,6 +105,7 @@ export class DetalleConciertoComponent implements OnInit {
     private compraService: CompraService,
     private authService: AuthService,
     private resenaService: ResenaService,
+    private artistaService: ArtistaService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -140,14 +142,19 @@ export class DetalleConciertoComponent implements OnInit {
 
         forkJoin({
           relacionesConcierto: this.conciertoService.getZonasByConcierto(id),
-          zonasMaestras: this.conciertoService.getZonasGlobales()
+          zonasMaestras: this.conciertoService.getZonasGlobales(),
+          artistas: this.conciertoService.getArtistasByConcierto(id),
+          todosArtistas: this.artistaService.getAll(),
         }).subscribe({
 
-          next: ({ relacionesConcierto, zonasMaestras }) => {
-            console.log('RELACIONES CONCIERTO:', relacionesConcierto);
+          next: ({ relacionesConcierto, zonasMaestras, artistas, todosArtistas }) => {
             const relaciones = relacionesConcierto ?? [];
             const maestras = zonasMaestras ?? [];
-
+            const listaArtistas = artistas ?? [];
+            const nombreArtista = listaArtistas.length > 0
+              ? todosArtistas.find((a: any) => a.idArtista === listaArtistas[0].idArtista)?.nombreArtista
+              ?? 'Sin artista confirmado'
+              : 'Sin artista confirmado';
 
             const zonasMapeadas: ZonaDisponible[] = relaciones.map((zc: any) => {
               const zonaInfo = maestras.find(
@@ -168,7 +175,7 @@ export class DetalleConciertoComponent implements OnInit {
             this.concierto = {
               id: dto.idConcierto || id,
               nombre: dto.nombreConcierto,
-              artista: 'Artista por confirmar',
+              artista: nombreArtista,
               imagen: dto.imagenConcierto ||
                 'https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?w=1200&q=80',
               fecha: dto.fechaConcierto

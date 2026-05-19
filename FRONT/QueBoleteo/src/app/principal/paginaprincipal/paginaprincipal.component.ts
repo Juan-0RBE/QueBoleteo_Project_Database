@@ -24,7 +24,6 @@ export interface Concierto {
   fecha: string;
   sede: string;
   estado: string;
-  precioDesde: number;
   destacado?: boolean;
 }
 
@@ -125,11 +124,21 @@ export class PaginaPrincipalComponent implements OnInit {
             : 'Por confirmar',
           sede: dto.nombreSede || 'Por confirmar',
           estado: dto.estadoConcierto || 'Sin estado',
-          precioDesde: 50000,
-          destacado: dto.estadoConcierto === 'Programado',
+          destacado: false,
         }));
 
-        // Genera las opciones de sede dinámicamente desde los datos reales
+        const programados = this.conciertos
+          .map((c, i) => ({ c, i }))
+          .filter(({ c }) => c.estado === 'Programado');
+
+        if (programados.length > 0) {
+          const { i } = programados[Math.floor(Math.random() * programados.length)];
+          this.conciertos[i].destacado = true;
+        } else if (this.conciertos.length > 0) {
+
+          this.conciertos[Math.floor(Math.random() * this.conciertos.length)].destacado = true;
+        }
+
         const sedesUnicas = [...new Set(this.conciertos.map((c) => c.sede))];
         this.sedes = [
           { label: 'Todas las sedes', value: null },
@@ -149,13 +158,19 @@ export class PaginaPrincipalComponent implements OnInit {
     this.loadingArtistas = true;
     this.artistaService.getAll().subscribe({
       next: (data: any[]) => {
-        this.artistas = data.map((art) => ({
+        const todos = data.map((art) => ({
           id: art.idArtista,
           nombre: art.nombreArtista,
           genero: art.lenguajeArtista || 'Variado',
           imagen: art.imagenArtista || 'https://placehold.co/150?text=Artista',
           pais: art.paisOrigenArtista || 'Internacional',
         }));
+
+        // Aleatorios, máximo 5
+        this.artistas = todos
+          .sort(() => Math.random() - 0.5)
+          .slice(0, 5);
+
         this.loadingArtistas = false;
         this.cdr.detectChanges();
       },

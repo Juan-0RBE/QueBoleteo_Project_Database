@@ -1,6 +1,5 @@
 <div class="confirmacion-container" *ngIf="cargado">
 
-  <!-- Icono de éxito -->
   <div class="icono-exito">
     <span class="pi pi-check-circle"></span>
   </div>
@@ -12,7 +11,6 @@
 
   <p-divider></p-divider>
 
-  <!-- Resumen de la compra -->
   <div class="resumen-card">
 
     <div class="resumen-row">
@@ -32,7 +30,6 @@
 
     <p-divider></p-divider>
 
-    <!-- Códigos de boletos -->
     <div class="boletos-section">
       <h3>Códigos de tus boletos</h3>
       <div class="boletos-grid">
@@ -45,7 +42,6 @@
       </div>
     </div>
 
-    <!-- Asientos asignados (solo si aplica) -->
     <div class="boletos-section" *ngIf="respuesta.idsLugares && respuesta.idsLugares.length > 0">
       <h3>Asientos asignados</h3>
       <div class="boletos-grid">

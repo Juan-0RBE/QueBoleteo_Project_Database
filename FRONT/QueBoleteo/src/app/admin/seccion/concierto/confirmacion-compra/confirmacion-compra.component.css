@@ -25,7 +25,6 @@ h1 {
   margin-bottom: 0.5rem;
 }
 
-/* ── Tarjeta resumen ─────────────────────────────────────────────────────── */
 .resumen-card {
   background: #f8fafc;
   border: 1px solid #e2e8f0;
@@ -64,7 +63,6 @@ h1 {
   color: #16a34a;
 }
 
-/* ── Boletos ─────────────────────────────────────────────────────────────── */
 .boletos-section h3 {
   font-size: 0.85rem;
   font-weight: 700;
@@ -113,7 +111,6 @@ h1 {
   color: #1e293b;
 }
 
-/* ── Acciones ────────────────────────────────────────────────────────────── */
 .acciones {
   margin-top: 2rem;
   display: flex;

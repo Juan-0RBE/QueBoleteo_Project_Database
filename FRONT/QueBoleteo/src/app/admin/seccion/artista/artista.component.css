@@ -2,7 +2,6 @@
   max-width: 1100px;
 }
 
-/* Encabezado */
 .section-header {
   display: flex;
   align-items: flex-start;
@@ -30,7 +29,6 @@
   color: #7a7890;
 }
 
-/* Formulario */
 .admin-form-card {
   background: #12121a;
   border: 1px solid rgba(124,58,237,0.25);
@@ -72,7 +70,6 @@
   grid-column: 1 / -1;
 }
 
-/* PrimeNG input overrides */
 .p-inputtext,
 textarea.p-inputtextarea {
   width: 100%;
@@ -109,7 +106,6 @@ textarea.p-inputtextarea {
   border-top: 1px solid rgba(255,255,255,0.07);
 }
 
-/* Tabla */
 .admin-table-card {
   background: #12121a;
   border: 1px solid rgba(255,255,255,0.07);
@@ -182,7 +178,6 @@ textarea.p-inputtextarea {
   }
 }
 
-/* Botones admin */
 .btn-admin-primary.p-button {
   background: linear-gradient(135deg, #7c3aed, #f0247a) !important;
   border: none !important;
@@ -206,9 +201,6 @@ textarea.p-inputtextarea {
   }
 }
 
-
-/* Esto es para que se pueda ver el drop down de los generos completo */
-/* Permite que el overlay del p-select salga de la tabla */
 .admin-table-card {
   overflow: visible !important;
 }
