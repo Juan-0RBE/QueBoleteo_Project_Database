@@ -25,7 +25,8 @@ import { AuthService } from '../../../../core/services/auth.service';
 
 
 export interface ZonaDisponible {
-  id: number;
+  idZona: number;
+  idZonaConcierto: number;
   nombre: string;
   precio: number;
   cantidadDisponible: number;
@@ -50,22 +51,26 @@ export interface ConciertoVisualizacion {
   genero: string;
   edadMinima: number;
   descripcion: string;
-  zonas: ZonaDisponible[]; // <-- Aquí sí existe la propiedad zonas
+  zonas: ZonaDisponible[];
 }
 
 @Component({
   selector: 'app-detalle-concierto',
   standalone: true,
   imports: [
-    CommonModule, RouterModule, FormsModule,
-    ButtonModule, InputNumberModule, DividerModule,
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    ButtonModule,
+    InputNumberModule,
+    DividerModule,
   ],
   templateUrl: './detalle-concierto.component.html',
   styleUrls: ['./detalle-concierto.component.css']
 })
+
 export class DetalleConciertoComponent implements OnInit {
 
-  // Inicializamos el objeto vacío con la estructura correcta para que el HTML no lance errores de "undefined"
   concierto: ConciertoVisualizacion = {
     id: 0,
     nombre: '',
@@ -88,7 +93,7 @@ export class DetalleConciertoComponent implements OnInit {
   cargandoAsientos: { [zonaId: number]: boolean } = {};
 
   cantidades: { [zonaId: number]: number } = {};
-  loading: boolean = true; // Control de estado de carga
+  loading: boolean = true;
 
 
 
@@ -103,14 +108,12 @@ export class DetalleConciertoComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Capturamos el parámetro id definido en el enrutador (ej: /concierto/:id)
+
     const idConcierto = Number(this.route.snapshot.paramMap.get('id'));
 
-    if (idConcierto) {
-      this.cargarDetalleConcierto(idConcierto);
-    } else {
-      // Si no viene un ID válido, redirigimos a la página principal
+    if (!idConcierto) {
       this.router.navigate(['/principal/paginaprincipal']);
+      return;
     }
 
     this.cargarDetalleConcierto(idConcierto);
@@ -128,23 +131,25 @@ export class DetalleConciertoComponent implements OnInit {
   enviandoResena: boolean = false;
 
   cargarDetalleConcierto(id: number): void {
+
     this.loading = true;
 
-    // 1. Consumimos el getById que retorna un ConciertoDTO
     this.conciertoService.getById(id).subscribe({
+
       next: (dto: ConciertoDTO) => {
 
-        // 2. Disparamos las llamadas secundarias usando los métodos exactos de tu Service
         forkJoin({
           relacionesConcierto: this.conciertoService.getZonasByConcierto(id),
-          // Asegúrate de mapear este método en tu servicio para que apunte a la tabla 'zona/all'
           zonasMaestras: this.conciertoService.getZonasGlobales()
         }).subscribe({
-          next: ({ relacionesConcierto, zonasMaestras }) => {
 
-            // 3. Cruzamos la información usando las variables locales de la suscripción
+          next: ({ relacionesConcierto, zonasMaestras }) => {
+            console.log('RELACIONES CONCIERTO:', relacionesConcierto);
             const zonasMapeadas: ZonaDisponible[] = relacionesConcierto.map((zc: any) => {
-              const zonaInfo = zonasMaestras.find((zm: any) => zm.idZona === zc.idZona);
+
+              const zonaInfo = zonasMaestras.find(
+                (zm: any) => zm.idZona === zc.idZona
+              );
 
               return {
                 idZona: zc.idZona,
@@ -154,45 +159,55 @@ export class DetalleConciertoComponent implements OnInit {
                 nombre: zonaInfo?.nombreZona || 'Zona',
                 precio: zc.precio || 0,
                 cantidadDisponible: zc.cantidadDisponible ?? 0,
-                descripcion: `Entrada válida para la zona ${zonaInfo ? zonaInfo.nombreZona : ''}.`,
-                tieneAsientos: zonaInfo ? zonaInfo.tieneAsiento : false
+                descripcion: `Zona ${zonaInfo?.nombreZona || ''}`,
+                tieneAsientos: zonaInfo?.tieneAsiento || false
               };
             });
 
-            // 4. Construimos el objeto final usando la interfaz ConciertoVisualizacion
-            // Esto separa las propiedades del DTO estricto de lo que requiere la vista
             this.concierto = {
               id: dto.idConcierto || id,
               nombre: dto.nombreConcierto,
-              artista: 'Artista por confirmar', // Más adelante puedes cruzarlo con getArtistasByConcierto(id)
-              imagen: dto.imagenConcierto || 'https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?w=1200&q=80',
-              fecha: dto.fechaConcierto ? new Date(dto.fechaConcierto).toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Por confirmar',
-              hora: dto.fechaConcierto ? new Date(dto.fechaConcierto).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' }) : 'Por confirmar',
+              artista: 'Artista por confirmar',
+              imagen: dto.imagenConcierto ||
+                'https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?w=1200&q=80',
+              fecha: dto.fechaConcierto
+                ? new Date(dto.fechaConcierto).toLocaleDateString('es-CO')
+                : 'Por confirmar',
+              hora: dto.fechaConcierto
+                ? new Date(dto.fechaConcierto).toLocaleTimeString('es-CO')
+                : 'Por confirmar',
               ciudad: 'Bogotá',
-              sede: dto.nombreSede || 'Sede Principal',
+              sede: dto.nombreSede || '',
               genero: 'General',
               edadMinima: dto.edadMinima || 0,
-              descripcion: dto.descripcionConcierto || 'No hay descripción disponible.',
-              zonas: zonasMapeadas // Asignación limpia y segura gracias a la nueva interfaz
+              descripcion: dto.descripcionConcierto || '',
+              zonas: zonasMapeadas
             };
 
-            // Inicializamos los inputs numéricos del carrito
-            this.concierto.zonas.forEach((z: ZonaDisponible) => this.cantidades[z.id] = 0);
+            // inicializar cantidades
+            this.concierto.zonas.forEach(z => {
+              this.cantidades[z.idZona] = 0;
+            });
+
             this.loading = false;
             this.cargarResenas();
             this.cdr.detectChanges();
           },
+
           error: (err) => {
-            console.error('Error procesando las localidades asociadas:', err);
+            console.error(err);
             this.loading = false;
           }
+
         });
 
       },
+
       error: (err) => {
-        console.error('Error al invocar getById en el Service:', err);
+        console.error(err);
         this.router.navigate(['/principal/paginaprincipal']);
       }
+
     });
   }
 
@@ -201,37 +216,101 @@ export class DetalleConciertoComponent implements OnInit {
   }
 
   incrementar(zona: ZonaDisponible): void {
-    const actual = this.getCantidad(zona.id);
+
+    const actual = this.getCantidad(zona.idZona);
+
     if (actual < zona.cantidadDisponible && actual < 10) {
-      this.cantidades[zona.id] = actual + 1;
+      this.cantidades[zona.idZona] = actual + 1;
     }
   }
 
-  decrementar(zonaId: number): void {
-    const actual = this.getCantidad(zonaId);
-    if (actual > 0) this.cantidades[zonaId] = actual - 1;
+  decrementar(idZona: number): void {
+
+    const actual = this.getCantidad(idZona);
+
+    if (actual > 0) {
+      this.cantidades[idZona] = actual - 1;
+    }
   }
 
   get totalBoletas(): number {
-    return this.itemsSeleccionados.reduce((acc, i) => acc + i.cantidad, 0);
+    return this.itemsSeleccionados
+      .reduce((a, b) => a + b.cantidad, 0);
   }
 
   get totalPrecio(): number {
-    return this.itemsSeleccionados.reduce((acc, i) => acc + i.zona.precio * i.cantidad, 0);
+    return this.itemsSeleccionados
+      .reduce((a, b) => a + b.cantidad * b.zona.precio, 0);
   }
 
   formatPrecio(v: number): string {
     return new Intl.NumberFormat('es-CO', {
-      style: 'currency', currency: 'COP', maximumFractionDigits: 0
-    }).format(valor);
+      style: 'currency',
+      currency: 'COP',
+      maximumFractionDigits: 0
+    }).format(v);
   }
 
   irAResumen(): void {
+
+    const correoUsuario = this.authService.getCorreo();
+
+    if (!correoUsuario) {
+      alert('Debes iniciar sesión');
+      return;
+    }
+
+    if (this.itemsSeleccionados.length === 0) {
+      alert('Selecciona al menos una boleta');
+      return;
+    }
+
     this.router.navigate(['/compra/resumen'], {
       state: {
         concierto: this.concierto,
         items: this.itemsSeleccionados,
-        total: this.totalPrecio
+        total: this.totalPrecio,
+        correo: correoUsuario
+      }
+    });
+  }
+
+
+  cargarAsientosReales(zona: ZonaDisponible): void {
+
+    if (this.asientosPorZona[zona.idZona]) return; // ya cargados, no volver a pedir
+
+    this.cargandoAsientos[zona.idZona] = true;
+
+    this.compraService.getLugaresDisponibles(zona.idZonaConcierto).subscribe({
+
+      next: (lugares: Lugar[]) => {
+
+        // Agrupar por fila
+        const filaMap = new Map<string, Lugar[]>();
+
+        lugares.forEach(l => {
+          const fila = l.fila ?? 'A'; // fallback por si viene null
+          if (!filaMap.has(fila)) filaMap.set(fila, []);
+          filaMap.get(fila)!.push(l);
+        });
+
+        // Ordenar filas y asientos dentro de cada fila
+        const matriz: Lugar[][] = Array.from(filaMap.entries())
+          .sort(([a], [b]) => a.localeCompare(b))
+          .map(([, asientos]) =>
+            asientos.sort((a, b) => a.numeroAsiento - b.numeroAsiento)
+          );
+
+        this.asientosPorZona[zona.idZona] = matriz;
+        this.asientosSeleccionados[zona.idZona] = new Set<number>();
+        this.cargandoAsientos[zona.idZona] = false;
+        this.cdr.detectChanges();
+      },
+
+      error: () => {
+        this.cargandoAsientos[zona.idZona] = false;
+        alert('Error al cargar los asientos de esta zona');
       }
     });
   }

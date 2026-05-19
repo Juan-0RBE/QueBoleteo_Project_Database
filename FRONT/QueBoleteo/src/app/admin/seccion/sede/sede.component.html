@@ -54,6 +54,8 @@
       </div>
     </div>
 
+
+
     <!-- Para mostrar errores -->
     <small *ngIf="errorMsg"   class="p-error">{{ errorMsg }}</small>
     <small *ngIf="successMsg" style="color: green">{{ successMsg }}</small>
@@ -127,6 +129,11 @@
                         <input pInputText [(ngModel)]="formularioZona.nombreZona" placeholder="Ej: Platea, VIP" />
                       </div>
 
+                      <div class="field field--full">
+                        <label>URL imagen de sección</label>
+                        <input pInputText [(ngModel)]="formularioSede.imagenSeccion" placeholder="https://..." />
+                      </div>
+
                       <div class="field">
                         <label>Tipo</label>
                         <p-select
@@ -141,11 +148,6 @@
                       <div class="field" *ngIf="!formularioZona.tieneAsiento">
                         <label>Capacidad</label>
                         <p-inputnumber [(ngModel)]="formLugares.capacidadGeneral" [min]="1" placeholder="N° personas" styleClass="w-full"></p-inputnumber>
-                      </div>
-
-                      <div class="field field--full">
-                        <label>URL imagen de sección</label>
-                        <input pInputText [(ngModel)]="formularioSede.imagenSeccion" placeholder="https://..." />
                       </div>
 
                     </div>
