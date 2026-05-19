@@ -38,7 +38,6 @@ export class AdminArtistaComponent implements OnInit {
   successMsg: string = '';
   loading: boolean = false;
 
-  // Panel de géneros
   artistaGeneroAbierto: number | null = null;
   generosAsociados: ArtGen[] = [];
   todosLosGeneros: Genero[] = [];
@@ -54,13 +53,11 @@ export class AdminArtistaComponent implements OnInit {
     private cdr: ChangeDetectorRef,
   ) {}
 
-  // Se ejecuta automáticamente al abrir la pantalla
   ngOnInit(): void {
     this.cargarArtistas();
     this.cargarTodosLosGeneros();
   }
 
-  // Llama al backend y llena la tabla
   cargarArtistas(): void {
     this.artistaService.getAll().subscribe({
       next: (data) => {
@@ -100,7 +97,6 @@ export class AdminArtistaComponent implements OnInit {
     this.loading = true;
 
     if (this.modoEdicion && this.artistaEditandoId !== null) {
-      // Edición — llama al PUT del backend
       this.artistaService.update(this.artistaEditandoId, this.formulario).subscribe({
         next: () => {
           this.successMsg = 'Artista actualizado correctamente';
@@ -113,7 +109,6 @@ export class AdminArtistaComponent implements OnInit {
         },
       });
     } else {
-      // Creación — llama al POST del backend
       this.artistaService.create(this.formulario).subscribe({
         next: () => {
           this.successMsg = 'Artista creado correctamente';
@@ -146,8 +141,6 @@ export class AdminArtistaComponent implements OnInit {
     this.loading = false;
   }
 
-  // Panel de géneros
-
   togglePanelGeneros(artista: Artista): void {
     const id = artista.idArtista!;
 
@@ -171,7 +164,6 @@ export class AdminArtistaComponent implements OnInit {
     });
   }
 
-  // Devuelve el nombre de un género dado su ID
   nombreGenero(idGenero: number): string {
     return (
       this.todosLosGeneros.find((g) => g.idGenero === idGenero)?.nombreGenero ?? `#${idGenero}`
@@ -216,7 +208,6 @@ export class AdminArtistaComponent implements OnInit {
     });
   }
 
-  // Géneros disponibles = todos los géneros menos los ya asociados
   get generosDisponibles(): Genero[] {
     const asociadosIds = new Set(this.generosAsociados.map((a) => a.idGenero));
     return this.todosLosGeneros.filter((g) => !asociadosIds.has(g.idGenero!));

@@ -70,7 +70,6 @@
     <div class="hero-meta">
       <span><i class="pi pi-calendar"></i> {{ conciertoDestacado.fecha }}</span>
       <span><i class="pi pi-map-marker"></i> {{ conciertoDestacado.sede }}</span>
-      <span><i class="pi pi-tag"></i> Desde {{ formatPrecio(conciertoDestacado.precioDesde) }}</span>
     </div>
     <p-button
       label="Comprar boletas"
@@ -156,7 +155,6 @@
             <span><i class="pi pi-map-marker"></i> {{ c.sede }}</span>
           </div>
           <div class="card-footer">
-            <span class="card-price">Desde {{ formatPrecio(c.precioDesde) }}</span>
             <p-button
               label="Ver"
               icon="pi pi-arrow-right"

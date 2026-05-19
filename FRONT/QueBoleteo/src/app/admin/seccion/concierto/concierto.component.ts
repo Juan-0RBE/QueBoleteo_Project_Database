@@ -8,14 +8,7 @@ import { TableModule } from 'primeng/table';
 import { DatePickerModule } from 'primeng/datepicker';
 import { TextareaModule } from 'primeng/textarea';
 import { InputNumberModule } from 'primeng/inputnumber';
-import {
-  ConciertoService,
-  ConciertoDTO,
-  ConArt,
-  ConGru,
-  ConOrg,
-  ZonaConcierto,
-} from '../../../core/services/concierto.service';
+import { ConciertoService, ConciertoDTO, ConArt, ConGru, ConOrg, ZonaConcierto } from '../../../core/services/concierto.service';
 import { ArtistaService, Artista } from '../../../core/services/artista.service';
 import { GrupoService, Grupo } from '../../../core/services/grupo.service';
 import { OrganizadorService, Organizador } from '../../../core/services/organizador.service';
@@ -42,7 +35,6 @@ import { of } from 'rxjs';
   styleUrls: ['./concierto.component.css'],
 })
 export class AdminConciertoComponent implements OnInit {
-  // ── CRUD concierto ────────────────────────────────────
   mostrarFormulario = false;
   modoEdicion = false;
   conciertoEditandoId: number | null = null;
@@ -54,7 +46,6 @@ export class AdminConciertoComponent implements OnInit {
   successMsg = '';
   loading = false;
 
-  // Datos para dropdowns del formulario
   sedes: Sede[] = [];
   tours: Tour[] = [];
 
@@ -64,7 +55,6 @@ export class AdminConciertoComponent implements OnInit {
     { label: 'Finalizado', value: 'Finalizado' },
   ];
 
-  // ── Panel de artistas ─────────────────────────────────
   conciertoArtistaAbierto: number | null = null;
   artistasAsociados: ConArt[] = [];
   todosLosArtistas: Artista[] = [];
@@ -72,7 +62,6 @@ export class AdminConciertoComponent implements OnInit {
   errorArtista = '';
   successArtista = '';
 
-  // ── Panel de grupos ───────────────────────────────────
   conciertoGrupoAbierto: number | null = null;
   gruposAsociados: ConGru[] = [];
   todosLosGrupos: Grupo[] = [];
@@ -80,7 +69,6 @@ export class AdminConciertoComponent implements OnInit {
   errorGrupo = '';
   successGrupo = '';
 
-  // ── Panel de organizadores ────────────────────────────
   conciertoOrgAbierto: number | null = null;
   organizadoresAsociados: ConOrg[] = [];
   todosLosOrganizadores: Organizador[] = [];
@@ -88,20 +76,17 @@ export class AdminConciertoComponent implements OnInit {
   errorOrg = '';
   successOrg = '';
 
-  // ── Panel de zonas ────────────────────────────────────
   conciertoZonaAbierto: number | null = null;
   zonasConcierto: ZonaConcierto[] = [];
-  todasLasZonas: Zona[] = []; // Zona viene de sede.service.ts
+  todasLasZonas: Zona[] = [];
   zonaSeleccionada: Zona | null = null;
   precioNuevo: number = 0;
-  // Para edición inline de precio/cantidad
-  editandoZona: number | null = null; // idPrecio en edición
+  editandoZona: number | null = null;
   precioEditando: number = 0;
   cantidadEditando: number = 0;
   errorZona = '';
   successZona = '';
 
-  // Nombre del concierto activo en cualquier panel
   nombreConciertoPanel = '';
 
   constructor(
@@ -122,8 +107,6 @@ export class AdminConciertoComponent implements OnInit {
     this.cargarTodosLosGrupos();
     this.cargarTodosLosOrganizadores();
   }
-
-  // ── Carga inicial ─────────────────────────────────────
 
   cargarConciertos(): void {
     this.conciertoService
@@ -172,8 +155,6 @@ export class AdminConciertoComponent implements OnInit {
     });
   }
 
-  // ── CRUD ──────────────────────────────────────────────
-
   abrirCrear(): void {
     this.formulario = this.formularioVacio();
     this.modoEdicion = false;
@@ -197,7 +178,6 @@ export class AdminConciertoComponent implements OnInit {
     this.successMsg = '';
     this.loading = true;
 
-    // Formatear fecha si viene como Date
     const body: ConciertoDTO = {
       ...this.formulario,
       ...this.formulario,
@@ -263,8 +243,6 @@ export class AdminConciertoComponent implements OnInit {
     if (!fecha) return '—';
     return new Date(fecha).toLocaleDateString('es-CO');
   }
-
-  // ── Panel de artistas ─────────────────────────────────
 
   togglePanelArtistas(c: ConciertoDTO): void {
     const id = c.idConcierto!;
@@ -338,8 +316,6 @@ export class AdminConciertoComponent implements OnInit {
     return this.todosLosArtistas.filter((a) => !ids.has(a.idArtista!));
   }
 
-  // ── Panel de grupos ───────────────────────────────────
-
   togglePanelGrupos(c: ConciertoDTO): void {
     const id = c.idConcierto!;
     if (this.conciertoGrupoAbierto === id) {
@@ -409,8 +385,6 @@ export class AdminConciertoComponent implements OnInit {
     return this.todosLosGrupos.filter((g) => !ids.has(g.idGrupo!));
   }
 
-  // ── Panel de organizadores ────────────────────────────
-
   togglePanelOrganizadores(c: ConciertoDTO): void {
     const id = c.idConcierto!;
     if (this.conciertoOrgAbierto === id) {
@@ -479,8 +453,6 @@ export class AdminConciertoComponent implements OnInit {
     return this.todosLosOrganizadores.filter((o) => !nombres.has(o.nombreOrganizador));
   }
 
-  // ── Panel de zonas ────────────────────────────────────
-
   togglePanelZonas(c: ConciertoDTO): void {
     const id = c.idConcierto!;
     if (this.conciertoZonaAbierto === id) {
@@ -496,7 +468,6 @@ export class AdminConciertoComponent implements OnInit {
     this.errorZona = '';
     this.successZona = '';
     this.cargarZonasConcierto(id);
-    // Cargar zonas de la sede de este concierto
     this.cargarZonasDeSede(c.nombreSede);
   }
 
@@ -525,7 +496,7 @@ export class AdminConciertoComponent implements OnInit {
       .subscribe({
         next: (data) => {
           this.todasLasZonas = (data ?? []).filter((z) => z.nombreSede === nombreSede);
-          this.cdr.detectChanges(); // fix NG0100
+          this.cdr.detectChanges();
         },
       });
   }
