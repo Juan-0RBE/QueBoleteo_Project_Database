@@ -145,17 +145,18 @@ export class DetalleConciertoComponent implements OnInit {
 
           next: ({ relacionesConcierto, zonasMaestras }) => {
             console.log('RELACIONES CONCIERTO:', relacionesConcierto);
-            const zonasMapeadas: ZonaDisponible[] = relacionesConcierto.map((zc: any) => {
+            const relaciones = relacionesConcierto ?? [];
+            const maestras = zonasMaestras ?? [];
 
-              const zonaInfo = zonasMaestras.find(
+
+            const zonasMapeadas: ZonaDisponible[] = relaciones.map((zc: any) => {
+              const zonaInfo = maestras.find(
                 (zm: any) => zm.idZona === zc.idZona
               );
 
               return {
                 idZona: zc.idZona,
-
                 idZonaConcierto: zc.idZonaConcierto ?? zc.id ?? zc.idPrecio,
-
                 nombre: zonaInfo?.nombreZona || 'Zona',
                 precio: zc.precio || 0,
                 cantidadDisponible: zc.cantidadDisponible ?? 0,
@@ -435,7 +436,8 @@ export class DetalleConciertoComponent implements OnInit {
     this.resenaService.getByConcierto(this.concierto.nombre).subscribe({
       next: (data) => {
         this.resenas = data ?? [];   // ← si data es null, usar []
-        this.cargandoResenas = false;
+        this.cargandoResenas = false
+        this.cdr.detectChanges();
       },
       error: () => {
         this.resenas = [];
