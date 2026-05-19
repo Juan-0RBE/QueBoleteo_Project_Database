@@ -22,14 +22,11 @@ public class LugarService implements CRUDOperation<LugarDTO> {
 	@Autowired
 	private ZonaRepository zonaRepo;
 
-	// CAMBIO v4: BoletoRepository eliminado — Lugar ya no gestiona boletos
-
 	public LugarService() {
 	}
 
 	/**
-	 * Convierte un DTO a entidad. Los lugares se crean siempre libres — la
-	 * asignación de boleto ocurre en VentaService durante la compra.
+	 * Convierte un DTO a entidad.
 	 *
 	 * @param dto DTO del lugar
 	 * @return Entidad Lugar lista para persistir
@@ -48,8 +45,7 @@ public class LugarService implements CRUDOperation<LugarDTO> {
 	}
 
 	/**
-	 * Convierte una entidad a DTO. CAMBIO v4: ya no incluye codigoBoleto — esa
-	 * relación vive en Boleto.
+	 * Convierte una entidad a DTO.
 	 *
 	 * @param entity Entidad Lugar
 	 * @return DTO del lugar
@@ -68,7 +64,7 @@ public class LugarService implements CRUDOperation<LugarDTO> {
 	}
 
 	/**
-	 * Crea un nuevo lugar libre (sin boleto asignado). Verifica que no exista ya
+	 * Crea un nuevo lugar libre. Verifica que no exista ya
 	 * ese número de asiento en la misma zona.
 	 *
 	 * @param newData DTO con los datos del lugar
@@ -135,8 +131,7 @@ public class LugarService implements CRUDOperation<LugarDTO> {
 	}
 
 	/**
-	 * Actualiza los datos físicos de un lugar (asiento, fila, zona). La asignación
-	 * de boleto ocurre exclusivamente en VentaService.
+	 * Actualiza los datos físicos de un lugar.
 	 *
 	 * @param id      ID del lugar a actualizar
 	 * @param newData Nuevos datos del lugar

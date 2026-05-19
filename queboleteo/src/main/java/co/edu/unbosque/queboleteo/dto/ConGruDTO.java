@@ -11,6 +11,8 @@ public class ConGruDTO {
     }
 
     /**
+     * Constructor
+     * 
      * @param idConcierto
      * @param idGrupo
      */

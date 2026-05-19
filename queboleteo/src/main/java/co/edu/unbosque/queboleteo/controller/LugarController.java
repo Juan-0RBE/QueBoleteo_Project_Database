@@ -25,102 +25,101 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @CrossOrigin(origins = { "*" })
 @RequestMapping(path = { "/lugar" })
-@Tag(name = "Gestión de Lugares",
-    description = "Endpoints para la gestión de lugares en zonas")
+@Tag(name = "Gestión de Lugares", description = "Endpoints para la gestión de lugares en zonas")
 @SecurityRequirement(name = "bearerAuth")
 public class LugarController {
 
-    @Autowired
-    private LugarService lugarService;
+	@Autowired
+	private LugarService lugarService;
 
-    /**
-     * Crea un nuevo lugar.
-     *
-     * @param lugar DTO del lugar
-     * @return Mensaje de éxito o error
-     */
-    @Operation(summary = "Crear lugar")
-    @PostMapping("/crear")
-    public ResponseEntity<String> create(@RequestBody LugarDTO lugar) {
-        int status = lugarService.create(lugar);
-        if (status == 0) {
-            return new ResponseEntity<>("Lugar creado correctamente", HttpStatus.CREATED);
-        }
-        return new ResponseEntity<>("Ya existe ese asiento en esa zona", HttpStatus.NOT_ACCEPTABLE);
-    }
+	/**
+	 * Crea un nuevo lugar.
+	 *
+	 * @param lugar DTO del lugar
+	 * @return Mensaje de éxito o error
+	 */
+	@Operation(summary = "Crear lugar")
+	@PostMapping("/crear")
+	public ResponseEntity<String> create(@RequestBody LugarDTO lugar) {
+		int status = lugarService.create(lugar);
+		if (status == 0) {
+			return new ResponseEntity<>("Lugar creado correctamente", HttpStatus.CREATED);
+		}
+		return new ResponseEntity<>("Ya existe ese asiento en esa zona", HttpStatus.NOT_ACCEPTABLE);
+	}
 
-    /**
-     * Obtiene todos los lugares.
-     *
-     * @return Lista de lugares
-     */
-    @Operation(summary = "Obtener todos los lugares")
-    @GetMapping("/all")
-    public ResponseEntity<List<LugarDTO>> getAll() {
-        List<LugarDTO> lista = lugarService.getAll();
-        if (lista.isEmpty()) {
-            return new ResponseEntity<>(lista, HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity<>(lista, HttpStatus.OK);
-    }
+	/**
+	 * Obtiene todos los lugares.
+	 *
+	 * @return Lista de lugares
+	 */
+	@Operation(summary = "Obtener todos los lugares")
+	@GetMapping("/all")
+	public ResponseEntity<List<LugarDTO>> getAll() {
+		List<LugarDTO> lista = lugarService.getAll();
+		if (lista.isEmpty()) {
+			return new ResponseEntity<>(lista, HttpStatus.NO_CONTENT);
+		}
+		return new ResponseEntity<>(lista, HttpStatus.OK);
+	}
 
-    /**
-     * Obtiene un lugar por ID.
-     *
-     * @param id ID del lugar
-     * @return Lugar encontrado
-     */
-    @Operation(summary = "Obtener lugar por ID")
-    @GetMapping("/{id}")
-    public ResponseEntity<LugarDTO> getById(@PathVariable Long id) {
-        LugarDTO found = lugarService.getById(id);
-        if (found != null) {
-            return new ResponseEntity<>(found, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
+	/**
+	 * Obtiene un lugar por ID.
+	 *
+	 * @param id ID del lugar
+	 * @return Lugar encontrado
+	 */
+	@Operation(summary = "Obtener lugar por ID")
+	@GetMapping("/{id}")
+	public ResponseEntity<LugarDTO> getById(@PathVariable Long id) {
+		LugarDTO found = lugarService.getById(id);
+		if (found != null) {
+			return new ResponseEntity<>(found, HttpStatus.OK);
+		}
+		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	}
 
-    /**
-     * Actualiza un lugar existente.
-     *
-     * @param id    ID del lugar
-     * @param lugar Nuevos datos
-     * @return Mensaje de éxito o error
-     */
-    @Operation(summary = "Actualizar lugar")
-    @PutMapping("/update/{id}")
-    public ResponseEntity<String> updateById(@PathVariable Long id, @RequestBody LugarDTO lugar) {
-        int status = lugarService.updateById(id, lugar);
-        if (status == 0) {
-            return new ResponseEntity<>("Lugar actualizado correctamente", HttpStatus.OK);
-        }
-        return new ResponseEntity<>("Lugar no encontrado", HttpStatus.NOT_FOUND);
-    }
+	/**
+	 * Actualiza un lugar existente.
+	 *
+	 * @param id    ID del lugar
+	 * @param lugar Nuevos datos
+	 * @return Mensaje de éxito o error
+	 */
+	@Operation(summary = "Actualizar lugar")
+	@PutMapping("/update/{id}")
+	public ResponseEntity<String> updateById(@PathVariable Long id, @RequestBody LugarDTO lugar) {
+		int status = lugarService.updateById(id, lugar);
+		if (status == 0) {
+			return new ResponseEntity<>("Lugar actualizado correctamente", HttpStatus.OK);
+		}
+		return new ResponseEntity<>("Lugar no encontrado", HttpStatus.NOT_FOUND);
+	}
 
-    /**
-     * Elimina un lugar por ID.
-     *
-     * @param id ID del lugar
-     * @return Mensaje de éxito o error
-     */
-    @Operation(summary = "Eliminar lugar")
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteById(@PathVariable Long id) {
-        int status = lugarService.deleteById(id);
-        if (status == 0) {
-            return new ResponseEntity<>("Lugar eliminado correctamente", HttpStatus.OK);
-        }
-        return new ResponseEntity<>("Lugar no encontrado", HttpStatus.NOT_FOUND);
-    }
+	/**
+	 * Elimina un lugar por ID.
+	 *
+	 * @param id ID del lugar
+	 * @return Mensaje de éxito o error
+	 */
+	@Operation(summary = "Eliminar lugar")
+	@DeleteMapping("/delete/{id}")
+	public ResponseEntity<String> deleteById(@PathVariable Long id) {
+		int status = lugarService.deleteById(id);
+		if (status == 0) {
+			return new ResponseEntity<>("Lugar eliminado correctamente", HttpStatus.OK);
+		}
+		return new ResponseEntity<>("Lugar no encontrado", HttpStatus.NOT_FOUND);
+	}
 
-    /**
-     * Cuenta el total de lugares.
-     *
-     * @return Cantidad total de lugares
-     */
-    @Operation(summary = "Contar lugares")
-    @GetMapping("/count")
-    public ResponseEntity<Long> count() {
-        return new ResponseEntity<>(lugarService.count(), HttpStatus.OK);
-    }
+	/**
+	 * Cuenta el total de lugares.
+	 *
+	 * @return Cantidad total de lugares
+	 */
+	@Operation(summary = "Contar lugares")
+	@GetMapping("/count")
+	public ResponseEntity<Long> count() {
+		return new ResponseEntity<>(lugarService.count(), HttpStatus.OK);
+	}
 }

@@ -151,17 +151,6 @@ public class VentaController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}
 	}
-	/*
-	@Operation(summary = "Realizar compra de boletos")
-	@PostMapping("/comprar")
-	public ResponseEntity<CompraResponseDto> comprar(@RequestBody CompraRequestDto dto) {
-		try {
-			CompraResponseDto response = ventaService.realizarCompra(dto);
-			return new ResponseEntity<>(response, HttpStatus.CREATED);
-		} catch (RuntimeException e) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
-	}*/
 
 	/**
 	 * Retorna los lugares disponibles (libres) de una zona-concierto. Útil para que

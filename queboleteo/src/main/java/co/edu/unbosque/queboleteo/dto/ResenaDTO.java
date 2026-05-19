@@ -15,6 +15,9 @@ public class ResenaDTO {
     }
 
     /**
+     * Constructor
+     * 
+     * 
      * @param comentario
      * @param calificacion
      * @param correoUsuario

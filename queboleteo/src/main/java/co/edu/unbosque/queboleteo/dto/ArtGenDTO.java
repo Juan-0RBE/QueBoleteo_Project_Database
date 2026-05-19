@@ -11,6 +11,8 @@ public class ArtGenDTO {
 	}
 
 	/**
+	 * Constructor
+	 * 
 	 * @param idArtista
 	 * @param idGenero
 	 */

@@ -25,8 +25,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @CrossOrigin(origins = { "*" })
 @RequestMapping(path = { "/sede" })
-@Tag(name = "Gestión de Sedes",
-	description = "Endpoints para la gestión de sedes")
+@Tag(name = "Gestión de Sedes", description = "Endpoints para la gestión de sedes")
 @SecurityRequirement(name = "bearerAuth")
 public class SedeController {
 
@@ -41,21 +40,12 @@ public class SedeController {
 	 */
 	@Operation(summary = "Crear sede")
 	@PostMapping("/crear")
-	public ResponseEntity<String> create(
-			@RequestBody SedeDTO sede) {
-
+	public ResponseEntity<String> create(@RequestBody SedeDTO sede) {
 		int status = sedeService.create(sede);
-
 		if (status == 0) {
-
-			return new ResponseEntity<>(
-					"Sede creada correctamente",
-					HttpStatus.CREATED);
+			return new ResponseEntity<>("Sede creada correctamente", HttpStatus.CREATED);
 		}
-
-		return new ResponseEntity<>(
-				"Ya existe una sede con ese nombre",
-				HttpStatus.NOT_ACCEPTABLE);
+		return new ResponseEntity<>("Ya existe una sede con ese nombre", HttpStatus.NOT_ACCEPTABLE);
 	}
 
 	/**
@@ -66,19 +56,11 @@ public class SedeController {
 	@Operation(summary = "Obtener todas las sedes")
 	@GetMapping("/all")
 	public ResponseEntity<List<SedeDTO>> getAll() {
-
 		List<SedeDTO> lista = sedeService.getAll();
-
 		if (lista.isEmpty()) {
-
-			return new ResponseEntity<>(
-					lista,
-					HttpStatus.NO_CONTENT);
+			return new ResponseEntity<>(lista, HttpStatus.NO_CONTENT);
 		}
-
-		return new ResponseEntity<>(
-				lista,
-				HttpStatus.OK);
+		return new ResponseEntity<>(lista, HttpStatus.OK);
 	}
 
 	/**
@@ -89,49 +71,29 @@ public class SedeController {
 	 */
 	@Operation(summary = "Obtener sede por nombre")
 	@GetMapping("/{nombre}")
-	public ResponseEntity<SedeDTO> getById(
-			@PathVariable String nombre) {
-
+	public ResponseEntity<SedeDTO> getById(@PathVariable String nombre) {
 		SedeDTO found = sedeService.getById(nombre);
-
 		if (found != null) {
-
-			return new ResponseEntity<>(
-					found,
-					HttpStatus.OK);
+			return new ResponseEntity<>(found, HttpStatus.OK);
 		}
-
-		return new ResponseEntity<>(
-				HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 
 	/**
 	 * Actualiza una sede existente.
 	 * 
 	 * @param nombre Nombre actual
-	 * @param sede Nuevos datos
+	 * @param sede   Nuevos datos
 	 * @return Mensaje de éxito o error
 	 */
 	@Operation(summary = "Actualizar sede")
 	@PutMapping("/update/{nombre}")
-	public ResponseEntity<String> updateById(
-			@PathVariable String nombre,
-			@RequestBody SedeDTO sede) {
-
-		int status = sedeService.updateById(
-				nombre,
-				sede);
-
+	public ResponseEntity<String> updateById(@PathVariable String nombre, @RequestBody SedeDTO sede) {
+		int status = sedeService.updateById(nombre, sede);
 		if (status == 0) {
-
-			return new ResponseEntity<>(
-					"Sede actualizada correctamente",
-					HttpStatus.OK);
+			return new ResponseEntity<>("Sede actualizada correctamente", HttpStatus.OK);
 		}
-
-		return new ResponseEntity<>(
-				"Sede no encontrada",
-				HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>("Sede no encontrada", HttpStatus.NOT_FOUND);
 	}
 
 	/**
@@ -142,21 +104,12 @@ public class SedeController {
 	 */
 	@Operation(summary = "Eliminar sede")
 	@DeleteMapping("/delete/{nombre}")
-	public ResponseEntity<String> deleteById(
-			@PathVariable String nombre) {
-
+	public ResponseEntity<String> deleteById(@PathVariable String nombre) {
 		int status = sedeService.deleteById(nombre);
-
 		if (status == 0) {
-
-			return new ResponseEntity<>(
-					"Sede eliminada correctamente",
-					HttpStatus.OK);
+			return new ResponseEntity<>("Sede eliminada correctamente", HttpStatus.OK);
 		}
-
-		return new ResponseEntity<>(
-				"Sede no encontrada",
-				HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>("Sede no encontrada", HttpStatus.NOT_FOUND);
 	}
 
 	/**
@@ -168,9 +121,7 @@ public class SedeController {
 	@GetMapping("/count")
 	public ResponseEntity<Long> count() {
 
-		return new ResponseEntity<>(
-				sedeService.count(),
-				HttpStatus.OK);
+		return new ResponseEntity<>(sedeService.count(), HttpStatus.OK);
 	}
 
 }

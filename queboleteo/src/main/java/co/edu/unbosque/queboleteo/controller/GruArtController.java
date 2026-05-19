@@ -40,9 +40,6 @@ public class GruArtController {
 	@Operation(summary = "Asociar artista a grupo con rol")
 	@PostMapping("/crear")
 	public ResponseEntity<String> create(@RequestBody GruArtDTO dto) {
-	    System.out.println("idGrupo: " + dto.getIdGrupo());
-	    System.out.println("idArtista: " + dto.getIdArtista());
-	    System.out.println("rol: " + dto.getRol());
 		int status = gruArtService.create(dto);
 		if (status == 0)
 			return new ResponseEntity<>("Asociación creada correctamente", HttpStatus.CREATED);

@@ -88,6 +88,8 @@ public class Usuario implements UserDetails {
 	}
 
 	/**
+	 * Constructor
+	 * 
 	 * @param correo
 	 * @param nombreUsuario
 	 * @param clave

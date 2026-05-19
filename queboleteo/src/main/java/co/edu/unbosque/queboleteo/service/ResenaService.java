@@ -37,8 +37,7 @@ public class ResenaService implements CRUDOperation<ResenaDTO> {
 	}
 
 	/**
-	 * Convierte un DTO a entidad. Resuelve las relaciones con Usuario (correo) y
-	 * Concierto (idConcierto).
+	 * Convierte un DTO a entidad.
 	 *
 	 * @param dto DTO de la reseña
 	 * @return Entidad Resena lista para persistir

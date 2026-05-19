@@ -34,10 +34,11 @@ public class Tour {
 	private LocalDate fechaFinal;
 
 	public Tour() {
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
+	 * Constructor
+	 * 
 	 * @param nombreTour
 	 * @param descripcionTour
 	 * @param imagenTour

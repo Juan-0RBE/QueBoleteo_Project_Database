@@ -30,7 +30,7 @@ public interface BoletoRepository extends JpaRepository<Boleto, Long> {
 
 	
 	/**
-	 * Hace una consulta para ver si el usuario tiene comprado un boleto de un concierto
+	 * Hace una consulta para ver si el usuario tiene comprado un boleto de un concierto.
 	 * 
 	 * @param correo
 	 * @param idConcierto

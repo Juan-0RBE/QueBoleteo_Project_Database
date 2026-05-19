@@ -12,6 +12,8 @@ public class OrganizadorDTO {
 	}
 
 	/**
+	 * Constructor
+	 * 
 	 * @param nombreOrganizador
 	 * @param correoOrganizador
 	 * @param logo
@@ -27,6 +29,9 @@ public class OrganizadorDTO {
 	}
 
 	/**
+	 * Constructor
+	 * 
+	 * 
 	 * @return the nombreOrganizador
 	 */
 	public String getNombreOrganizador() {
@@ -34,6 +39,8 @@ public class OrganizadorDTO {
 	}
 
 	/**
+	 * 
+	 * 
 	 * @param nombreOrganizador the nombreOrganizador to set
 	 */
 	public void setNombreOrganizador(String nombreOrganizador) {

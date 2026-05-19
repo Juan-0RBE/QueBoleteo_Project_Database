@@ -31,7 +31,6 @@ public class EmailService {
 		String asunto = "¡Bienvenido a QueBoleteo!";
 		String path = "/auth/verificar";
 		String mensaje = "Haz click en el botón de abajo para verificar tu cuenta de QueBoleteo";
-		// ⚠️ Pasamos el correo directamente — es la PK del usuario
 		enviarEmail(correo, asunto, path, mensaje);
 	}
 

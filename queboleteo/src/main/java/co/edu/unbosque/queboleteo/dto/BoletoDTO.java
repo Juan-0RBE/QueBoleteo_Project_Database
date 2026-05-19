@@ -14,6 +14,8 @@ public class BoletoDTO {
     }
 
     /**
+     * Constructor
+     * 
      * @param estadoBoleto
      * @param idPrecio
      * @param idVenta

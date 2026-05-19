@@ -20,6 +20,7 @@ public class ArtGenId implements Serializable {
 
 	
 	/**
+	 * Constructor
 	 * 
 	 * @param artistaIndividualIdArtista
 	 * @param generoIdGenero

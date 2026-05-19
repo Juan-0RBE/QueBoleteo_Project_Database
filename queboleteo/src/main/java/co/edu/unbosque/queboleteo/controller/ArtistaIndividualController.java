@@ -25,8 +25,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @CrossOrigin(origins = { "*" })
 @RequestMapping(path = { "/artistaindividual" })
-@Tag(name = "Gestión de Artistas Individuales", 
-	description = "Endpoints para la gestión de artistas individuales")
+@Tag(name = "Gestión de Artistas Individuales", description = "Endpoints para la gestión de artistas individuales")
 @SecurityRequirement(name = "bearerAuth")
 public class ArtistaIndividualController {
 
@@ -41,22 +40,17 @@ public class ArtistaIndividualController {
 	 */
 	@Operation(summary = "Crear artista individual")
 	@PostMapping("/crear")
-	public ResponseEntity<String> create(
-			@RequestBody ArtistaIndividualDTO artista) {
+	public ResponseEntity<String> create(@RequestBody ArtistaIndividualDTO artista) {
 
 		int status = artistaService.create(artista);
 
 		if (status == 0) {
 
-			return new ResponseEntity<>(
-					"Artista creado correctamente",
-					HttpStatus.CREATED);
+			return new ResponseEntity<>("Artista creado correctamente", HttpStatus.CREATED);
 
 		} else {
 
-			return new ResponseEntity<>(
-					"Ya existe un artista con ese nombre",
-					HttpStatus.NOT_ACCEPTABLE);
+			return new ResponseEntity<>("Ya existe un artista con ese nombre", HttpStatus.NOT_ACCEPTABLE);
 		}
 	}
 
@@ -73,14 +67,10 @@ public class ArtistaIndividualController {
 
 		if (lista.isEmpty()) {
 
-			return new ResponseEntity<>(
-					lista,
-					HttpStatus.NO_CONTENT);
+			return new ResponseEntity<>(lista, HttpStatus.NO_CONTENT);
 		}
 
-		return new ResponseEntity<>(
-				lista,
-				HttpStatus.OK);
+		return new ResponseEntity<>(lista, HttpStatus.OK);
 	}
 
 	/**
@@ -91,47 +81,37 @@ public class ArtistaIndividualController {
 	 */
 	@Operation(summary = "Obtener artista por ID")
 	@GetMapping("/{id}")
-	public ResponseEntity<ArtistaIndividualDTO> getById(
-			@PathVariable Long id) {
+	public ResponseEntity<ArtistaIndividualDTO> getById(@PathVariable Long id) {
 
 		ArtistaIndividualDTO found = artistaService.getById(id);
 
 		if (found != null) {
 
-			return new ResponseEntity<>(
-					found,
-					HttpStatus.OK);
+			return new ResponseEntity<>(found, HttpStatus.OK);
 		}
 
-		return new ResponseEntity<>(
-				HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 
 	/**
 	 * Actualiza un artista existente.
 	 * 
-	 * @param id ID del artista
+	 * @param id      ID del artista
 	 * @param artista Nuevos datos
 	 * @return Mensaje de éxito o error
 	 */
 	@Operation(summary = "Actualizar artista")
 	@PutMapping("/update/{id}")
-	public ResponseEntity<String> updateById(
-			@PathVariable Long id,
-			@RequestBody ArtistaIndividualDTO artista) {
+	public ResponseEntity<String> updateById(@PathVariable Long id, @RequestBody ArtistaIndividualDTO artista) {
 
 		int status = artistaService.updateById(id, artista);
 
 		if (status == 0) {
 
-			return new ResponseEntity<>(
-					"Artista actualizado correctamente",
-					HttpStatus.OK);
+			return new ResponseEntity<>("Artista actualizado correctamente", HttpStatus.OK);
 		}
 
-		return new ResponseEntity<>(
-				"Artista no encontrado",
-				HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>("Artista no encontrado", HttpStatus.NOT_FOUND);
 	}
 
 	/**
@@ -142,21 +122,16 @@ public class ArtistaIndividualController {
 	 */
 	@Operation(summary = "Eliminar artista")
 	@DeleteMapping("/delete/{id}")
-	public ResponseEntity<String> deleteById(
-			@PathVariable Long id) {
+	public ResponseEntity<String> deleteById(@PathVariable Long id) {
 
 		int status = artistaService.deleteById(id);
 
 		if (status == 0) {
 
-			return new ResponseEntity<>(
-					"Artista eliminado correctamente",
-					HttpStatus.OK);
+			return new ResponseEntity<>("Artista eliminado correctamente", HttpStatus.OK);
 		}
 
-		return new ResponseEntity<>(
-				"Artista no encontrado",
-				HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>("Artista no encontrado", HttpStatus.NOT_FOUND);
 	}
 
 	/**
@@ -168,9 +143,7 @@ public class ArtistaIndividualController {
 	@GetMapping("/count")
 	public ResponseEntity<Long> count() {
 
-		return new ResponseEntity<>(
-				artistaService.count(),
-				HttpStatus.OK);
+		return new ResponseEntity<>(artistaService.count(), HttpStatus.OK);
 	}
 
 }

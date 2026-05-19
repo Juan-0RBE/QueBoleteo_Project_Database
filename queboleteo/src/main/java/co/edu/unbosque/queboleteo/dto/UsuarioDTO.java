@@ -8,34 +8,37 @@ import co.edu.unbosque.queboleteo.entity.Usuario.Role;
 public class UsuarioDTO {
 
 	private String correo;
-
 	private String nombreUsuario;
-
 	private String clave;
-
 	private String documentoIdentidad;
-
 	private String primerNombre;
-
 	private String segundoNombre;
-
 	private String primerApellido;
-
 	private String segundoApellido;
-
 	private LocalDate fechaNacimiento;
-
 	private Integer edad;
-
 	private String numeroTelefono;
-
 	private Boolean isVerified;
-
 	private Role role;
 
 	public UsuarioDTO() {
 	}
 
+	/**
+	 * Constructor
+	 * 
+	 * @param correo
+	 * @param nombreUsuario
+	 * @param clave
+	 * @param documentoIdentidad
+	 * @param primerNombre
+	 * @param segundoNombre
+	 * @param primerApellido
+	 * @param segundoApellido
+	 * @param fechaNacimiento
+	 * @param edad
+	 * @param numeroTelefono
+	 */
 	public UsuarioDTO(String correo, String nombreUsuario, String clave,
 			String documentoIdentidad, String primerNombre,
 			String segundoNombre, String primerApellido,

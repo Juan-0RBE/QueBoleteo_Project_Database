@@ -28,6 +28,7 @@ public class GruGen {
 	}
 
 	/**
+	 * Constructor
 	 * 
 	 * @param grupo
 	 * @param genero

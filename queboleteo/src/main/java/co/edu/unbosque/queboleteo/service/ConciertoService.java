@@ -21,8 +21,6 @@ public class ConciertoService implements CRUDOperation<ConciertoDTO> {
 	@Autowired
 	private ConciertoRepository conciertoRepo;
 
-	// ⚠️ Necesitamos los repos de Tour y Sede para poder buscar
-	// los objetos completos a partir del ID/nombre que llega en el DTO
 	@Autowired
 	private TourRepository tourRepo;
 
@@ -31,10 +29,6 @@ public class ConciertoService implements CRUDOperation<ConciertoDTO> {
 
 	public ConciertoService() {
 	}
-
-	// ─────────────────────────────────────────────
-	// Métodos auxiliares de mapeo manual
-	// ─────────────────────────────────────────────
 
 	/**
 	 * Convierte un DTO a entidad.
@@ -52,13 +46,11 @@ public class ConciertoService implements CRUDOperation<ConciertoDTO> {
 		entity.setFechaConcierto(dto.getFechaConcierto());
 		entity.setEstadoConcierto(dto.getEstadoConcierto());
 
-		// Resolvemos la relación con Tour usando su ID
 		if (dto.getIdTour() != null) {
 			Optional<Tour> tour = tourRepo.findById(dto.getIdTour());
 			tour.ifPresent(entity::setTour);
 		}
 
-		// Resolvemos la relación con Sede usando su nombre (PK de Sede)
 		if (dto.getNombreSede() != null) {
 			Optional<Sede> sede = sedeRepo.findById(dto.getNombreSede());
 			sede.ifPresent(entity::setSede);
@@ -68,8 +60,7 @@ public class ConciertoService implements CRUDOperation<ConciertoDTO> {
 	}
 
 	/**
-	 * Convierte una entidad a DTO. ⚠️ Extraemos solo las claves primarias de Tour y
-	 * Sede, no los objetos completos, para no exponer datos innecesarios.
+	 * Convierte una entidad a DTO.
 	 *
 	 * @param entity Entidad Concierto
 	 * @return DTO del concierto
@@ -85,12 +76,10 @@ public class ConciertoService implements CRUDOperation<ConciertoDTO> {
 		dto.setFechaConcierto(entity.getFechaConcierto());
 		dto.setEstadoConcierto(entity.getEstadoConcierto());
 
-		// Extraemos solo el ID del tour, no el objeto completo
 		if (entity.getTour() != null) {
 			dto.setIdTour(entity.getTour().getIdTour());
 		}
 
-		// Extraemos solo el nombre de la sede
 		if (entity.getSede() != null) {
 			dto.setNombreSede(entity.getSede().getNombreSede());
 		}
@@ -98,9 +87,6 @@ public class ConciertoService implements CRUDOperation<ConciertoDTO> {
 		return dto;
 	}
 
-	// ─────────────────────────────────────────────
-	// Operaciones CRUD
-	// ─────────────────────────────────────────────
 
 	/**
 	 * Crea un nuevo concierto en la base de datos.
@@ -193,13 +179,11 @@ public class ConciertoService implements CRUDOperation<ConciertoDTO> {
 			entity.setFechaConcierto(newData.getFechaConcierto());
 			entity.setEstadoConcierto(newData.getEstadoConcierto());
 
-			// Actualizamos la relación con Tour si viene un nuevo ID
 			if (newData.getIdTour() != null) {
 				Optional<Tour> tour = tourRepo.findById(newData.getIdTour());
 				tour.ifPresent(entity::setTour);
 			}
 
-			// Actualizamos la relación con Sede si viene un nuevo nombre
 			if (newData.getNombreSede() != null) {
 				Optional<Sede> sede = sedeRepo.findById(newData.getNombreSede());
 				sede.ifPresent(entity::setSede);

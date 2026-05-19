@@ -32,17 +32,12 @@ public class ArtistaIndividualService implements CRUDOperation<ArtistaIndividual
 	 */
 	@Override
 	public int create(ArtistaIndividualDTO newData) {
-
 		Optional<ArtistaIndividual> found = artistaRepo.findByNombreArtista(newData.getNombreArtista());
-
 		if (found.isPresent()) {
 			return 1;
 		}
-
 		ArtistaIndividual entity = modelMapper.map(newData, ArtistaIndividual.class);
-
 		artistaRepo.save(entity);
-
 		return 0;
 	}
 
@@ -53,18 +48,12 @@ public class ArtistaIndividualService implements CRUDOperation<ArtistaIndividual
 	 */
 	@Override
 	public List<ArtistaIndividualDTO> getAll() {
-
 		List<ArtistaIndividual> entityList = artistaRepo.findAll();
-
 		List<ArtistaIndividualDTO> dtoList = new ArrayList<>();
-
 		entityList.forEach((entity) -> {
-
 			ArtistaIndividualDTO dto = modelMapper.map(entity, ArtistaIndividualDTO.class);
-
 			dtoList.add(dto);
 		});
-
 		return dtoList;
 	}
 
@@ -76,14 +65,10 @@ public class ArtistaIndividualService implements CRUDOperation<ArtistaIndividual
 	 */
 	@Override
 	public ArtistaIndividualDTO getById(Long id) {
-
 		Optional<ArtistaIndividual> found = artistaRepo.findById(id);
-
 		if (found.isPresent()) {
-
 			return modelMapper.map(found.get(), ArtistaIndividualDTO.class);
 		}
-
 		return null;
 	}
 
@@ -95,16 +80,11 @@ public class ArtistaIndividualService implements CRUDOperation<ArtistaIndividual
 	 */
 	@Override
 	public int deleteById(Long id) {
-
 		Optional<ArtistaIndividual> found = artistaRepo.findById(id);
-
 		if (found.isPresent()) {
-
 			artistaRepo.delete(found.get());
-
 			return 0;
 		}
-
 		return 1;
 	}
 
@@ -117,25 +97,18 @@ public class ArtistaIndividualService implements CRUDOperation<ArtistaIndividual
 	 */
 	@Override
 	public int updateById(Long id, ArtistaIndividualDTO newData) {
-
 		Optional<ArtistaIndividual> found = artistaRepo.findById(id);
-
 		if (found.isPresent()) {
-
 			ArtistaIndividual entity = found.get();
-
 			entity.setNombreArtista(newData.getNombreArtista());
 			entity.setDescripcionArtista(newData.getDescripcionArtista());
 			entity.setImagenArtista(newData.getImagenArtista());
 			entity.setPaisOrigenArtista(newData.getPaisOrigenArtista());
 			entity.setEdadArtista(newData.getEdadArtista());
 			entity.setLenguajeArtista(newData.getLenguajeArtista());
-
 			artistaRepo.save(entity);
-
 			return 0;
 		}
-
 		return 1;
 	}
 
@@ -146,7 +119,6 @@ public class ArtistaIndividualService implements CRUDOperation<ArtistaIndividual
 	 */
 	@Override
 	public Long count() {
-
 		return artistaRepo.count();
 	}
 
@@ -158,7 +130,6 @@ public class ArtistaIndividualService implements CRUDOperation<ArtistaIndividual
 	 */
 	@Override
 	public boolean exist(Long id) {
-
 		return artistaRepo.existsById(id);
 	}
 

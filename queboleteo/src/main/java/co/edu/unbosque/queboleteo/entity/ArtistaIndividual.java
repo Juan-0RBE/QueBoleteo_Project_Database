@@ -38,6 +38,9 @@ public class ArtistaIndividual {
 	}
 
 	/**
+	 * 
+	 * Constructor
+	 * 
 	 * @param nombreArtista
 	 * @param descripcionArtista
 	 * @param imagenArtista

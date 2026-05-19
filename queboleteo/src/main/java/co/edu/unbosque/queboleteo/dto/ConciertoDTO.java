@@ -21,6 +21,8 @@ public class ConciertoDTO {
 	}
 
 	/**
+	 * Constructor
+	 * 
 	 * @param nombreConcierto
 	 * @param descripcionConcierto
 	 * @param imagenConcierto

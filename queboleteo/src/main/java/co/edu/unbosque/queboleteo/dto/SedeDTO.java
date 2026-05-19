@@ -14,6 +14,8 @@ public class SedeDTO {
 	}
 
 	/**
+	 * Constructor
+	 * 
 	 * @param nombreSede
 	 * @param calle
 	 * @param carrera

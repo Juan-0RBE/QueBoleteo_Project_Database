@@ -32,10 +32,11 @@ public class Sede {
 	private String imagenSeccion;
 
 	public Sede() {
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
+	 * Constructor
+	 * 
 	 * @param nombreSede
 	 * @param calle
 	 * @param carrera

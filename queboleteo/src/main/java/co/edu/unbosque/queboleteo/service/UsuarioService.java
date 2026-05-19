@@ -33,51 +33,38 @@ public class UsuarioService implements CRUDOperation<UsuarioDTO> {
 	/**
 	 * Crear usuario
 	 * 
-	 * Retornos:
-	 * 0 = éxito
-	 * 1 = username ya existe
-	 * 2 = contraseña inválida
-	 * 3 = correo ya existe
+	 * Retorna 0 si es exitoso, 1 si el nombre de usuario ya existe, 2 si la contraseña es inválida, 3 si el correo ya existe.
+	 *
 	 */
 	@Override
 	public int create(UsuarioDTO newData) {
-
 		Usuario entity = modelMapper.map(newData, Usuario.class);
-
 		if (findUsernameAlreadyTaken(entity.getNombreUsuario())) {
 			return 1;
 		}
-
 		if (!newData.getClave()
 				.matches("^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*(),.?\":{}|<>]).{8,}$")) {
 			return 2;
 		}
-
 		if (findEmailAlreadyTaken(entity.getCorreo())) {
 			return 3;
 		}
-		
+		if (findIDAlreadyTaken(entity.getDocumentoIdentidad())) {
+			return 4;
+		}
 		int edad = Period.between(entity.getFechaNacimiento(), LocalDate.now()).getYears();
 		System.out.println(edad);
 		entity.setEdad(edad);
-
 		entity.setRole(Usuario.Role.USUARIO);
 		entity.setIsVerified(true);
-		
-		// Solo sobreescribe el role si el DTO trae uno explícito (para crear admins)
 		if (newData.getRole() != null) {
 		    entity.setRole(newData.getRole());
 		}
-		
 		entity.setClave(passwordEncoder.encode(entity.getPassword()));
-		
-
 		if (newData.getRole() != null) {
 			entity.setRole(newData.getRole());
 		}
-
 		usuarioRepo.save(entity);
-
 		return 0;
 	}
 
@@ -236,6 +223,16 @@ public class UsuarioService implements CRUDOperation<UsuarioDTO> {
 	public boolean findEmailAlreadyTaken(String correo) {
 
 		Optional<Usuario> found = usuarioRepo.findByCorreo(correo);
+
+		return found.isPresent();
+	}
+	
+	/**
+	 * Verificar documento de identidad repetido
+	 */
+	public boolean findIDAlreadyTaken(String correo) {
+
+		Optional<Usuario> found = usuarioRepo.findByDocumentoIdentidad(correo);
 
 		return found.isPresent();
 	}

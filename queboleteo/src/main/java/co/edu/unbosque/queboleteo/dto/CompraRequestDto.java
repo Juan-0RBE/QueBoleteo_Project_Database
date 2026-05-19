@@ -8,10 +8,11 @@ public class CompraRequestDto {
 	private Long idZonaConcierto;
 	private Integer cantidad;
 
-	// Opcional — solo se usa cuando la zona tiene asientos
-	// Si la zona es general, se ignora aunque venga en el request
 	private List<Long> idsLugaresElegidos;
 
+	/**
+	 * Constructor
+	 */
 	public CompraRequestDto() {
 	}
 

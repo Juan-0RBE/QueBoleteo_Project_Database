@@ -16,6 +16,8 @@ public class VentaDTO {
     }
 
     /**
+     * Constructor
+     * 
      * @param valorTotal
      * @param fechaVenta
      * @param correoUsuario

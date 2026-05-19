@@ -50,7 +50,6 @@ public class Concierto {
 	private Sede sede;
 
 	public Concierto() {
-		// TODO Auto-generated constructor stub
 	}
 
 	/**

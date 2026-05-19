@@ -31,8 +31,7 @@ public class BoletoService implements CRUDOperation<BoletoDTO> {
 	}
 
 	/**
-	 * Convierte un DTO a entidad. El boleto ya no es dueño de la relación con Lugar
-	 * — la FK BOLETO_CodigoBoleto vive en la tabla LUGAR.
+	 * Convierte un DTO a entidad.
 	 *
 	 * @param dto DTO del boleto
 	 * @return Entidad Boleto lista para persistir
@@ -55,8 +54,7 @@ public class BoletoService implements CRUDOperation<BoletoDTO> {
 	}
 
 	/**
-	 * Convierte una entidad a DTO. El lugar asociado se navega desde Lugar (lado
-	 * dueño), por lo que aquí solo exponemos ZonaConcierto y Venta.
+	 * Convierte una entidad a DTO. 
 	 *
 	 * @param entity Entidad Boleto
 	 * @return DTO del boleto
@@ -78,8 +76,7 @@ public class BoletoService implements CRUDOperation<BoletoDTO> {
 	}
 
 	/**
-	 * Crea un nuevo boleto. La validación de lugar ocupado ya no aplica aquí — se
-	 * controla desde LugarService al asignar el boleto al lugar.
+	 * Crea un nuevo boleto.
 	 *
 	 * @param newData DTO con los datos del boleto
 	 * @return 0 si fue exitoso
@@ -135,8 +132,7 @@ public class BoletoService implements CRUDOperation<BoletoDTO> {
 	}
 
 	/**
-	 * Actualiza un boleto existente. Solo se actualizan estadoBoleto, zonaConcierto
-	 * y venta. La asignación de lugar se gestiona desde LugarService.
+	 * Actualiza un boleto existente.
 	 *
 	 * @param id      Código del boleto a actualizar
 	 * @param newData Nuevos datos del boleto

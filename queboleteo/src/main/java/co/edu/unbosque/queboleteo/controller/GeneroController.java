@@ -28,8 +28,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @CrossOrigin(origins = { "*" })
 @RequestMapping(path = { "/genero" })
-@Tag(name = "Gestión de Géneros",
-	description = "Endpoints para la gestión de géneros musicales")
+@Tag(name = "Gestión de Géneros", description = "Endpoints para la gestión de géneros musicales")
 @SecurityRequirement(name = "bearerAuth")
 public class GeneroController {
 
@@ -44,22 +43,12 @@ public class GeneroController {
 	 */
 	@Operation(summary = "Crear género")
 	@PostMapping("/crear")
-	public ResponseEntity<String> create(
-			@RequestBody GeneroDTO genero) {
-
+	public ResponseEntity<String> create(@RequestBody GeneroDTO genero) {
 		int status = generoService.create(genero);
-
 		if (status == 0) {
-
-			return new ResponseEntity<>(
-					"Género creado correctamente",
-					HttpStatus.CREATED);
-
+			return new ResponseEntity<>("Género creado correctamente", HttpStatus.CREATED);
 		} else {
-
-			return new ResponseEntity<>(
-					"Ya existe un género con ese nombre",
-					HttpStatus.NOT_ACCEPTABLE);
+			return new ResponseEntity<>("Ya existe un género con ese nombre", HttpStatus.NOT_ACCEPTABLE);
 		}
 	}
 
@@ -71,19 +60,11 @@ public class GeneroController {
 	@Operation(summary = "Obtener todos los géneros")
 	@GetMapping("/all")
 	public ResponseEntity<List<GeneroDTO>> getAll() {
-
 		List<GeneroDTO> lista = generoService.getAll();
-
 		if (lista.isEmpty()) {
-
-			return new ResponseEntity<>(
-					lista,
-					HttpStatus.NO_CONTENT);
+			return new ResponseEntity<>(lista, HttpStatus.NO_CONTENT);
 		}
-
-		return new ResponseEntity<>(
-				lista,
-				HttpStatus.OK);
+		return new ResponseEntity<>(lista, HttpStatus.OK);
 	}
 
 	/**
@@ -94,47 +75,29 @@ public class GeneroController {
 	 */
 	@Operation(summary = "Obtener género por ID")
 	@GetMapping("/{id}")
-	public ResponseEntity<GeneroDTO> getById(
-			@PathVariable Long id) {
-
+	public ResponseEntity<GeneroDTO> getById(@PathVariable Long id) {
 		GeneroDTO found = generoService.getById(id);
-
 		if (found != null) {
-
-			return new ResponseEntity<>(
-					found,
-					HttpStatus.OK);
+			return new ResponseEntity<>(found, HttpStatus.OK);
 		}
-
-		return new ResponseEntity<>(
-				HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 
 	/**
 	 * Actualiza un género existente.
 	 * 
-	 * @param id ID del género
+	 * @param id     ID del género
 	 * @param genero Nuevos datos
 	 * @return Mensaje de éxito o error
 	 */
 	@Operation(summary = "Actualizar género")
 	@PutMapping("/update/{id}")
-	public ResponseEntity<String> updateById(
-			@PathVariable Long id,
-			@RequestBody GeneroDTO genero) {
-
+	public ResponseEntity<String> updateById(@PathVariable Long id, @RequestBody GeneroDTO genero) {
 		int status = generoService.updateById(id, genero);
-
 		if (status == 0) {
-
-			return new ResponseEntity<>(
-					"Género actualizado correctamente",
-					HttpStatus.OK);
+			return new ResponseEntity<>("Género actualizado correctamente", HttpStatus.OK);
 		}
-
-		return new ResponseEntity<>(
-				"Género no encontrado",
-				HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>("Género no encontrado", HttpStatus.NOT_FOUND);
 	}
 
 	/**
@@ -145,21 +108,12 @@ public class GeneroController {
 	 */
 	@Operation(summary = "Eliminar género")
 	@DeleteMapping("/delete/{id}")
-	public ResponseEntity<String> deleteById(
-			@PathVariable Long id) {
-
+	public ResponseEntity<String> deleteById(@PathVariable Long id) {
 		int status = generoService.deleteById(id);
-
 		if (status == 0) {
-
-			return new ResponseEntity<>(
-					"Género eliminado correctamente",
-					HttpStatus.OK);
+			return new ResponseEntity<>("Género eliminado correctamente", HttpStatus.OK);
 		}
-
-		return new ResponseEntity<>(
-				"Género no encontrado",
-				HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>("Género no encontrado", HttpStatus.NOT_FOUND);
 	}
 
 	/**
@@ -170,10 +124,7 @@ public class GeneroController {
 	@Operation(summary = "Contar géneros")
 	@GetMapping("/count")
 	public ResponseEntity<Long> count() {
-
-		return new ResponseEntity<>(
-				generoService.count(),
-				HttpStatus.OK);
+		return new ResponseEntity<>(generoService.count(), HttpStatus.OK);
 	}
 
 }

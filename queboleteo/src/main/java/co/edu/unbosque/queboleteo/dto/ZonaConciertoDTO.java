@@ -17,6 +17,8 @@ public class ZonaConciertoDTO {
     }
 
     /**
+     * Constructor
+     * 
      * @param precio
      * @param cantidadDisponible
      * @param idZona

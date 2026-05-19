@@ -54,13 +54,13 @@ public class ConGruService {
 	public int create(ConGruDTO dto) {
 		Optional<Concierto> concierto = conciertoRepo.findById(dto.getIdConcierto());
 		Optional<Grupo> grupo = grupoRepo.findById(dto.getIdGrupo());
-
-		if (concierto.isEmpty() || grupo.isEmpty())
+		if (concierto.isEmpty() || grupo.isEmpty()) {
 			return 1;
-
+		}
 		ConGruId id = new ConGruId(dto.getIdConcierto(), dto.getIdGrupo());
-		if (conGruRepo.existsById(id))
+		if (conGruRepo.existsById(id)) {			
 			return 2;
+		}
 
 		conGruRepo.save(new ConGru(concierto.get(), grupo.get()));
 		return 0;

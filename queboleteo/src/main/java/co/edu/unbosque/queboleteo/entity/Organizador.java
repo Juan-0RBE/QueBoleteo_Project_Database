@@ -20,10 +20,11 @@ public class Organizador {
 	private String logo;
 
 	public Organizador() {
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
+	 * Constructor
+	 * 
 	 * @param nombreOrganizador
 	 * @param correoOrganizador
 	 * @param logo

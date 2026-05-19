@@ -32,13 +32,8 @@ public class ZonaService implements CRUDOperation<ZonaDTO> {
 	public ZonaService() {
 	}
 
-	// ─────────────────────────────────────────────
-	// Métodos auxiliares de mapeo manual
-	// ─────────────────────────────────────────────
-
 	/**
-	 * Convierte un DTO a entidad. Resuelve la relación Sede a partir del nombreSede
-	 * recibido en el DTO.
+	 * Convierte un DTO a entidad.
 	 *
 	 * @param dto DTO de la zona
 	 * @return Entidad Zona lista para persistir
@@ -50,15 +45,16 @@ public class ZonaService implements CRUDOperation<ZonaDTO> {
 
 		if (dto.getNombreSede() != null) {
 			Optional<Sede> sede = sedeRepo.findById(dto.getNombreSede());
-			sede.ifPresent(entity::setSede);
+			if (sede.isPresent()) {
+				entity.setSede(sede.get());
+			}
 		}
 
 		return entity;
 	}
 
 	/**
-	 * Convierte una entidad a DTO. Extrae solo el nombreSede, no el objeto Sede
-	 * completo.
+	 * Convierte una entidad a DTO.
 	 *
 	 * @param entity Entidad Zona
 	 * @return DTO de la zona
@@ -75,10 +71,6 @@ public class ZonaService implements CRUDOperation<ZonaDTO> {
 
 		return dto;
 	}
-
-	// ─────────────────────────────────────────────
-	// Operaciones CRUD
-	// ─────────────────────────────────────────────
 
 	/**
 	 * Crea una nueva zona en la base de datos.
@@ -158,7 +150,9 @@ public class ZonaService implements CRUDOperation<ZonaDTO> {
 
 			if (newData.getNombreSede() != null) {
 				Optional<Sede> sede = sedeRepo.findById(newData.getNombreSede());
-				sede.ifPresent(entity::setSede);
+				if (sede.isPresent()) {
+					entity.setSede(sede.get());
+				}
 			}
 
 			zonaRepo.save(entity);
@@ -207,22 +201,20 @@ public class ZonaService implements CRUDOperation<ZonaDTO> {
 			return 1;
 		}
 		Zona zona = found.get();
-		
-	    long lugaresExistentes = lugarRepo.countByZona(zona);
-	    if (lugaresExistentes > 0) return 3;  // nuevo código: ya configurada
+
+		long lugaresExistentes = lugarRepo.countByZona(zona);
+		if (lugaresExistentes > 0)
+			return 3; // nuevo código: ya configurada
 
 		List<Lugar> lugares = new ArrayList<>();
 
 		if (zona.getTieneAsiento()) {
 
-			// 2a. Validar datos para zona con asientos
 			if (dto.getFilas() == null || dto.getFilas() <= 0 || dto.getAsientosPorFila() == null
 					|| dto.getAsientosPorFila() <= 0) {
 				return 2;
 			}
 
-			// 2b. Generar lugares con fila (A, B, C...) y número (1, 2, 3...)
-			// Ejemplo: 3 filas × 10 asientos = 30 lugares: A-1, A-2... C-10
 			for (int f = 0; f < dto.getFilas(); f++) {
 				String letraFila = String.valueOf((char) ('A' + f));
 				for (int a = 1; a <= dto.getAsientosPorFila(); a++) {
@@ -230,30 +222,25 @@ public class ZonaService implements CRUDOperation<ZonaDTO> {
 					lugar.setFila(letraFila);
 					lugar.setNumeroAsiento(a);
 					lugar.setZona(zona);
-					// lugar.setBoleto(null); ← ELIMINAR esta línea
 					lugares.add(lugar);
 				}
 			}
 
 		} else {
 
-			// 3a. Validar datos para zona general
 			if (dto.getCapacidadGeneral() == null || dto.getCapacidadGeneral() <= 0) {
 				return 2;
 			}
 
-			// 3b. Generar lugares genéricos sin fila ni asiento
 			for (int i = 0; i < dto.getCapacidadGeneral(); i++) {
 				Lugar lugar = new Lugar();
 				lugar.setFila(null);
 				lugar.setNumeroAsiento(null);
 				lugar.setZona(zona);
-				// lugar.setBoleto(null); ← ELIMINAR esta línea
 				lugares.add(lugar);
 			}
 		}
 
-		// 4. Guardar todos los lugares en un solo batch
 		lugarRepo.saveAll(lugares);
 		return 0;
 	}

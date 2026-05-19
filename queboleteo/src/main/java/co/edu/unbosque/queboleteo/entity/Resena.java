@@ -33,10 +33,11 @@ public class Resena {
 	private Concierto concierto;
 
 	public Resena() {
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
+	 * Constructor
+	 * 
 	 * @param comentario
 	 * @param calificacion
 	 * @param usuario

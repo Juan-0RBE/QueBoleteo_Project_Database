@@ -15,6 +15,9 @@ public class TourDTO {
 	}
 
 	/**
+	 * Constructor
+	 * 
+	 * 
 	 * @param nombreTour
 	 * @param descripcionTour
 	 * @param imagenTour

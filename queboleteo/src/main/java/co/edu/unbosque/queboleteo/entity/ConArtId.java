@@ -19,6 +19,9 @@ public class ConArtId implements Serializable {
 	}
 
 	/**
+	 * 
+	 * Constructor
+	 * 
 	 * @param conciertoIdConcierto
 	 * @param artistaIndividualIdArtista
 	 */

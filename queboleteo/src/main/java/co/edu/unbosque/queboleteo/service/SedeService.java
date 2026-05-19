@@ -24,8 +24,7 @@ public class SedeService {
 	 */
 	public int create(SedeDTO dto) {
 
-		Sede found = sedeRepo.findByNombreSede(
-				dto.getNombreSede());
+		Sede found = sedeRepo.findByNombreSede(dto.getNombreSede());
 
 		if (found != null) {
 			return 1;
@@ -64,8 +63,7 @@ public class SedeService {
 	 */
 	public SedeDTO getById(String nombre) {
 
-		Sede found = sedeRepo.findById(nombre)
-				.orElse(null);
+		Sede found = sedeRepo.findById(nombre).orElse(null);
 
 		if (found == null) {
 			return null;
@@ -78,14 +76,12 @@ public class SedeService {
 	 * Actualiza una sede existente.
 	 * 
 	 * @param nombre Nombre actual
-	 * @param dto Nuevos datos
+	 * @param dto    Nuevos datos
 	 * @return 0 si actualizó, 1 si no existe
 	 */
-	public int updateById(String nombre,
-			SedeDTO dto) {
+	public int updateById(String nombre, SedeDTO dto) {
 
-		Sede found = sedeRepo.findById(nombre)
-				.orElse(null);
+		Sede found = sedeRepo.findById(nombre).orElse(null);
 
 		if (found == null) {
 			return 1;
@@ -94,11 +90,9 @@ public class SedeService {
 		found.setCalle(dto.getCalle());
 		found.setCarrera(dto.getCarrera());
 		found.setCiudad(dto.getCiudad());
-		found.setTieneAccesibilidad(
-				dto.getTieneAccesibilidad());
+		found.setTieneAccesibilidad(dto.getTieneAccesibilidad());
 		found.setImagenSede(dto.getImagenSede());
-		found.setImagenSeccion(
-				dto.getImagenSeccion());
+		found.setImagenSeccion(dto.getImagenSeccion());
 
 		sedeRepo.save(found);
 
@@ -113,8 +107,7 @@ public class SedeService {
 	 */
 	public int deleteById(String nombre) {
 
-		Sede found = sedeRepo.findById(nombre)
-				.orElse(null);
+		Sede found = sedeRepo.findById(nombre).orElse(null);
 
 		if (found == null) {
 			return 1;
@@ -142,14 +135,8 @@ public class SedeService {
 	 */
 	private Sede dtoToEntity(SedeDTO dto) {
 
-		return new Sede(
-				dto.getNombreSede(),
-				dto.getCalle(),
-				dto.getCarrera(),
-				dto.getCiudad(),
-				dto.getTieneAccesibilidad(),
-				dto.getImagenSede(),
-				dto.getImagenSeccion());
+		return new Sede(dto.getNombreSede(), dto.getCalle(), dto.getCarrera(), dto.getCiudad(),
+				dto.getTieneAccesibilidad(), dto.getImagenSede(), dto.getImagenSeccion());
 	}
 
 	/**
@@ -160,14 +147,8 @@ public class SedeService {
 	 */
 	private SedeDTO entityToDTO(Sede entity) {
 
-		return new SedeDTO(
-				entity.getNombreSede(),
-				entity.getCalle(),
-				entity.getCarrera(),
-				entity.getCiudad(),
-				entity.getTieneAccesibilidad(),
-				entity.getImagenSede(),
-				entity.getImagenSeccion());
+		return new SedeDTO(entity.getNombreSede(), entity.getCalle(), entity.getCarrera(), entity.getCiudad(),
+				entity.getTieneAccesibilidad(), entity.getImagenSede(), entity.getImagenSeccion());
 	}
 
 }

@@ -45,7 +45,7 @@ public class GruGenService {
 	}
 
 	/**
-	 * Crea una nueva asociación grupo-género.
+	 * Crea una nueva asociación grupo género.
 	 *
 	 * @param dto DTO con idGrupo e idGenero
 	 * @return 0 si fue exitoso, 1 si grupo o género no existen, 2 si la asociación

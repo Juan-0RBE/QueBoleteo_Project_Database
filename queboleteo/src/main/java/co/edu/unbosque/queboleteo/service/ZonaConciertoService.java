@@ -49,14 +49,16 @@ public class ZonaConciertoService implements CRUDOperation<ZonaConciertoDTO> {
 
 		if (dto.getIdZona() != null) {
 			Optional<Zona> zona = zonaRepo.findById(dto.getIdZona());
-			zona.ifPresent(entity::setZona);
+			if (zona.isPresent()) {
+			    entity.setZona(zona.get());
+			}
 		}
-
 		if (dto.getIdConcierto() != null) {
 			Optional<Concierto> concierto = conciertoRepo.findById(dto.getIdConcierto());
-			concierto.ifPresent(entity::setConcierto);
+			if (concierto.isPresent()) {
+			    entity.setConcierto(concierto.get());
+			}
 		}
-
 		return entity;
 	}
 
@@ -75,7 +77,6 @@ public class ZonaConciertoService implements CRUDOperation<ZonaConciertoDTO> {
 		if (entity.getZona() != null) {
 			dto.setIdZona(entity.getZona().getIdZona());
 		}
-
 		if (entity.getConcierto() != null) {
 			dto.setIdConcierto(entity.getConcierto().getIdConcierto());
 		}
@@ -83,26 +84,6 @@ public class ZonaConciertoService implements CRUDOperation<ZonaConciertoDTO> {
 		return dto;
 	}
 
-	/**
-	 * Crea un nuevo registro ZonaConcierto. Verifica que no exista ya esa
-	 * combinación zona+concierto.
-	 *
-	 * @param newData DTO con los datos
-	 * @return 0 si fue exitoso, 1 si ya existe esa combinación
-	 */
-	/*
-	 * @Override public int create(ZonaConciertoDTO newData) { // Verificamos
-	 * duplicado por combinación zona+concierto if (newData.getIdZona() != null &&
-	 * newData.getIdConcierto() != null) { Optional<Zona> zona =
-	 * zonaRepo.findById(newData.getIdZona()); Optional<Concierto> concierto =
-	 * conciertoRepo.findById(newData.getIdConcierto());
-	 * 
-	 * if (zona.isPresent() && concierto.isPresent()) { Optional<ZonaConcierto>
-	 * found = zonaConciertoRepo.findByZonaAndConcierto(zona.get(),
-	 * concierto.get()); if (found.isPresent()) { return 1; } } }
-	 * 
-	 * zonaConciertoRepo.save(toEntity(newData)); return 0; }
-	 */
 
 	/**
 	 * Obtiene todos los registros ZonaConcierto.
@@ -151,7 +132,7 @@ public class ZonaConciertoService implements CRUDOperation<ZonaConciertoDTO> {
 	/**
 	 * Actualiza un registro ZonaConcierto existente.
 	 *
-	 * @param id      ID del registro a actualizar
+	 * @param id ID del registro a actualizar
 	 * @param newData Nuevos datos
 	 * @return 0 si actualizó correctamente, 1 si no existe
 	 */
@@ -165,12 +146,16 @@ public class ZonaConciertoService implements CRUDOperation<ZonaConciertoDTO> {
 
 			if (newData.getIdZona() != null) {
 				Optional<Zona> zona = zonaRepo.findById(newData.getIdZona());
-				zona.ifPresent(entity::setZona);
+				if (zona.isPresent()) {
+				    entity.setZona(zona.get());
+				}
 			}
 
 			if (newData.getIdConcierto() != null) {
 				Optional<Concierto> concierto = conciertoRepo.findById(newData.getIdConcierto());
-				concierto.ifPresent(entity::setConcierto);
+				if (concierto.isPresent()) {
+				    entity.setConcierto(concierto.get());
+				}
 			}
 
 			zonaConciertoRepo.save(entity);
@@ -201,9 +186,7 @@ public class ZonaConciertoService implements CRUDOperation<ZonaConciertoDTO> {
 	}
 
 	/**
-	 * Crea un nuevo registro ZonaConcierto. La CantidadDisponible se calcula
-	 * automáticamente contando los lugares libres que ya existen en la zona — no se
-	 * recibe desde el request.
+	 * Crea un nuevo registro ZonaConcierto.
 	 *
 	 * @param newData DTO con precio, idZona e idConcierto
 	 * @return 0 si fue exitoso 1 si ya existe esa combinación zona+concierto 2 si
@@ -241,7 +224,7 @@ public class ZonaConciertoService implements CRUDOperation<ZonaConciertoDTO> {
 	}
 	
 	/**
-	 * Obtiene todas las zonas-concierto de un concierto específico.
+	 * Obtiene todas las zonas concierto de un concierto específico.
 	 *
 	 * @param idConcierto ID del concierto
 	 * @return Lista de DTOs filtrada por concierto

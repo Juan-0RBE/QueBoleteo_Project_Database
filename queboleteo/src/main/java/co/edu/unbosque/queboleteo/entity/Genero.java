@@ -24,6 +24,9 @@ public class Genero {
 	}
 
 	/**
+	 * Constructor
+	 * 
+	 * 
 	 * @param nombreGenero
 	 */
 	public Genero(String nombreGenero) {

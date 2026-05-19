@@ -14,6 +14,8 @@ public class ZonaDTO {
 	}
 
 	/**
+	 * Constructor
+	 * 
 	 * @param nombreZona
 	 * @param tieneAsiento
 	 * @param nombreSede

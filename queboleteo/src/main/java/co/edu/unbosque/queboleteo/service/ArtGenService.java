@@ -45,7 +45,7 @@ public class ArtGenService {
 	}
 
 	/**
-	 * Crea una nueva asociación artista-género.
+	 * Crea una nueva asociación artista género.
 	 *
 	 * @param dto DTO con idArtista e idGenero
 	 * @return 0 si fue exitoso, 1 si artista o género no existen, 2 si la
@@ -54,14 +54,11 @@ public class ArtGenService {
 	public int create(ArtGenDTO dto) {
 		Optional<ArtistaIndividual> artista = artistaRepo.findById(dto.getIdArtista());
 		Optional<Genero> genero = generoRepo.findById(dto.getIdGenero());
-
 		if (artista.isEmpty() || genero.isEmpty())
 			return 1;
-
 		ArtGenId id = new ArtGenId(dto.getIdArtista(), dto.getIdGenero());
 		if (artGenRepo.existsById(id))
 			return 2;
-
 		artGenRepo.save(new ArtGen(artista.get(), genero.get()));
 		return 0;
 	}

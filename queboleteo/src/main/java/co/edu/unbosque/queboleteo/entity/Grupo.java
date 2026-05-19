@@ -35,10 +35,11 @@ public class Grupo {
 	private String lenguajeGrupo;
 
 	public Grupo() {
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
+	 * Constructor
+	 * 
 	 * @param nombreGrupo
 	 * @param descripcionGrupo
 	 * @param imagenGrupo

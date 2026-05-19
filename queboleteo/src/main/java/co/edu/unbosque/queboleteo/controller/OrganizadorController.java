@@ -44,9 +44,7 @@ public class OrganizadorController {
 	@Operation(summary = "Crear organizador")
 	@PostMapping("/crear")
 	public ResponseEntity<String> create(@RequestBody OrganizadorDTO organizador) {
-
 		int status = organizadorService.create(organizador);
-
 		if (status == 0) {
 			return new ResponseEntity<>("Organizador creado correctamente", HttpStatus.CREATED);
 		}
@@ -66,14 +64,10 @@ public class OrganizadorController {
 	@Operation(summary = "Obtener todos los organizadores")
 	@GetMapping("/all")
 	public ResponseEntity<List<OrganizadorDTO>> getAll() {
-
 		List<OrganizadorDTO> lista = organizadorService.getAll();
-
 		if (lista.isEmpty()) {
-
 			return new ResponseEntity<>(lista, HttpStatus.NO_CONTENT);
 		}
-
 		return new ResponseEntity<>(lista, HttpStatus.OK);
 	}
 
@@ -86,14 +80,10 @@ public class OrganizadorController {
 	@Operation(summary = "Obtener organizador por nombre")
 	@GetMapping("/{nombre}")
 	public ResponseEntity<OrganizadorDTO> getById(@PathVariable String nombre) {
-
 		OrganizadorDTO found = organizadorService.getById(nombre);
-
 		if (found != null) {
-
 			return new ResponseEntity<>(found, HttpStatus.OK);
 		}
-
 		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 
@@ -107,14 +97,10 @@ public class OrganizadorController {
 	@Operation(summary = "Actualizar organizador")
 	@PutMapping("/update/{nombre}")
 	public ResponseEntity<String> updateById(@PathVariable String nombre, @RequestBody OrganizadorDTO organizador) {
-
 		int status = organizadorService.updateById(nombre, organizador);
-
 		if (status == 0) {
-
 			return new ResponseEntity<>("Organizador actualizado correctamente", HttpStatus.OK);
 		}
-
 		return new ResponseEntity<>("Organizador no encontrado", HttpStatus.NOT_FOUND);
 	}
 
@@ -127,14 +113,10 @@ public class OrganizadorController {
 	@Operation(summary = "Eliminar organizador")
 	@DeleteMapping("/delete/{nombre}")
 	public ResponseEntity<String> deleteById(@PathVariable String nombre) {
-
 		int status = organizadorService.deleteById(nombre);
-
 		if (status == 0) {
-
 			return new ResponseEntity<>("Organizador eliminado correctamente", HttpStatus.OK);
 		}
-
 		return new ResponseEntity<>("Organizador no encontrado", HttpStatus.NOT_FOUND);
 	}
 

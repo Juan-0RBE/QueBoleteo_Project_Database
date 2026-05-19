@@ -25,8 +25,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @CrossOrigin(origins = { "*" })
 @RequestMapping(path = { "/tour" })
-@Tag(name = "Gestión de Tours",
-	description = "Endpoints para la gestión de tours")
+@Tag(name = "Gestión de Tours", description = "Endpoints para la gestión de tours")
 @SecurityRequirement(name = "bearerAuth")
 public class TourController {
 
@@ -41,21 +40,12 @@ public class TourController {
 	 */
 	@Operation(summary = "Crear tour")
 	@PostMapping("/crear")
-	public ResponseEntity<String> create(
-			@RequestBody TourDTO tour) {
-
+	public ResponseEntity<String> create(@RequestBody TourDTO tour) {
 		int status = tourService.create(tour);
-
 		if (status == 0) {
-
-			return new ResponseEntity<>(
-					"Tour creado correctamente",
-					HttpStatus.CREATED);
+			return new ResponseEntity<>("Tour creado correctamente", HttpStatus.CREATED);
 		}
-
-		return new ResponseEntity<>(
-				"Ya existe un tour con ese nombre",
-				HttpStatus.NOT_ACCEPTABLE);
+		return new ResponseEntity<>("Ya existe un tour con ese nombre", HttpStatus.NOT_ACCEPTABLE);
 	}
 
 	/**
@@ -66,19 +56,11 @@ public class TourController {
 	@Operation(summary = "Obtener todos los tours")
 	@GetMapping("/all")
 	public ResponseEntity<List<TourDTO>> getAll() {
-
 		List<TourDTO> lista = tourService.getAll();
-
 		if (lista.isEmpty()) {
-
-			return new ResponseEntity<>(
-					lista,
-					HttpStatus.NO_CONTENT);
+			return new ResponseEntity<>(lista, HttpStatus.NO_CONTENT);
 		}
-
-		return new ResponseEntity<>(
-				lista,
-				HttpStatus.OK);
+		return new ResponseEntity<>(lista, HttpStatus.OK);
 	}
 
 	/**
@@ -89,49 +71,29 @@ public class TourController {
 	 */
 	@Operation(summary = "Obtener tour por ID")
 	@GetMapping("/{id}")
-	public ResponseEntity<TourDTO> getById(
-			@PathVariable Long id) {
-
+	public ResponseEntity<TourDTO> getById(@PathVariable Long id) {
 		TourDTO found = tourService.getById(id);
-
 		if (found != null) {
-
-			return new ResponseEntity<>(
-					found,
-					HttpStatus.OK);
+			return new ResponseEntity<>(found, HttpStatus.OK);
 		}
-
-		return new ResponseEntity<>(
-				HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 
 	/**
 	 * Actualiza un tour existente.
 	 * 
-	 * @param id ID del tour
+	 * @param id   ID del tour
 	 * @param tour Nuevos datos
 	 * @return Mensaje de éxito o error
 	 */
 	@Operation(summary = "Actualizar tour")
 	@PutMapping("/update/{id}")
-	public ResponseEntity<String> updateById(
-			@PathVariable Long id,
-			@RequestBody TourDTO tour) {
-
-		int status = tourService.updateById(
-				id,
-				tour);
-
+	public ResponseEntity<String> updateById(@PathVariable Long id, @RequestBody TourDTO tour) {
+		int status = tourService.updateById(id, tour);
 		if (status == 0) {
-
-			return new ResponseEntity<>(
-					"Tour actualizado correctamente",
-					HttpStatus.OK);
+			return new ResponseEntity<>("Tour actualizado correctamente", HttpStatus.OK);
 		}
-
-		return new ResponseEntity<>(
-				"Tour no encontrado",
-				HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>("Tour no encontrado", HttpStatus.NOT_FOUND);
 	}
 
 	/**
@@ -142,21 +104,12 @@ public class TourController {
 	 */
 	@Operation(summary = "Eliminar tour")
 	@DeleteMapping("/delete/{id}")
-	public ResponseEntity<String> deleteById(
-			@PathVariable Long id) {
-
+	public ResponseEntity<String> deleteById(@PathVariable Long id) {
 		int status = tourService.deleteById(id);
-
 		if (status == 0) {
-
-			return new ResponseEntity<>(
-					"Tour eliminado correctamente",
-					HttpStatus.OK);
+			return new ResponseEntity<>("Tour eliminado correctamente", HttpStatus.OK);
 		}
-
-		return new ResponseEntity<>(
-				"Tour no encontrado",
-				HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>("Tour no encontrado", HttpStatus.NOT_FOUND);
 	}
 
 	/**
@@ -167,10 +120,7 @@ public class TourController {
 	@Operation(summary = "Contar tours")
 	@GetMapping("/count")
 	public ResponseEntity<Long> count() {
-
-		return new ResponseEntity<>(
-				tourService.count(),
-				HttpStatus.OK);
+		return new ResponseEntity<>(tourService.count(), HttpStatus.OK);
 	}
 
 }

@@ -32,6 +32,8 @@ public class GruArt {
 	}
 
 	/**
+	 * Constructor
+	 * 
 	 * 
 	 * @param grupo
 	 * @param artista
