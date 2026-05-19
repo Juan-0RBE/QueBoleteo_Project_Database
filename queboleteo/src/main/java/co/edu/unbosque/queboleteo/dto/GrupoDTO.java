@@ -14,6 +14,9 @@ public class GrupoDTO {
 	}
 
 	/**
+	 * Constructor
+	 * 
+	 * 
 	 * @param nombreGrupo
 	 * @param descripcionGrupo
 	 * @param imagenGrupo

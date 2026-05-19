@@ -12,6 +12,8 @@ public class ConOrgDTO {
 	}
 
 	/**
+	 * Constructor
+	 * 
 	 * @param idConcierto
 	 * @param nombreOrganizador
 	 */

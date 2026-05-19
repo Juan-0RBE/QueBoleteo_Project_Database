@@ -28,6 +28,8 @@ public class ConOrg {
 	}
 
 	/**
+	 * Constructor
+	 * 
 	 * @param concierto
 	 * @param organizador
 	 */

@@ -28,6 +28,8 @@ public class ConGru {
 	}
 
 	/**
+	 * Constructor
+	 * 
 	 * 
 	 * @param concierto
 	 * @param grupo

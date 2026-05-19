@@ -2,13 +2,13 @@ package co.edu.unbosque.queboleteo.dto;
 
 public class ConfiguracionLugarDto {
 
-	// Para zona con asientos
-	private Integer filas; // ej: 3 → genera A, B, C
-	private Integer asientosPorFila; // ej: 10 → genera 1..10 por fila
+	private Integer filas;
+	private Integer asientosPorFila;
+	private Integer capacidadGeneral;
 
-	// Para zona general (sin asientos)
-	private Integer capacidadGeneral; // ej: 200 → genera 200 lugares sin fila ni número
-
+	/**
+	 * Constructor
+	 */
 	public ConfiguracionLugarDto() {
 	}
 

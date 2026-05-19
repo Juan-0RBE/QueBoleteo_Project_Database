@@ -24,9 +24,6 @@ public class Lugar {
 	@Column(name = "Fila", length = 10)
 	private String fila;
 
-	// Lugar es un asiento físico permanente de una zona.
-	// Ya no tiene relación directa con Boleto.
-	// La disponibilidad para un concierto se consulta desde BoletoRepository.
 	@ManyToOne
 	@JoinColumn(name = "ZONA_IdZona", nullable = false)
 	private Zona zona;
@@ -35,6 +32,8 @@ public class Lugar {
 	}
 
 	/**
+	 * Constructor
+	 * 
 	 * @param numeroAsiento
 	 * @param fila
 	 * @param zona

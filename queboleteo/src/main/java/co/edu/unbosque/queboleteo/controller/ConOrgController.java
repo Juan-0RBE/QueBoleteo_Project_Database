@@ -95,7 +95,7 @@ public class ConOrgController {
 	/**
 	 * Elimina la asociación entre un concierto y un organizador.
 	 *
-	 * @param idConcierto       ID del concierto
+	 * @param idConcierto ID del concierto
 	 * @param nombreOrganizador Nombre del organizador
 	 * @return Mensaje de éxito o error
 	 */

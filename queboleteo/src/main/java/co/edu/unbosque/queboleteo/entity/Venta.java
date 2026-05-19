@@ -32,7 +32,6 @@ public class Venta {
 	private Usuario usuario;
 
 	public Venta() {
-		// TODO Auto-generated constructor stub
 	}
 
 	/**

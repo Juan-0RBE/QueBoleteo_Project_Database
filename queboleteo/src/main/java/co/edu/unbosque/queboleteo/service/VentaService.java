@@ -50,8 +50,7 @@ public class VentaService implements CRUDOperation<VentaDTO> {
 	}
 
 	/**
-	 * Convierte un DTO a entidad. Resuelve la relación Usuario a partir del correo
-	 * recibido en el DTO.
+	 * Convierte un DTO a entidad.
 	 *
 	 * @param dto DTO de la venta
 	 * @return Entidad Venta lista para persistir
@@ -63,7 +62,10 @@ public class VentaService implements CRUDOperation<VentaDTO> {
 
 		if (dto.getCorreoUsuario() != null) {
 			Optional<Usuario> usuario = usuarioRepo.findById(dto.getCorreoUsuario());
-			usuario.ifPresent(entity::setUsuario);
+			if (usuario.isPresent()) {
+			    entity.setUsuario(usuario.get());
+			}
+
 		}
 
 		return entity;
@@ -81,11 +83,9 @@ public class VentaService implements CRUDOperation<VentaDTO> {
 		dto.setIdVenta(entity.getIdVenta());
 		dto.setValorTotal(entity.getValorTotal());
 		dto.setFechaVenta(entity.getFechaVenta());
-
 		if (entity.getUsuario() != null) {
 			dto.setCorreoUsuario(entity.getUsuario().getCorreo());
 		}
-
 		return dto;
 	}
 
@@ -163,7 +163,9 @@ public class VentaService implements CRUDOperation<VentaDTO> {
 
 			if (newData.getCorreoUsuario() != null) {
 				Optional<Usuario> usuario = usuarioRepo.findById(newData.getCorreoUsuario());
-				usuario.ifPresent(entity::setUsuario);
+				if (usuario.isPresent()) {
+				    entity.setUsuario(usuario.get());
+				}
 			}
 
 			ventaRepo.save(entity);
@@ -228,7 +230,7 @@ public class VentaService implements CRUDOperation<VentaDTO> {
 
 		if (zc.getZona().getTieneAsiento()) {
 
-			// ZONA CON ASIENTOS
+			// zona con asientos
 			if (dto.getIdsLugaresElegidos() == null || dto.getIdsLugaresElegidos().isEmpty()) {
 				throw new RuntimeException("Esta zona tiene asientos. Debes enviar idsLugaresElegidos.");
 			}
@@ -247,7 +249,7 @@ public class VentaService implements CRUDOperation<VentaDTO> {
 
 		} else {
 
-			// ZONA GENERAL
+			// zona general
 			// Buscar libres por ZonaConcierto específica
 			lugaresAAsignar = lugarRepo.findLugaresLibresPorZonaConcierto(zc.getZona().getIdZona(), zc.getIdPrecio());
 
@@ -424,12 +426,10 @@ public class VentaService implements CRUDOperation<VentaDTO> {
 		return response;
 	}
 
-	// Métodos auxiliares para el endpoint de consulta
 	public ZonaConcierto getZonaConcierto(Long id) {
 		return zonaConciertoRepo.findById(id).orElseThrow(() -> new RuntimeException("ZonaConcierto no encontrada"));
 	}
 
-	// IdPrecio para filtrar por concierto
 	public List<Lugar> getLugaresLibres(Long idZona, Long idPrecio) {
 		return lugarRepo.findLugaresLibresPorZonaConcierto(idZona, idPrecio);
 	}

@@ -1,6 +1,7 @@
 package co.edu.unbosque.queboleteo.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -28,12 +29,11 @@ public interface ZonaConciertoRepository extends JpaRepository<ZonaConcierto, Lo
 
     /**
      * Busca el registro de una zona en un concierto específico.
-     * Útil para verificar duplicados en create.
      *
      * @param zona      Objeto Zona
      * @param concierto Objeto Concierto
      * @return Optional con el registro si existe
      */
-    java.util.Optional<ZonaConcierto> findByZonaAndConcierto(Zona zona, Concierto concierto);
+    Optional<ZonaConcierto> findByZonaAndConcierto(Zona zona, Concierto concierto);
     
 }

@@ -28,6 +28,8 @@ public class ArtGen {
 	}
 
 	/**
+	 * Constructor
+	 * 
 	 * 
 	 * @param artista
 	 * @param genero

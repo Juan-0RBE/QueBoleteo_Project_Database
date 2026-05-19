@@ -96,7 +96,7 @@ public class ConGruController {
 	 * Elimina la asociación entre un concierto y un grupo.
 	 *
 	 * @param idConcierto ID del concierto
-	 * @param idGrupo     ID del grupo
+	 * @param idGrupo ID del grupo
 	 * @return Mensaje de éxito o error
 	 */
 	@Operation(summary = "Eliminar asociación concierto-grupo")

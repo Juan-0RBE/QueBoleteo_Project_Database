@@ -19,6 +19,8 @@ public class ConOrgId implements Serializable {
 	}
 
 	/**
+	 * Constructor
+	 * 
 	 * @param conciertoIdConcierto
 	 * @param organizadorNombreOrganizador
 	 */

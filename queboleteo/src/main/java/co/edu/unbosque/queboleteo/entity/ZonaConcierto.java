@@ -35,10 +35,12 @@ public class ZonaConcierto {
 	private Concierto concierto;
 
 	public ZonaConcierto() {
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
+	 * Constructor
+	 * 
+	 * 
 	 * @param precio
 	 * @param cantidadDisponible
 	 * @param zona

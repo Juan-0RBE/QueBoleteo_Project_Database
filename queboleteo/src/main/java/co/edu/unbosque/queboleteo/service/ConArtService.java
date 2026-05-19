@@ -30,9 +30,7 @@ public class ConArtService {
 
 	public ConArtService() {
 	}
-
-	// Métodos auxiliares de mapeo manual
-
+	
 	/**
 	 * Convierte una entidad a DTO.
 	 *
@@ -47,7 +45,7 @@ public class ConArtService {
 	}
 
 	/**
-	 * Crea una nueva asociación concierto-artista.
+	 * Crea una nueva asociación concierto artista.
 	 *
 	 * @param dto DTO con los IDs de concierto y artista
 	 * @return 0 si fue exitoso, 1 si concierto o artista no existen, 2 si la
@@ -56,15 +54,13 @@ public class ConArtService {
 	public int create(ConArtDTO dto) {
 		Optional<Concierto> concierto = conciertoRepo.findById(dto.getIdConcierto());
 		Optional<ArtistaIndividual> artista = artistaRepo.findById(dto.getIdArtista());
-
-		if (concierto.isEmpty() || artista.isEmpty())
-			return 1;
-
-		// ⚠️ Verificamos duplicado usando existsById con la PK compuesta
+		if (concierto.isEmpty() || artista.isEmpty()) {
+			return 1;			
+		}
 		ConArtId id = new ConArtId(dto.getIdConcierto(), dto.getIdArtista());
-		if (conArtRepo.existsById(id))
-			return 2;
-
+		if (conArtRepo.existsById(id)) {
+			return 2;			
+		}
 		conArtRepo.save(new ConArt(concierto.get(), artista.get()));
 		return 0;
 	}
@@ -89,8 +85,9 @@ public class ConArtService {
 	 */
 	public List<ConArtDTO> getByConciertoId(Long idConcierto) {
 		Optional<Concierto> concierto = conciertoRepo.findById(idConcierto);
-		if (concierto.isEmpty())
-			return new ArrayList<>();
+		if (concierto.isEmpty()) {
+			return new ArrayList<>();			
+		}
 		List<ConArt> entityList = conArtRepo.findByConcierto(concierto.get());
 		List<ConArtDTO> dtoList = new ArrayList<>();
 		entityList.forEach(entity -> dtoList.add(toDTO(entity)));
@@ -105,8 +102,9 @@ public class ConArtService {
 	 */
 	public List<ConArtDTO> getByArtistaId(Long idArtista) {
 		Optional<ArtistaIndividual> artista = artistaRepo.findById(idArtista);
-		if (artista.isEmpty())
-			return new ArrayList<>();
+		if (artista.isEmpty()) {
+			return new ArrayList<>();			
+		}
 		List<ConArt> entityList = conArtRepo.findByArtista(artista.get());
 		List<ConArtDTO> dtoList = new ArrayList<>();
 		entityList.forEach(entity -> dtoList.add(toDTO(entity)));

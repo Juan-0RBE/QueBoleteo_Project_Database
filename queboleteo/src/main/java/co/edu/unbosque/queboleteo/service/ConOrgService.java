@@ -31,8 +31,6 @@ public class ConOrgService {
 	public ConOrgService() {
 	}
 
-	// Métodos auxiliares de mapeo manual
-
 	/**
 	 * Convierte una entidad a DTO.
 	 *

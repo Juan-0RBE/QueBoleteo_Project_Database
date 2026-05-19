@@ -38,16 +38,6 @@ public class ZonaConciertoController {
 	 * @param zonaConcierto DTO del registro
 	 * @return Mensaje de éxito o error
 	 */
-	/*
-	 * @Operation(summary = "Crear zona-concierto")
-	 * 
-	 * @PostMapping("/crear") public ResponseEntity<String> create(@RequestBody
-	 * ZonaConciertoDTO zonaConcierto) { int status =
-	 * zonaConciertoService.create(zonaConcierto); if (status == 0) { return new
-	 * ResponseEntity<>("Zona-concierto creada correctamente", HttpStatus.CREATED);
-	 * } return new ResponseEntity<>("Ya existe esa combinación zona-concierto",
-	 * HttpStatus.NOT_ACCEPTABLE); }
-	 */
 
 	/**
 	 * Obtiene todos los registros ZonaConcierto.
@@ -83,7 +73,7 @@ public class ZonaConciertoController {
 	/**
 	 * Actualiza un registro ZonaConcierto existente.
 	 *
-	 * @param id            ID del registro
+	 * @param id ID del registro
 	 * @param zonaConcierto Nuevos datos
 	 * @return Mensaje de éxito o error
 	 */

@@ -54,7 +54,7 @@ public class GruArtService {
 	 */
 	public int create(GruArtDTO dto) {
 		if (dto == null || dto.getIdGrupo() == null || dto.getIdArtista() == null) {
-			return 4; // O puedes lanzar una excepción controlada
+			return 4;
 		}
 		
 		Optional<Grupo> grupo = grupoRepo.findById(dto.getIdGrupo());

@@ -19,6 +19,7 @@ public class ConGruId implements Serializable {
 	}
 
 	/**
+	 * Constructor
 	 * 
 	 * @param conciertoIdConcierto
 	 * @param grupoIdGrupo

@@ -46,6 +46,7 @@ public interface ConciertoRepository extends JpaRepository<Concierto, Long> {
 	List<Concierto> findBySede(Sede sede);
 
 	/**
+	 * Busca si un concierto ya está creado para una sede, en una fecha específica
 	 * 
 	 * @param nombreSede
 	 * @param fecha

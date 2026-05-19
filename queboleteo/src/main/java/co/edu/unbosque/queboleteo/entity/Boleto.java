@@ -21,10 +21,6 @@ public class Boleto {
 	@Column(name = "EstadoBoleto", length = 15)
 	private String estadoBoleto;
 
-	// Boleto es ahora dueño de la FK hacia Lugar.
-	// nullable = true porque zonas generales no asignan lugar específico.
-	// Cardinalidad N:1 — muchos boletos pueden apuntar al mismo lugar
-	// a lo largo del tiempo (uno por concierto distinto).
 	@ManyToOne
 	@JoinColumn(name = "LUGAR_IdLugar", nullable = true)
 	private Lugar lugar;
@@ -41,7 +37,7 @@ public class Boleto {
 	}
 
 	/**
-	 * Constructor para zona general (sin lugar asignado)
+	 * Constructor para zona general
 	 * 
 	 * @param estadoBoleto
 	 * @param zonaConcierto
@@ -54,7 +50,7 @@ public class Boleto {
 	}
 
 	/**
-	 * Constructor para zona con asientos (lugar específico asignado)
+	 * Constructor para zona con asientos
 	 * 
 	 * @param estadoBoleto
 	 * @param lugar

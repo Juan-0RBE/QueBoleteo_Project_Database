@@ -11,6 +11,8 @@ public class GruGenDTO {
 	}
 
 	/**
+	 * Constructor
+	 * 
 	 * @param idGrupo
 	 * @param idGenero
 	 */

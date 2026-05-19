@@ -11,6 +11,8 @@ public class ConArtDTO {
 	}
 
 	/**
+	 * Constructor
+	 * 
 	 * @param idConcierto
 	 * @param idArtista
 	 */

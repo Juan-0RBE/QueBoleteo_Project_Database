@@ -11,6 +11,7 @@ public class GeneroDTO {
 	}
 
 	/**
+	 * Constructor
 	 * 
 	 * @param nombreGenero
 	 */

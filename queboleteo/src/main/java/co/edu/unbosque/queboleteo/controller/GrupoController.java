@@ -28,8 +28,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @CrossOrigin(origins = { "*" })
 @RequestMapping(path = { "/grupo" })
-@Tag(name = "Gestión de Grupos",
-	description = "Endpoints para la gestión de grupos musicales")
+@Tag(name = "Gestión de Grupos", description = "Endpoints para la gestión de grupos musicales")
 @SecurityRequirement(name = "bearerAuth")
 public class GrupoController {
 
@@ -44,22 +43,17 @@ public class GrupoController {
 	 */
 	@Operation(summary = "Crear grupo")
 	@PostMapping("/crear")
-	public ResponseEntity<String> create(
-			@RequestBody GrupoDTO grupo) {
+	public ResponseEntity<String> create(@RequestBody GrupoDTO grupo) {
 
 		int status = grupoService.create(grupo);
 
 		if (status == 0) {
 
-			return new ResponseEntity<>(
-					"Grupo creado correctamente",
-					HttpStatus.CREATED);
+			return new ResponseEntity<>("Grupo creado correctamente", HttpStatus.CREATED);
 
 		} else {
 
-			return new ResponseEntity<>(
-					"Ya existe un grupo con ese nombre",
-					HttpStatus.NOT_ACCEPTABLE);
+			return new ResponseEntity<>("Ya existe un grupo con ese nombre", HttpStatus.NOT_ACCEPTABLE);
 		}
 	}
 
@@ -76,14 +70,10 @@ public class GrupoController {
 
 		if (lista.isEmpty()) {
 
-			return new ResponseEntity<>(
-					lista,
-					HttpStatus.NO_CONTENT);
+			return new ResponseEntity<>(lista, HttpStatus.NO_CONTENT);
 		}
 
-		return new ResponseEntity<>(
-				lista,
-				HttpStatus.OK);
+		return new ResponseEntity<>(lista, HttpStatus.OK);
 	}
 
 	/**
@@ -94,47 +84,37 @@ public class GrupoController {
 	 */
 	@Operation(summary = "Obtener grupo por ID")
 	@GetMapping("/{id}")
-	public ResponseEntity<GrupoDTO> getById(
-			@PathVariable Long id) {
+	public ResponseEntity<GrupoDTO> getById(@PathVariable Long id) {
 
 		GrupoDTO found = grupoService.getById(id);
 
 		if (found != null) {
 
-			return new ResponseEntity<>(
-					found,
-					HttpStatus.OK);
+			return new ResponseEntity<>(found, HttpStatus.OK);
 		}
 
-		return new ResponseEntity<>(
-				HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 
 	/**
 	 * Actualiza un grupo existente.
 	 * 
-	 * @param id ID del grupo
+	 * @param id    ID del grupo
 	 * @param grupo Nuevos datos
 	 * @return Mensaje de éxito o error
 	 */
 	@Operation(summary = "Actualizar grupo")
 	@PutMapping("/update/{id}")
-	public ResponseEntity<String> updateById(
-			@PathVariable Long id,
-			@RequestBody GrupoDTO grupo) {
+	public ResponseEntity<String> updateById(@PathVariable Long id, @RequestBody GrupoDTO grupo) {
 
 		int status = grupoService.updateById(id, grupo);
 
 		if (status == 0) {
 
-			return new ResponseEntity<>(
-					"Grupo actualizado correctamente",
-					HttpStatus.OK);
+			return new ResponseEntity<>("Grupo actualizado correctamente", HttpStatus.OK);
 		}
 
-		return new ResponseEntity<>(
-				"Grupo no encontrado",
-				HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>("Grupo no encontrado", HttpStatus.NOT_FOUND);
 	}
 
 	/**
@@ -145,21 +125,16 @@ public class GrupoController {
 	 */
 	@Operation(summary = "Eliminar grupo")
 	@DeleteMapping("/delete/{id}")
-	public ResponseEntity<String> deleteById(
-			@PathVariable Long id) {
+	public ResponseEntity<String> deleteById(@PathVariable Long id) {
 
 		int status = grupoService.deleteById(id);
 
 		if (status == 0) {
 
-			return new ResponseEntity<>(
-					"Grupo eliminado correctamente",
-					HttpStatus.OK);
+			return new ResponseEntity<>("Grupo eliminado correctamente", HttpStatus.OK);
 		}
 
-		return new ResponseEntity<>(
-				"Grupo no encontrado",
-				HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>("Grupo no encontrado", HttpStatus.NOT_FOUND);
 	}
 
 	/**
@@ -171,9 +146,7 @@ public class GrupoController {
 	@GetMapping("/count")
 	public ResponseEntity<Long> count() {
 
-		return new ResponseEntity<>(
-				grupoService.count(),
-				HttpStatus.OK);
+		return new ResponseEntity<>(grupoService.count(), HttpStatus.OK);
 	}
 
 }

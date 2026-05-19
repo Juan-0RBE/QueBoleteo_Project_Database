@@ -29,10 +29,12 @@ public class Zona {
 	private Sede sede;
 
 	public Zona() {
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
+	 * Constructor
+	 * 
+	 * 
 	 * @param nombreZona
 	 * @param tieneAsiento
 	 * @param sede

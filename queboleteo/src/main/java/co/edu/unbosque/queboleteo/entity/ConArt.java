@@ -28,6 +28,7 @@ public class ConArt {
 	}
 
 	/**
+	 * Constructor
 	 * 
 	 * @param concierto
 	 * @param artista

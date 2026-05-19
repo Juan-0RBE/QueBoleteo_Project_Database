@@ -15,6 +15,9 @@ public class LugarDTO {
     }
 
     /**
+     * 
+     * Constructor
+     * 
      * @param numeroAsiento
      * @param fila
      * @param idZona

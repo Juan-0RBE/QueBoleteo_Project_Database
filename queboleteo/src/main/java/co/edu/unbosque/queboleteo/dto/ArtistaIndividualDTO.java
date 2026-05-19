@@ -16,6 +16,8 @@ public class ArtistaIndividualDTO {
 	}
 
 	/**
+	 * Constructor
+	 * 
 	 * @param nombreArtista
 	 * @param descripcionArtista
 	 * @param imagenArtista

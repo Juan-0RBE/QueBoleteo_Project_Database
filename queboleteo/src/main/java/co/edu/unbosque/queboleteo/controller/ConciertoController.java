@@ -25,104 +25,103 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @CrossOrigin(origins = { "*" })
 @RequestMapping(path = { "/concierto" })
-@Tag(name = "Gestión de Conciertos",
-    description = "Endpoints para la gestión de conciertos")
+@Tag(name = "Gestión de Conciertos", description = "Endpoints para la gestión de conciertos")
 @SecurityRequirement(name = "bearerAuth")
 public class ConciertoController {
 
-    @Autowired
-    private ConciertoService conciertoService;
+	@Autowired
+	private ConciertoService conciertoService;
 
-    /**
-     * Crea un nuevo concierto.
-     *
-     * @param concierto DTO del concierto
-     * @return Mensaje de éxito o error
-     */
-    @Operation(summary = "Crear concierto")
-    @PostMapping("/crear")
-    public ResponseEntity<String> create(@RequestBody ConciertoDTO concierto) {
-        int status = conciertoService.create(concierto);
-        if (status == 0) {
-            return new ResponseEntity<>("Concierto creado correctamente", HttpStatus.CREATED);
-        } else if (status == 2) {
-        	return new ResponseEntity<>("Se debe asignar una sede válida al concierto", HttpStatus.NOT_ACCEPTABLE);
-        }
-        return new ResponseEntity<>("Ya existe un concierto con ese nombre", HttpStatus.NOT_ACCEPTABLE);
-    }
+	/**
+	 * Crea un nuevo concierto.
+	 *
+	 * @param concierto DTO del concierto
+	 * @return Mensaje de éxito o error
+	 */
+	@Operation(summary = "Crear concierto")
+	@PostMapping("/crear")
+	public ResponseEntity<String> create(@RequestBody ConciertoDTO concierto) {
+		int status = conciertoService.create(concierto);
+		if (status == 0) {
+			return new ResponseEntity<>("Concierto creado correctamente", HttpStatus.CREATED);
+		} else if (status == 2) {
+			return new ResponseEntity<>("Se debe asignar una sede válida al concierto", HttpStatus.NOT_ACCEPTABLE);
+		}
+		return new ResponseEntity<>("Ya existe un concierto con ese nombre", HttpStatus.NOT_ACCEPTABLE);
+	}
 
-    /**
-     * Obtiene todos los conciertos.
-     *
-     * @return Lista de conciertos
-     */
-    @Operation(summary = "Obtener todos los conciertos")
-    @GetMapping("/all")
-    public ResponseEntity<List<ConciertoDTO>> getAll() {
-        List<ConciertoDTO> lista = conciertoService.getAll();
-        if (lista.isEmpty()) {
-            return new ResponseEntity<>(lista, HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity<>(lista, HttpStatus.OK);
-    }
+	/**
+	 * Obtiene todos los conciertos.
+	 *
+	 * @return Lista de conciertos
+	 */
+	@Operation(summary = "Obtener todos los conciertos")
+	@GetMapping("/all")
+	public ResponseEntity<List<ConciertoDTO>> getAll() {
+		List<ConciertoDTO> lista = conciertoService.getAll();
+		if (lista.isEmpty()) {
+			return new ResponseEntity<>(lista, HttpStatus.NO_CONTENT);
+		}
+		return new ResponseEntity<>(lista, HttpStatus.OK);
+	}
 
-    /**
-     * Obtiene un concierto por ID.
-     *
-     * @param id ID del concierto
-     * @return Concierto encontrado
-     */
-    @Operation(summary = "Obtener concierto por ID")
-    @GetMapping("/{id}")
-    public ResponseEntity<ConciertoDTO> getById(@PathVariable Long id) {
-        ConciertoDTO found = conciertoService.getById(id);
-        if (found != null) {
-            return new ResponseEntity<>(found, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
+	/**
+	 * Obtiene un concierto por ID.
+	 *
+	 * @param id ID del concierto
+	 * @return Concierto encontrado
+	 */
+	@Operation(summary = "Obtener concierto por ID")
+	@GetMapping("/{id}")
+	public ResponseEntity<ConciertoDTO> getById(@PathVariable Long id) {
+		ConciertoDTO found = conciertoService.getById(id);
+		if (found != null) {
+			return new ResponseEntity<>(found, HttpStatus.OK);
+		}
+		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	}
 
-    /**
-     * Actualiza un concierto existente.
-     *
-     * @param id        ID del concierto
-     * @param concierto Nuevos datos
-     * @return Mensaje de éxito o error
-     */
-    @Operation(summary = "Actualizar concierto")
-    @PutMapping("/update/{id}")
-    public ResponseEntity<String> updateById(@PathVariable Long id, @RequestBody ConciertoDTO concierto) {
-        int status = conciertoService.updateById(id, concierto);
-        if (status == 0) {
-            return new ResponseEntity<>("Concierto actualizado correctamente", HttpStatus.OK);
-        }
-        return new ResponseEntity<>("Concierto no encontrado", HttpStatus.NOT_FOUND);
-    }
+	/**
+	 * Actualiza un concierto existente.
+	 *
+	 * @param id ID del concierto
+	 * @param concierto Nuevos datos
+	 * @return Mensaje de éxito o error
+	 */
+	@Operation(summary = "Actualizar concierto")
+	@PutMapping("/update/{id}")
+	public ResponseEntity<String> updateById(@PathVariable Long id, @RequestBody ConciertoDTO concierto) {
+		int status = conciertoService.updateById(id, concierto);
+		if (status == 0) {
+			return new ResponseEntity<>("Concierto actualizado correctamente", HttpStatus.OK);
+		}
+		return new ResponseEntity<>("Concierto no encontrado", HttpStatus.NOT_FOUND);
+	}
 
-    /**
-     * Elimina un concierto por ID.
-     *
-     * @param id ID del concierto
-     * @return Mensaje de éxito o error
-     */
-    @Operation(summary = "Eliminar concierto")
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteById(@PathVariable Long id) {
-        int status = conciertoService.deleteById(id);
-        if (status == 0) {
-            return new ResponseEntity<>("Concierto eliminado correctamente", HttpStatus.OK);
-        }
-        return new ResponseEntity<>("Concierto no encontrado", HttpStatus.NOT_FOUND);
-    }
+	/**
+	 * Elimina un concierto por ID.
+	 *
+	 * @param id ID del concierto
+	 * @return Mensaje de éxito o error
+	 */
+	@Operation(summary = "Eliminar concierto")
+	@DeleteMapping("/delete/{id}")
+	public ResponseEntity<String> deleteById(@PathVariable Long id) {
+		int status = conciertoService.deleteById(id);
+		if (status == 0) {
+			return new ResponseEntity<>("Concierto eliminado correctamente", HttpStatus.OK);
+		}
+		return new ResponseEntity<>("Concierto no encontrado", HttpStatus.NOT_FOUND);
+	}
 
-    /**
-     * Cuenta el total de conciertos.
-     *
-     * @return Cantidad total de conciertos
-     */
-    @Operation(summary = "Contar conciertos")
-    @GetMapping("/count")
-    public ResponseEntity<Long> count() {
-        return new ResponseEntity<>(conciertoService.count(), HttpStatus.OK);
-    }
+	/**
+	 * Cuenta el total de conciertos.
+	 *
+	 * @return Cantidad total de conciertos
+	 */
+	@Operation(summary = "Contar conciertos")
+	@GetMapping("/count")
+	public ResponseEntity<Long> count() {
+		return new ResponseEntity<>(conciertoService.count(), HttpStatus.OK);
+	}
 }

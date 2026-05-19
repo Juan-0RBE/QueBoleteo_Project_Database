@@ -10,6 +10,9 @@ public class CompraResponseDto {
 	private List<Long> codigosBoletos;
 	private List<Long> idsLugares;
 
+	/**
+	 * Constructor
+	 */
 	public CompraResponseDto() {
 	}
 

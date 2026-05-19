@@ -19,6 +19,8 @@ public class GruArtId implements Serializable {
 	}
 
 	/**
+	 * Constructor
+	 * 
 	 * @param grupoIdGrupo
 	 * @param artistaIndividualIdArtista
 	 */
